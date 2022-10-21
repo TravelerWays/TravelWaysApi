@@ -30,6 +30,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public AppUser createUser(CreateUserRequest request) {
+        // ToDo: walidacja i sprawdzanie czy inny uzytkonik nie istnieje
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         var user = AppUser.of(request);
         var role = roleRepository.findByName(Roles.ROLE_USER);
