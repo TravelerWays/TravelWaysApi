@@ -1,6 +1,8 @@
 package travel.way.travelwayapi.user.controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,5 +21,13 @@ public class UserController {
     @GetMapping("all")
     public List<UserDto> GetAll() {
         return userService.getAll().stream().map(UserDto::of).collect(Collectors.toList());
+    }
+
+    @GetMapping("logged")
+    public UserDto getLogged(){
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        var user = userService.getByUsername(auth.getName());
+
+        return UserDto.of(user);
     }
 }
