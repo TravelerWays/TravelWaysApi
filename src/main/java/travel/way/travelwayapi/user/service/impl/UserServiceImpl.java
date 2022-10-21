@@ -1,4 +1,4 @@
-package travel.way.travelwayapi.user.service;
+package travel.way.travelwayapi.user.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -8,6 +8,7 @@ import travel.way.travelwayapi._core.models.BaseEntity;
 import travel.way.travelwayapi._core.models.Roles;
 import travel.way.travelwayapi.user.models.dto.request.CreateUserRequest;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
@@ -22,7 +23,9 @@ import java.util.List;
 public class AppUser extends BaseEntity {
     private String name;
     private String surname;
+    @Column(unique = true)
     private String username;
+    @Column(unique = true)
     private String email;
     private String password;
 
