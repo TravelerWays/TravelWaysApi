@@ -1,7 +1,6 @@
-package travel.way.travelwayapi.auth.service.internal;
+package travel.way.travelwayapi.auth.services.internal;
 
 import travel.way.travelwayapi._core.exceptions.ServerException;
-import travel.way.travelwayapi.auth.models.dto.response.AuthResponse;
 
 public interface JwtUtils {
     public static final  String TOKEN_TYPE = "Bearer";

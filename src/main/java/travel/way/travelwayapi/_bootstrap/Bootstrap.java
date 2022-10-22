@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import travel.way.travelwayapi._core.models.Roles;
 import travel.way.travelwayapi.user.models.db.Role;
 import travel.way.travelwayapi.user.models.dto.request.CreateUserRequest;
-import travel.way.travelwayapi.user.repository.RoleRepository;
+import travel.way.travelwayapi.user.repositories.RoleRepository;
 import travel.way.travelwayapi.user.shared.UserService;
 
 @Configuration

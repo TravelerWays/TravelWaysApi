@@ -1,4 +1,4 @@
-package travel.way.travelwayapi.auth.service.impl;
+package travel.way.travelwayapi.auth.services.impl;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import travel.way.travelwayapi._core.exceptions.ServerException;
 import travel.way.travelwayapi._core.properites.AuthProperties;
 import travel.way.travelwayapi.auth.models.db.RefreshToken;
-import travel.way.travelwayapi.auth.reposiotry.RefreshTokenRepository;
-import travel.way.travelwayapi.auth.service.internal.JwtUtils;
+import travel.way.travelwayapi.auth.repositories.RefreshTokenRepository;
+import travel.way.travelwayapi.auth.services.internal.JwtUtils;
 import travel.way.travelwayapi.user.models.db.Role;
 import travel.way.travelwayapi.user.shared.UserService;
 
@@ -46,6 +46,7 @@ public class JwtUtilsImpl implements JwtUtils {
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                 .withClaim(ROLES_CLAIMS, user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
+                .withClaim("test", "elo")
                 .sign(algorithm);
     }
 
@@ -61,7 +62,7 @@ public class JwtUtilsImpl implements JwtUtils {
     @Transactional
     public String refreshToken(String refreshToken) {
         var token = refreshTokenRepository.findByToken(refreshToken);
-        if(token.isUsed()){
+        if (token.isUsed()) {
             revokeAllConnectedToken(token);
             throw new ServerException("Invalid refresh token", HttpStatus.FORBIDDEN.value());
         }
@@ -103,7 +104,7 @@ public class JwtUtilsImpl implements JwtUtils {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 
-    private String getRandomString(){
+    private String getRandomString() {
         var alphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 + "0123456789"
                 + "abcdefghijklmnopqrstuvxyz";
@@ -111,8 +112,8 @@ public class JwtUtilsImpl implements JwtUtils {
         var stringBuilder = new StringBuilder(10);
         var random = new Random();
 
-        for(int i = 0; i < 10; i++){
-          stringBuilder.append(alphaNumericString.charAt(random.nextInt(alphaNumericString.length())));
+        for (int i = 0; i < 10; i++) {
+            stringBuilder.append(alphaNumericString.charAt(random.nextInt(alphaNumericString.length())));
         }
 
         return stringBuilder.toString();
@@ -124,7 +125,7 @@ public class JwtUtilsImpl implements JwtUtils {
         return verifier.verify(jwt);
     }
 
-    private void revokeAllConnectedToken(RefreshToken token){
+    private void revokeAllConnectedToken(RefreshToken token) {
         refreshTokenRepository.revokeRefresh(token.getUser());
     }
 }

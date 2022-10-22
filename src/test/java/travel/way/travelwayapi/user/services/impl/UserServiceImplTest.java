@@ -1,6 +1,5 @@
-package travel.way.travelwayapi.user.service.impl;
+package travel.way.travelwayapi.user.services.impl;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -9,15 +8,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import travel.way.travelwayapi._core.models.Roles;
 import travel.way.travelwayapi.user.models.db.AppUser;
 import travel.way.travelwayapi.user.models.db.Role;
 import travel.way.travelwayapi.user.models.dto.request.CreateUserRequest;
-import travel.way.travelwayapi.user.repository.RoleRepository;
-import travel.way.travelwayapi.user.repository.UserRepository;
+import travel.way.travelwayapi.user.repositories.RoleRepository;
+import travel.way.travelwayapi.user.repositories.UserRepository;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertSame;

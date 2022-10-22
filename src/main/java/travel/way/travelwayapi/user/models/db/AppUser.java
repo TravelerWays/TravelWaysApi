@@ -4,8 +4,7 @@ import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import travel.way.travelwayapi._core.models.BaseEntity;
-import travel.way.travelwayapi._core.models.Roles;
+import travel.way.travelwayapi._core.models.db.BaseEntity;
 import travel.way.travelwayapi.user.models.dto.request.CreateUserRequest;
 
 import javax.persistence.Column;

@@ -2,12 +2,11 @@ package travel.way.travelwayapi.auth.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import travel.way.travelwayapi.auth.models.dto.response.AuthResponse;
-import travel.way.travelwayapi.auth.service.internal.JwtUtils;
+import travel.way.travelwayapi.auth.services.internal.JwtUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
