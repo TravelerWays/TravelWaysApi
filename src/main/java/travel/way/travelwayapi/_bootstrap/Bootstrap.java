@@ -24,7 +24,7 @@ public class Bootstrap {
     public CommandLineRunner setupRoles() {
         return args -> {
             for (var roleName : Roles.GetAllRoles()) {
-                if (roleRepository.existsByName(roleName)) {
+                if (!roleRepository.existsByName(roleName)) {
                     roleRepository.save(new Role(roleName));
                 }
             }

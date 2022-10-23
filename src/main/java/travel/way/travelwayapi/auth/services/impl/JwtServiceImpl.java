@@ -17,25 +17,28 @@ import travel.way.travelwayapi._core.exceptions.ServerException;
 import travel.way.travelwayapi._core.properites.AuthProperties;
 import travel.way.travelwayapi.auth.models.db.RefreshToken;
 import travel.way.travelwayapi.auth.repositories.RefreshTokenRepository;
-import travel.way.travelwayapi.auth.services.internal.JwtUtils;
+import travel.way.travelwayapi.auth.services.internal.JwtService;
 import travel.way.travelwayapi.user.models.db.Role;
 import travel.way.travelwayapi.user.shared.UserService;
 
+import javax.servlet.http.Cookie;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 
 @Service
 @RequiredArgsConstructor
-public class JwtUtilsImpl implements JwtUtils {
+public class JwtServiceImpl implements JwtService {
     private final UserService userService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthProperties authProperties;
+
     private final static String ROLES_CLAIMS = "roles";
+    private final static String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     @Override
     public String generateJwt(String username) {
@@ -46,7 +49,6 @@ public class JwtUtilsImpl implements JwtUtils {
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                 .withClaim(ROLES_CLAIMS, user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
-                .withClaim("test", "elo")
                 .sign(algorithm);
     }
 
@@ -104,16 +106,25 @@ public class JwtUtilsImpl implements JwtUtils {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 
+    @Override
+    public Cookie getRefreshCookie(String refreshToken) {
+        var cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+
+        return cookie;
+    }
+
     private String getRandomString() {
         var alphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 + "0123456789"
                 + "abcdefghijklmnopqrstuvxyz";
 
         var stringBuilder = new StringBuilder(10);
-        var random = new Random();
+        var secureRandom = new SecureRandom();
 
         for (int i = 0; i < 10; i++) {
-            stringBuilder.append(alphaNumericString.charAt(random.nextInt(alphaNumericString.length())));
+            stringBuilder.append(alphaNumericString.charAt(secureRandom.nextInt(alphaNumericString.length())));
         }
 
         return stringBuilder.toString();

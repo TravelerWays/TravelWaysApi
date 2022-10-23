@@ -27,16 +27,10 @@ public class UserController {
     }
 
     @GetMapping("logged")
-    public UserDto getLogged(){
+    public UserDto getLogged() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         var user = userService.getByUsername(auth.getName());
 
         return UserDto.of(user);
-    }
-
-    @GetMapping("throw")
-    @SneakyThrows
-    public void throwTest(){
-        throw new ServerException("test message", HttpStatus.NOT_FOUND.value());
     }
 }

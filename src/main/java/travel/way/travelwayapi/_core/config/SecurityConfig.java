@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import travel.way.travelwayapi.auth.filters.AuthenticationFilter;
 import travel.way.travelwayapi.auth.filters.AuthorizationFilter;
-import travel.way.travelwayapi.auth.services.internal.JwtUtils;
+import travel.way.travelwayapi.auth.services.internal.JwtService;
 
 @Configuration
 @EnableWebSecurity
@@ -23,7 +23,7 @@ import travel.way.travelwayapi.auth.services.internal.JwtUtils;
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final JwtUtils jwtUtils;
+    private final JwtService jwtUtils;
 
     @Bean
     public AuthenticationManager authenticationManagerBean(HttpSecurity http) throws Exception {

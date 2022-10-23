@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
-import travel.way.travelwayapi.auth.services.internal.JwtUtils;
+import travel.way.travelwayapi.auth.services.internal.JwtService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -16,17 +16,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
     private static final List<String> publicUri = List.of("/login", "/refresh", "/register");
-    private final JwtUtils jwtUtils;
+    private final JwtService jwtService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if(shouldAuthorization(request.getServletPath())){
             try {
                 var token = request.getHeader(HttpHeaders.AUTHORIZATION);
-                if(token == null  || token.startsWith(JwtUtils.TOKEN_TYPE)) {
-                    token = token.substring(JwtUtils.TOKEN_TYPE.length()).trim();
+                if(token == null  || token.startsWith(JwtService.TOKEN_TYPE)) {
+                    token = token.substring(JwtService.TOKEN_TYPE.length()).trim();
 
-                    jwtUtils.authenticationUser(token);
+                    jwtService.authenticationUser(token);
                 }
             }catch (Exception e){
                 response.setStatus(HttpStatus.FORBIDDEN.value());
