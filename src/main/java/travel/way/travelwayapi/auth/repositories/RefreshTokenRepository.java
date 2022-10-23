@@ -1,4 +1,4 @@
-package travel.way.travelwayapi.auth.reposiotry;
+package travel.way.travelwayapi.auth.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

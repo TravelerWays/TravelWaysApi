@@ -1,4 +1,4 @@
-package travel.way.travelwayapi.user.service.impl;
+package travel.way.travelwayapi.user.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import travel.way.travelwayapi._core.models.Roles;
 import travel.way.travelwayapi.user.models.db.AppUser;
 import travel.way.travelwayapi.user.models.dto.request.CreateUserRequest;
-import travel.way.travelwayapi.user.repository.RoleRepository;
-import travel.way.travelwayapi.user.repository.UserRepository;
+import travel.way.travelwayapi.user.repositories.RoleRepository;
+import travel.way.travelwayapi.user.repositories.UserRepository;
 import travel.way.travelwayapi.user.shared.UserService;
 
 import java.util.ArrayList;

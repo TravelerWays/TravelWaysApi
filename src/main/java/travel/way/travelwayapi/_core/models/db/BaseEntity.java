@@ -1,4 +1,4 @@
-package travel.way.travelwayapi._core.models;
+package travel.way.travelwayapi._core.models.db;
 
 
 import lombok.Data;

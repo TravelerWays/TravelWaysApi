@@ -3,8 +3,7 @@ package travel.way.travelwayapi.user.models.db;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLInsert;
-import travel.way.travelwayapi._core.models.BaseEntity;
+import travel.way.travelwayapi._core.models.db.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

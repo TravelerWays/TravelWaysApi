@@ -1,11 +1,14 @@
 package travel.way.travelwayapi.user.controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import travel.way.travelwayapi._core.exceptions.ServerException;
 import travel.way.travelwayapi.user.models.dto.response.UserDto;
 import travel.way.travelwayapi.user.shared.UserService;
 
@@ -24,7 +27,7 @@ public class UserController {
     }
 
     @GetMapping("logged")
-    public UserDto getLogged(){
+    public UserDto getLogged() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         var user = userService.getByUsername(auth.getName());
 
