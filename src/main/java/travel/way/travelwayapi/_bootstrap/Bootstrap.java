@@ -36,10 +36,8 @@ public class Bootstrap {
     @DependsOn({"setupRoles"})
     public CommandLineRunner run() {
         return args -> {
-            var role = roleRepository.findByName(Roles.ROLE_USER);
-
             var createUser = new CreateUserRequest(
-                    "Jhon",
+                    "John",
                     "Doe",
                     "JD",
                     "elo",
