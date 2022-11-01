@@ -6,7 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
+import travel.ways.travelwaysapi._core.properity.CommonProperty;
 import travel.ways.travelwaysapi._core.util.TimeUtil;
+import travel.ways.travelwaysapi.mail.MailService;
+import travel.ways.travelwaysapi.mail.models.dto.request.SendMailRequest;
+import travel.ways.travelwaysapi.mail.models.mailTemplate.RecoveryPasswordTemplateModel;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.PasswordRecovery;
 import travel.ways.travelwaysapi.user.model.dto.request.InitPasswordRecoveryRequest;
@@ -14,7 +18,6 @@ import travel.ways.travelwaysapi.user.repository.PasswordRecoveryRepository;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
 import travel.ways.travelwaysapi.user.service.internal.PasswordRecoveryService;
 
-import java.sql.Timestamp;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -22,6 +25,8 @@ import java.util.UUID;
 public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     private final UserRepository userRepository;
     private final PasswordRecoveryRepository passwordRecoveryRepository;
+    private final MailService mailService;
+    private final CommonProperty commonProperty;
 
 
     @Override
@@ -32,17 +37,22 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         if(user == null){
             throw new ServerException("User doesn't exists", HttpStatus.BAD_REQUEST.value());
         }
-        //todo: send mail
-        var now = TimeUtil.Now();
 
         passwordRecoveryRepository.setAllRecoveryAsUsed(user);
+
         var passwordRecoveryModel = new PasswordRecovery(
                 UUID.randomUUID().toString(),
                 false,
-                new Timestamp(TimeUtil.AddMinutes(now, 20).getTime()),
+                TimeUtil.Now().addMinutes(20).getTimestamp(),
                 user
         );
 
+        mailService.sendMail(new SendMailRequest<RecoveryPasswordTemplateModel>(
+                "Password recovery",
+                user.getEmail(),
+                "passwordRecovery.ftl",
+                new RecoveryPasswordTemplateModel(passwordRecoveryModel.getHash(), commonProperty.getFrontAppUrl())
+        ));
         passwordRecoveryRepository.save(passwordRecoveryModel);
         return passwordRecoveryModel.getHash();
     }
@@ -53,9 +63,19 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         if(recoveryModel == null){
             return false;
         }
-        var now = TimeUtil.NowTimestamp();
 
-        return !recoveryModel.isUsed() && recoveryModel.getExpiredAt().compareTo(now) > 0;
+        return !recoveryModel.isUsed() && recoveryModel.getExpiredAt().compareTo(TimeUtil.Now().getTimestamp()) > 0;
+    }
+
+    @Override
+    @SneakyThrows
+    @Transactional
+    public void setRecoveryHashAsUsed(String hash) {
+        var recoveryModel = passwordRecoveryRepository.findByHash(hash);
+        if(recoveryModel == null){
+            throw new ServerException("invalid recovery hash", HttpStatus.BAD_REQUEST.value());
+        }
+        recoveryModel.setUsed(true);
     }
 
     @Override

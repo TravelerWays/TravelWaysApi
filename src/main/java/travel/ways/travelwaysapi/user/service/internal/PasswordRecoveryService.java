@@ -6,5 +6,6 @@ import travel.ways.travelwaysapi.user.model.dto.request.InitPasswordRecoveryRequ
 public interface PasswordRecoveryService {
     String initRecoveryPassword(InitPasswordRecoveryRequest request);
     boolean isRecoveryHashValid(String hash);
+    void setRecoveryHashAsUsed(String hash);
     AppUser getUserByRecoveryHash(String hash);
 }

@@ -14,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
-import travel.ways.travelwaysapi._core.properite.AuthProperties;
+import travel.ways.travelwaysapi._core.properity.AuthProperty;
 import travel.ways.travelwaysapi.auth.model.db.RefreshToken;
 import travel.ways.travelwaysapi.auth.repository.RefreshTokenRepository;
 import travel.ways.travelwaysapi.auth.service.internal.JwtService;
@@ -35,14 +35,14 @@ import static java.util.Arrays.stream;
 public class JwtServiceImpl implements JwtService {
     private final UserService userService;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final AuthProperties authProperties;
+    private final AuthProperty authProperty;
 
     private final static String ROLES_CLAIMS = "roles";
     private final static String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     @Override
     public String generateJwt(String username) {
-        Algorithm algorithm = Algorithm.HMAC256(authProperties.getSecret().getBytes());
+        Algorithm algorithm = Algorithm.HMAC256(authProperty.getSecret().getBytes());
         var user = userService.getByUsername(username);
         return JWT
                 .create()
@@ -131,7 +131,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private DecodedJWT verifierJwt(String jwt) throws JWTVerificationException {
-        var algorithm = Algorithm.HMAC256(authProperties.getSecret().getBytes());
+        var algorithm = Algorithm.HMAC256(authProperty.getSecret().getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
         return verifier.verify(jwt);
     }

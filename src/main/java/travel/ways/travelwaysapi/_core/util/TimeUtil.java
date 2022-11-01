@@ -1,34 +1,64 @@
 package travel.ways.travelwaysapi._core.util;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+@Getter
+public class TimeUtil implements Comparable<TimeUtil> {
+    private final Date date;
 
-public class TimeUtil {
-    public static Date Now() {
+    TimeUtil() {
         var calendar = Calendar.getInstance();
         calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return calendar.getTime();
+        date = calendar.getTime();
     }
 
-    public static Timestamp NowTimestamp(){
+    TimeUtil(long time) {
         var calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
         calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return new Timestamp(calendar.getTimeInMillis());
+        date = calendar.getTime();
     }
 
-    public static Timestamp ParseToTimestamp(Date date){
+    public static TimeUtil Now() {
+        return new TimeUtil();
+    }
+
+    public long getTime() {
+        return date.getTime();
+    }
+
+    public Timestamp getTimestamp() {
         return new Timestamp(date.getTime());
     }
 
-    public static Date ParseToDate(Timestamp timestamp){
-        return new Date(timestamp.getTime());
+    @Override
+    public String toString() {
+        return date.toString();
     }
 
-    public static Date AddMinutes(Date time, int minutes) {
-        return new Date(time.getTime() + (long) minutes * 60 * 1000);
+    public TimeUtil addMinutes(long minutes) {
+        date.setTime(date.getTime() + minutes * 60 * 1000);
+        return this;
     }
 
+    public TimeUtil addHours(long hours) {
+        date.setTime(date.getTime() + hours * 60 * 60 * 1000);
+        return this;
+    }
+
+    public TimeUtil addDays(long days) {
+        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+        return this;
+    }
+
+    @Override
+    public int compareTo(TimeUtil o) {
+        return (int) (date.getTime() - o.getTime());
+    }
 }

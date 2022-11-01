@@ -41,7 +41,7 @@ public class Bootstrap {
                     "Doe",
                     "JD",
                     "elo",
-                    "email@gmail.com"
+                    "kazmierczakkarol1999@gmail.com"
             );
 
             userService.createUser(createUser);

@@ -30,12 +30,15 @@ public class AccountController {
     }
 
     @PostMapping("password-recovery/change-password/{hash}")
-    public BaseResponse changePassword(@RequestBody ChangePasswordRequest request, @PathVariable String hash){
-        if(!recoveryPasswordService.isRecoveryHashValid(hash)){
+    public BaseResponse changePassword(@RequestBody ChangePasswordRequest request, @PathVariable String hash) {
+        if (!recoveryPasswordService.isRecoveryHashValid(hash)) {
             return new BaseResponse(false, "invalid recovery hash");
         }
+
         var user = recoveryPasswordService.getUserByRecoveryHash(hash);
         accountManager.changePassword(user.getId(), request.getPassword());
+        recoveryPasswordService.setRecoveryHashAsUsed(hash);
+
         return new BaseResponse(true, "password changed");
     }
 }
