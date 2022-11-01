@@ -32,7 +32,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     @Override
     @SneakyThrows
     @Transactional
-    public String initRecoveryPassword(InitPasswordRecoveryRequest request) {
+    public void initPasswordRecovery(InitPasswordRecoveryRequest request) {
         var user = userRepository.findByEmail(request.getEmail());
         if(user == null){
             throw new ServerException("User doesn't exists", HttpStatus.BAD_REQUEST.value());
@@ -54,7 +54,6 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
                 new RecoveryPasswordTemplateModel(passwordRecoveryModel.getHash(), commonProperty.getFrontAppUrl())
         ));
         passwordRecoveryRepository.save(passwordRecoveryModel);
-        return passwordRecoveryModel.getHash();
     }
 
     @Override

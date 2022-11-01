@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
 import travel.ways.travelwaysapi.user.model.dto.request.ChangePasswordRequest;
 import travel.ways.travelwaysapi.user.model.dto.request.InitPasswordRecoveryRequest;
-import travel.ways.travelwaysapi.user.model.dto.response.InitPasswordRecoveryResponse;
 import travel.ways.travelwaysapi.user.model.dto.response.ValidHashPasswordRecoveryResponse;
 import travel.ways.travelwaysapi.user.service.internal.AccountManager;
 import travel.ways.travelwaysapi.user.service.internal.PasswordRecoveryService;
@@ -18,9 +17,9 @@ public class AccountController {
     private final AccountManager accountManager;
 
     @PostMapping("password-recovery/init")
-    public InitPasswordRecoveryResponse passwordRecoverInit(@RequestBody InitPasswordRecoveryRequest request) {
-        var recoveryHash = recoveryPasswordService.initRecoveryPassword(request);
-        return new InitPasswordRecoveryResponse(recoveryHash);
+    public BaseResponse passwordRecoverInit(@RequestBody InitPasswordRecoveryRequest request) {
+        recoveryPasswordService.initPasswordRecovery(request);
+        return new BaseResponse(true, "mail with link send");
     }
 
     @GetMapping("password-recovery/valid/{hash}")
