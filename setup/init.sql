@@ -1,1 +1,1 @@
-create database "travelWay";
+create database "travelWays";
