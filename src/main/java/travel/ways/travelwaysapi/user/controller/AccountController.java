@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
 import travel.ways.travelwaysapi.user.model.dto.request.ChangePasswordRequest;
 import travel.ways.travelwaysapi.user.model.dto.request.InitPasswordRecoveryRequest;
-import travel.ways.travelwaysapi.user.model.dto.response.ValidHashPasswordRecoveryResponse;
+import travel.ways.travelwaysapi.user.model.dto.response.ValidateRecoveryHashResponse;
 import travel.ways.travelwaysapi.user.service.internal.AccountManager;
 import travel.ways.travelwaysapi.user.service.internal.PasswordRecoveryService;
 
@@ -23,9 +23,9 @@ public class AccountController {
     }
 
     @GetMapping("password-recovery/valid/{hash}")
-    public ValidHashPasswordRecoveryResponse validPasswordRecovery(@PathVariable String hash) {
+    public ValidateRecoveryHashResponse validateRecoveryHash(@PathVariable String hash) {
         var isValid = recoveryPasswordService.isRecoveryHashValid(hash);
-        return new ValidHashPasswordRecoveryResponse(isValid);
+        return new ValidateRecoveryHashResponse(isValid);
     }
 
     @PostMapping("password-recovery/change-password/{hash}")
