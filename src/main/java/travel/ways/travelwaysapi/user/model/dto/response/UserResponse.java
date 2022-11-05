@@ -11,7 +11,7 @@ import java.util.Collection;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class UserResponse {
     private Long id;
     private String name;
     private String surname;
@@ -19,9 +19,9 @@ public class UserDto {
     private String email;
     private Collection<RoleDto> roles = new ArrayList<>();
 
-    public static UserDto of(AppUser user){
+    public static UserResponse of(AppUser user){
         var roles = user.getRoles().stream().map(role -> {return  new RoleDto(role.getName());}).toList();
-        return new UserDto(
+        return new UserResponse(
                 user.getId(),
                 user.getName(),
                 user.getSurname(),

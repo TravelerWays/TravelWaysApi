@@ -11,19 +11,19 @@ import travel.ways.travelwaysapi.user.repository.UserRepository;
 
 import java.util.Optional;
 
-class AccountManagerImplTest {
+class AccountServiceImplTest {
     @Mock
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    private AccountManagerImpl accountManager;
+    private AccountServiceImpl accountManager;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        accountManager = new AccountManagerImpl(userRepository, passwordEncoder);
+        accountManager = new AccountServiceImpl(userRepository, passwordEncoder);
     }
 
     @Test

@@ -7,13 +7,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
-import travel.ways.travelwaysapi.user.repository.PasswordRecoveryRepository;
+import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
-import travel.ways.travelwaysapi.user.service.internal.AccountManager;
+import travel.ways.travelwaysapi.user.service.internal.AccountService;
 
 @Service
 @RequiredArgsConstructor
-public class AccountManagerImpl implements AccountManager {
+public class AccountServiceImpl implements AccountService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -28,4 +28,11 @@ public class AccountManagerImpl implements AccountManager {
         var user = optionalUser.get();
         user.setPassword(passwordEncoder.encode(newPassword));
     }
+
+    @Override
+    public void registerUser(CreateUserRequest createUserRequest) {
+
+    }
+
+
 }
