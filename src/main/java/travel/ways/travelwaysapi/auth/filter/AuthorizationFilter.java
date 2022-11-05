@@ -37,6 +37,6 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     }
 
     private boolean shouldAuthorization(String requestPath) {
-        return publicUri.stream().anyMatch(x -> x.startsWith(requestPath));
+        return publicUri.stream().noneMatch(requestPath::startsWith);
     }
 }
