@@ -8,7 +8,7 @@ import org.mockito.MockitoAnnotations;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.Role;
 import travel.ways.travelwaysapi.user.model.dto.request.ChangePasswordRequest;
-import travel.ways.travelwaysapi.user.service.internal.AccountManager;
+import travel.ways.travelwaysapi.user.service.internal.AccountService;
 import travel.ways.travelwaysapi.user.service.internal.PasswordRecoveryService;
 
 import java.util.List;
@@ -19,7 +19,7 @@ class AccountControllerTest {
     @Mock
     private PasswordRecoveryService passwordRecoveryService;
     @Mock
-    private AccountManager accountManager;
+    private AccountService accountService;
 
     private AccountController accountController;
 
@@ -27,7 +27,7 @@ class AccountControllerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        accountController = new AccountController(passwordRecoveryService, accountManager);
+        accountController = new AccountController(passwordRecoveryService, accountService);
     }
 
 
@@ -64,6 +64,6 @@ class AccountControllerTest {
         // assert
         assertTrue(result.isSuccess());
         assertSame("password changed", result.getMessage());
-        Mockito.verify(accountManager, Mockito.times(1)).changePassword(2L, "test");
+        Mockito.verify(accountService, Mockito.times(1)).changePassword(2L, "test");
     }
 }

@@ -23,35 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private RoleRepository roleRepository;
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     private UserServiceImpl userService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        userService = new UserServiceImpl(userRepository, roleRepository, passwordEncoder);
-    }
-
-    @Test
-    void createUser_givenValidRequest_thenCreateNewUser() {
-        // arrange
-        var request = new CreateUserRequest(
-                "Jhon",
-                "Doe",
-                "JD",
-                "elo",
-                "email@gmail.com"
-        );
-        // act
-        var result = userService.createUser(request);
-        // assert
-        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
-        assertSame(result.getName(), request.getName());
-        assertSame(result.getUsername(), request.getUsername());
-        assertSame(result.getEmail(), request.getEmail());
-        assertSame(result.getSurname(), request.getSurname());
+        userService = new UserServiceImpl(userRepository);
     }
 
     @Test

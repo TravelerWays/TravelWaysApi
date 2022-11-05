@@ -6,16 +6,25 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
+import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
+import travel.ways.travelwaysapi.user.repository.RoleRepository;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
 
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 
 class AccountServiceImplTest {
     @Mock
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private RoleRepository roleRepository;
 
     private AccountServiceImpl accountManager;
 
@@ -23,7 +32,7 @@ class AccountServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        accountManager = new AccountServiceImpl(userRepository, passwordEncoder);
+        accountManager = new AccountServiceImpl(userRepository, passwordEncoder, roleRepository);
     }
 
     @Test
@@ -36,7 +45,21 @@ class AccountServiceImplTest {
         accountManager.changePassword(1L, "123");
 
         // assert
-        Mockito.verify(mockAppUser, Mockito.times(1)).setPassword(Mockito.any());
-        Mockito.verify(passwordEncoder, Mockito.times(1)).encode(Mockito.any());
+        Mockito.verify(mockAppUser, Mockito.times(1)).setPassword(any());
+        Mockito.verify(passwordEncoder, Mockito.times(1)).encode(any());
+    }
+
+    @Test
+    public void registerUser_whenUserExists_throwException(){
+        CreateUserRequest userRequest = new CreateUserRequest(
+                "testName",
+                "testSurname",
+                "testUsername",
+                "passwd",
+                "test@mail.com"
+        );
+        Mockito.when(userRepository.findByEmail(any())).thenReturn(new AppUser());
+        Exception exception = assertThrows(ServerException.class, () -> accountManager.registerUser(userRequest));
+        assertTrue(exception.getMessage().contains("already exists"));
     }
 }

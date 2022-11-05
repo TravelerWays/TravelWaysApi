@@ -17,10 +17,10 @@ public class UserResponse {
     private String surname;
     private String username;
     private String email;
-    private Collection<RoleDto> roles = new ArrayList<>();
+    private Collection<RoleResponse> roles = new ArrayList<>();
 
     public static UserResponse of(AppUser user){
-        var roles = user.getRoles().stream().map(role -> {return  new RoleDto(role.getName());}).toList();
+        var roles = user.getRoles().stream().map(role -> {return  new RoleResponse(role.getName());}).toList();
         return new UserResponse(
                 user.getId(),
                 user.getName(),

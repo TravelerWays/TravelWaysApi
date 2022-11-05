@@ -24,20 +24,6 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-
-    @Override
-    @Transactional
-    public AppUser createUser(CreateUserRequest request) {
-        // ToDo: walidacja i sprawdzanie czy inny uzytkonik nie istnieje
-        request.setPassword(passwordEncoder.encode(request.getPassword()));
-        var user = AppUser.of(request);
-        var role = roleRepository.findByName(Roles.ROLE_USER);
-        user.getRoles().add(role);
-        userRepository.save(user);
-        return user;
-    }
 
     @Override
     public AppUser getByUsername(String username) {
