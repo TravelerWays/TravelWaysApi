@@ -7,6 +7,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import travel.ways.travelwaysapi._core.exception.ServerException;
+import travel.ways.travelwaysapi._core.properity.CommonProperty;
+import travel.ways.travelwaysapi.mail.MailService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 import travel.ways.travelwaysapi.user.repository.RoleRepository;
@@ -25,6 +27,10 @@ class AccountServiceImplTest {
     private PasswordEncoder passwordEncoder;
     @Mock
     private RoleRepository roleRepository;
+    @Mock
+    private MailService mailService;
+    @Mock
+    private CommonProperty commonProperty;
 
     private AccountServiceImpl accountManager;
 
@@ -32,7 +38,7 @@ class AccountServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        accountManager = new AccountServiceImpl(userRepository, passwordEncoder, roleRepository);
+        accountManager = new AccountServiceImpl(userRepository, passwordEncoder, roleRepository, mailService, commonProperty);
     }
 
     @Test
@@ -58,7 +64,7 @@ class AccountServiceImplTest {
                 "passwd",
                 "test@mail.com"
         );
-        Mockito.when(userRepository.findByEmail(any())).thenReturn(new AppUser());
+        Mockito.when(userRepository.existsByEmail(any())).thenReturn(true);
         Exception exception = assertThrows(ServerException.class, () -> accountManager.registerUser(userRequest));
         assertTrue(exception.getMessage().contains("already exists"));
     }
