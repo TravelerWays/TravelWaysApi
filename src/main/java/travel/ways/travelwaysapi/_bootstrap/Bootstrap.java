@@ -11,13 +11,11 @@ import travel.ways.travelwaysapi._core.model.Roles;
 import travel.ways.travelwaysapi.user.model.db.Role;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 import travel.ways.travelwaysapi.user.repository.RoleRepository;
-import travel.ways.travelwaysapi.user.service.internal.AccountService;
-import travel.ways.travelwaysapi.user.service.shared.UserService;
+import travel.ways.travelwaysapi.user.service.shared.AccountService;
 
 @Configuration
 @RequiredArgsConstructor
 public class Bootstrap {
-    private final UserService userService;
     private final AccountService accountService;
     private final RoleRepository roleRepository;
 
@@ -43,7 +41,7 @@ public class Bootstrap {
                     "Doe",
                     "JD",
                     "elo",
-                    "kazmierczakkarol1999@gmail.com"
+                    "test@example.com"
             );
 
             accountService.registerUser(createUser);

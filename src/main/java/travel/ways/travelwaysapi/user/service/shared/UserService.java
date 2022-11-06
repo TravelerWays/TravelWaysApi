@@ -8,4 +8,5 @@ import java.util.List;
 public interface UserService {
     AppUser getByUsername(String username);
     List<AppUser> getAll();
+    AppUser getByHash(String hash);
 }

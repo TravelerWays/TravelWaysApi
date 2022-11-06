@@ -8,7 +8,7 @@ import org.mockito.MockitoAnnotations;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.Role;
 import travel.ways.travelwaysapi.user.model.dto.request.ChangePasswordRequest;
-import travel.ways.travelwaysapi.user.service.internal.AccountService;
+import travel.ways.travelwaysapi.user.service.shared.AccountService;
 import travel.ways.travelwaysapi.user.service.internal.PasswordRecoveryService;
 
 import java.util.List;

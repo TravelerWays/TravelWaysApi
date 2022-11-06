@@ -4,15 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
 import travel.ways.travelwaysapi.auth.model.dto.request.LoginForm;
 import travel.ways.travelwaysapi.auth.model.dto.response.AuthResponse;
 import travel.ways.travelwaysapi.auth.service.internal.JwtService;
+import travel.ways.travelwaysapi.user.model.db.AppUser;
+import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -26,19 +28,24 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-
+    private final UserService userService;
 
     @SneakyThrows
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        ObjectMapper mapper = new ObjectMapper();
+        var form = mapper.readValue(request.getInputStream(), LoginForm.class);
+        AppUser user = userService.getByUsername(form.getUsername());
+        if(user != null && !user.isActive()){
+            throw new BadCredentialsException("User is not active");
+        }
+
         if (CorsUtils.isPreFlightRequest(request)) {
             response.setStatus(HttpServletResponse.SC_OK);
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(null, null);
             return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        var form = mapper.readValue(request.getInputStream(), LoginForm.class);
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(form.getUsername(), form.getPassword());
 
@@ -61,4 +68,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
     }
+
+
+
 }

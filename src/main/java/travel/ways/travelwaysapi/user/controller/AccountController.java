@@ -1,7 +1,6 @@
 package travel.ways.travelwaysapi.user.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
@@ -9,7 +8,7 @@ import travel.ways.travelwaysapi.user.model.dto.request.ChangePasswordRequest;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 import travel.ways.travelwaysapi.user.model.dto.request.InitPasswordRecoveryRequest;
 import travel.ways.travelwaysapi.user.model.dto.response.ValidHashPasswordRecoveryResponse;
-import travel.ways.travelwaysapi.user.service.internal.AccountService;
+import travel.ways.travelwaysapi.user.service.shared.AccountService;
 import travel.ways.travelwaysapi.user.service.internal.PasswordRecoveryService;
 
 @RestController
@@ -20,9 +19,15 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/register")
-    public BaseResponse registerUser(@RequestBody CreateUserRequest user) throws ServerException {
-        accountService.registerUser(user);
+    public BaseResponse registerUser(@RequestBody CreateUserRequest createUserRequest) {
+        accountService.registerUser(createUserRequest);
         return new BaseResponse(true, "client registered");
+    }
+
+    @GetMapping("/active/{hash}")
+    public BaseResponse activeAccount(@PathVariable String hash){
+        accountService.confirmUser(hash);
+        return new BaseResponse(true, "client active");
     }
 
 

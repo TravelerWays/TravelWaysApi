@@ -6,13 +6,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import travel.ways.travelwaysapi._core.model.Roles;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
-import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
-import travel.ways.travelwaysapi.user.repository.RoleRepository;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
@@ -25,6 +20,8 @@ import java.util.List;
 public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
 
+
+
     @Override
     public AppUser getByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -33,6 +30,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public List<AppUser> getAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public AppUser getByHash(String hash) {
+        return userRepository.findByHash(hash);
     }
 
     @Override
@@ -49,4 +51,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         return new User(user.getUsername(), user.getPassword(), authorities);
     }
+
+
 }
