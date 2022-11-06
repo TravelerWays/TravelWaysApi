@@ -3,10 +3,12 @@ package travel.ways.travelwaysapi.user.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
+import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.dto.request.ChangePasswordRequest;
+import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 import travel.ways.travelwaysapi.user.model.dto.request.InitPasswordRecoveryRequest;
 import travel.ways.travelwaysapi.user.model.dto.response.ValidHashPasswordRecoveryResponse;
-import travel.ways.travelwaysapi.user.service.internal.AccountManager;
+import travel.ways.travelwaysapi.user.service.shared.AccountService;
 import travel.ways.travelwaysapi.user.service.internal.PasswordRecoveryService;
 
 @RestController
@@ -14,12 +16,26 @@ import travel.ways.travelwaysapi.user.service.internal.PasswordRecoveryService;
 @RequiredArgsConstructor
 public class AccountController {
     private final PasswordRecoveryService recoveryPasswordService;
-    private final AccountManager accountManager;
+    private final AccountService accountService;
+
+    @PostMapping("/register")
+    public BaseResponse registerUser(@RequestBody CreateUserRequest createUserRequest) {
+        AppUser user = accountService.createUser(createUserRequest);
+        accountService.sendActivationMail(user);
+        return new BaseResponse(true, "user registered");
+    }
+
+    @GetMapping("/active/{hash}")
+    public BaseResponse activeAccount(@PathVariable String hash){
+        accountService.confirmUser(hash);
+        return new BaseResponse(true, "user active");
+    }
+
 
     @PostMapping("password-recovery/init")
     public BaseResponse passwordRecoverInit(@RequestBody InitPasswordRecoveryRequest request) {
         recoveryPasswordService.initPasswordRecovery(request);
-        return new BaseResponse(true, "mail with link send");
+        return new BaseResponse(true, "mail with link sent");
     }
 
     @GetMapping("password-recovery/valid/{hash}")
@@ -35,7 +51,7 @@ public class AccountController {
         }
 
         var user = recoveryPasswordService.getUserByRecoveryHash(hash);
-        accountManager.changePassword(user.getId(), request.getPassword());
+        accountService.changePassword(user.getId(), request.getPassword());
         recoveryPasswordService.setRecoveryHashAsUsed(hash);
 
         return new BaseResponse(true, "password changed");

@@ -6,13 +6,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import travel.ways.travelwaysapi._core.model.Roles;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
-import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
-import travel.ways.travelwaysapi.user.repository.RoleRepository;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
@@ -24,20 +19,8 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    @Override
-    @Transactional
-    public AppUser createUser(CreateUserRequest request) {
-        // ToDo: walidacja i sprawdzanie czy inny uzytkonik nie istnieje
-        request.setPassword(passwordEncoder.encode(request.getPassword()));
-        var user = AppUser.of(request);
-        var role = roleRepository.findByName(Roles.ROLE_USER);
-        user.getRoles().add(role);
-        userRepository.save(user);
-        return user;
-    }
+
 
     @Override
     public AppUser getByUsername(String username) {
@@ -47,6 +30,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public List<AppUser> getAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public AppUser getByHash(String hash) {
+        return userRepository.findByHash(hash);
     }
 
     @Override
@@ -63,4 +51,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         return new User(user.getUsername(), user.getPassword(), authorities);
     }
+
+
 }

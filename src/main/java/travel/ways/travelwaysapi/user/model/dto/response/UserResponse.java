@@ -11,17 +11,17 @@ import java.util.Collection;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class UserResponse {
     private Long id;
     private String name;
     private String surname;
     private String username;
     private String email;
-    private Collection<RoleDto> roles = new ArrayList<>();
+    private Collection<RoleResponse> roles = new ArrayList<>();
 
-    public static UserDto of(AppUser user){
-        var roles = user.getRoles().stream().map(role -> {return  new RoleDto(role.getName());}).toList();
-        return new UserDto(
+    public static UserResponse of(AppUser user){
+        var roles = user.getRoles().stream().map(role -> {return  new RoleResponse(role.getName());}).toList();
+        return new UserResponse(
                 user.getId(),
                 user.getName(),
                 user.getSurname(),

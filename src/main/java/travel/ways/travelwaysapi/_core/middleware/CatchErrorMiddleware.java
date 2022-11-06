@@ -17,6 +17,7 @@ public class CatchErrorMiddleware {
     public void serverErrorHandler(ServerException exception, HttpServletResponse response) {
         var mapper = new ObjectMapper();
         var baseError = new BaseErrorResponse(exception.getMessage(), exception.getStatusCode());
+        response.setStatus(exception.getStatusCode());
         mapper.writeValue(response.getOutputStream(), baseError);
     }
 }

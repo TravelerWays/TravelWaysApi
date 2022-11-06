@@ -15,7 +15,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor()
+@AllArgsConstructor
 public class AppUser extends BaseEntity {
     private String name;
     private String surname;
@@ -24,6 +24,9 @@ public class AppUser extends BaseEntity {
     @Column(unique = true)
     private String email;
     private String password;
+    private boolean active;
+    @Column(unique = true)
+    private String hash;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles = new ArrayList<>();
