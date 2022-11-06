@@ -2,8 +2,8 @@ package travel.ways.travelwaysapi.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
+import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.dto.request.ChangePasswordRequest;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 import travel.ways.travelwaysapi.user.model.dto.request.InitPasswordRecoveryRequest;
@@ -20,21 +20,22 @@ public class AccountController {
 
     @PostMapping("/register")
     public BaseResponse registerUser(@RequestBody CreateUserRequest createUserRequest) {
-        accountService.registerUser(createUserRequest);
-        return new BaseResponse(true, "client registered");
+        AppUser user = accountService.createUser(createUserRequest);
+        accountService.sendActivationMail(user);
+        return new BaseResponse(true, "user registered");
     }
 
     @GetMapping("/active/{hash}")
     public BaseResponse activeAccount(@PathVariable String hash){
         accountService.confirmUser(hash);
-        return new BaseResponse(true, "client active");
+        return new BaseResponse(true, "user active");
     }
 
 
     @PostMapping("password-recovery/init")
     public BaseResponse passwordRecoverInit(@RequestBody InitPasswordRecoveryRequest request) {
         recoveryPasswordService.initPasswordRecovery(request);
-        return new BaseResponse(true, "mail with link send");
+        return new BaseResponse(true, "mail with link sent");
     }
 
     @GetMapping("password-recovery/valid/{hash}")

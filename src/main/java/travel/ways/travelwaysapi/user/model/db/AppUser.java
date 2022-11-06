@@ -25,6 +25,7 @@ public class AppUser extends BaseEntity {
     private String email;
     private String password;
     private boolean active;
+    @Column(unique = true)
     private String hash;
 
     @ManyToMany(fetch = FetchType.EAGER)

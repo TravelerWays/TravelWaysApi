@@ -19,6 +19,7 @@ import travel.ways.travelwaysapi.user.repository.RoleRepository;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
 import travel.ways.travelwaysapi.user.service.shared.AccountService;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -46,7 +47,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @SneakyThrows
     @Transactional
-    public void registerUser(CreateUserRequest requestUser) {
+    public AppUser createUser(CreateUserRequest requestUser){
         if(userRepository.existsByEmail(requestUser.getEmail())){
             throw new ServerException("User with email: " + requestUser.getEmail() + " already exists.",
                     HttpStatus.CONFLICT.value());
@@ -57,20 +58,11 @@ public class AccountServiceImpl implements AccountService {
         }
 
         requestUser.setPassword(passwordEncoder.encode(requestUser.getPassword()));
-
-        AppUser user = AppUser.of(requestUser);
-        Role role = roleRepository.findByName(Roles.ROLE_USER);
-        user.getRoles().add(role);
+        AppUser user = AppUser.of(requestUser, List.of(roleRepository.findByName(Roles.ROLE_USER)));
         user.setHash(UUID.randomUUID().toString());
 
-        mailService.sendMail(new SendMailRequest<ActiveAccountTemplateModel>(
-                "Active account",
-                user.getEmail(),
-                "activeAccount.ftl",
-                new ActiveAccountTemplateModel(user.getHash(), commonProperty.getFrontAppUrl())
-        ));
-
         userRepository.save(user);
+        return user;
     }
 
     @Transactional
@@ -84,5 +76,13 @@ public class AccountServiceImpl implements AccountService {
         user.setActive(true);
     }
 
+    public void sendActivationMail(AppUser user){
+        mailService.sendMail(new SendMailRequest<ActiveAccountTemplateModel>(
+                "Active account",
+                user.getEmail(),
+                "activeAccount.ftl",
+                new ActiveAccountTemplateModel(user.getHash(), commonProperty.getFrontAppUrl())
+        ));
+    }
 
 }

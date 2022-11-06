@@ -34,11 +34,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         ObjectMapper mapper = new ObjectMapper();
-        var form = mapper.readValue(request.getInputStream(), LoginForm.class);
-        AppUser user = userService.getByUsername(form.getUsername());
-        if(user != null && !user.isActive()){
-            throw new BadCredentialsException("User is not active");
-        }
+
 
         if (CorsUtils.isPreFlightRequest(request)) {
             response.setStatus(HttpServletResponse.SC_OK);
@@ -46,6 +42,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         }
 
+        var form = mapper.readValue(request.getInputStream(), LoginForm.class);
+        AppUser user = userService.getByUsername(form.getUsername());
+        if(user != null && !user.isActive()){
+            throw new BadCredentialsException("User is not active");
+        }
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(form.getUsername(), form.getPassword());
 
@@ -68,7 +69,4 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
     }
-
-
-
 }

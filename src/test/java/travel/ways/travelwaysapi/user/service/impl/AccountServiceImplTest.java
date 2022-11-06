@@ -65,7 +65,7 @@ class AccountServiceImplTest {
                 "test@mail.com"
         );
         Mockito.when(userRepository.existsByEmail(any())).thenReturn(true);
-        Exception exception = assertThrows(ServerException.class, () -> accountManager.registerUser(userRequest));
+        Exception exception = assertThrows(ServerException.class, () -> accountManager.createUser(userRequest));
         assertTrue(exception.getMessage().contains("already exists"));
     }
 }

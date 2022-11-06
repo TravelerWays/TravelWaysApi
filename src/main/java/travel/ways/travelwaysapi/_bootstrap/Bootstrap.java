@@ -44,7 +44,7 @@ public class Bootstrap {
                     "test@example.com"
             );
 
-            accountService.registerUser(createUser);
+            accountService.createUser(createUser);
         };
     }
 }
