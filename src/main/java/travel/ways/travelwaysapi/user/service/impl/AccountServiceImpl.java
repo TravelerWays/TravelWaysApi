@@ -13,7 +13,6 @@ import travel.ways.travelwaysapi.mail.MailService;
 import travel.ways.travelwaysapi.mail.models.dto.request.SendMailRequest;
 import travel.ways.travelwaysapi.mail.models.mailTemplate.ActiveAccountTemplateModel;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
-import travel.ways.travelwaysapi.user.model.db.Role;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 import travel.ways.travelwaysapi.user.repository.RoleRepository;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
