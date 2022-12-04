@@ -1,23 +1,22 @@
 package travel.ways.travelwaysapi._core.middleware;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.model.dto.BaseErrorResponse;
 
-import javax.servlet.http.HttpServletResponse;
-
-@ControllerAdvice
-public class CatchErrorMiddleware {
+@RestControllerAdvice
+public class CatchErrorMiddleware extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ServerException.class)
-    @SneakyThrows
-    public void serverErrorHandler(ServerException exception, HttpServletResponse response) {
-        var mapper = new ObjectMapper();
-        var baseError = new BaseErrorResponse(exception.getMessage(), exception.getStatusCode());
-        response.setStatus(exception.getStatusCode());
-        mapper.writeValue(response.getOutputStream(), baseError);
+    public ResponseEntity<BaseErrorResponse> serverErrorHandler(ServerException exception, WebRequest request) {
+        String path = ((ServletWebRequest)request).getRequest().getRequestURI();
+        var baseError = new BaseErrorResponse(exception.getMessage(), exception.getHttpStatus(), path);
+        return new ResponseEntity<>(baseError, exception.getHttpStatus());
     }
+
 }
