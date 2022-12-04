@@ -66,7 +66,7 @@ public class JwtServiceImpl implements JwtService {
         var token = refreshTokenRepository.findByToken(refreshToken);
         if (token.isUsed()) {
             revokeAllConnectedToken(token);
-            throw new ServerException("Invalid refresh token", HttpStatus.FORBIDDEN.value());
+            throw new ServerException("Invalid refresh token", HttpStatus.FORBIDDEN);
         }
 
         token.setUsed(true);
