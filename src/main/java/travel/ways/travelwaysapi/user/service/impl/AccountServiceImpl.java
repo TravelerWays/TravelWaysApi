@@ -67,16 +67,16 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     @SneakyThrows
-    public void confirmUser(String hash){
+    public void activateUser(String hash){
         AppUser user = userRepository.findByHash(hash);
         if(user == null){
-            throw new ServerException("Can't find user for hash", HttpStatus.NOT_FOUND);
+            throw new ServerException("Can't find user for hash: " + hash, HttpStatus.NOT_FOUND);
         }
         user.setActive(true);
     }
 
     public void sendActivationMail(AppUser user){
-        mailService.sendMail(new SendMailRequest<ActiveAccountTemplateModel>(
+        mailService.sendMail(new SendMailRequest<>(
                 "Active account",
                 user.getEmail(),
                 "activeAccount.ftl",
