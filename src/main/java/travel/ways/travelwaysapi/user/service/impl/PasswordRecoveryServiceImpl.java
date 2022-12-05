@@ -47,7 +47,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
                 user
         );
 
-        mailService.sendMail(new SendMailRequest<RecoveryPasswordTemplateModel>(
+        mailService.sendMail(new SendMailRequest<>(
                 "Password recovery",
                 user.getEmail(),
                 "passwordRecovery.ftl",
@@ -62,7 +62,6 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         if(recoveryModel == null){
             return false;
         }
-
         return !recoveryModel.isUsed() && recoveryModel.getExpiredAt().compareTo(TimeUtil.Now().getTimestamp()) > 0;
     }
 
