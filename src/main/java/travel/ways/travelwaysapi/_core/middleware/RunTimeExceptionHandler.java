@@ -13,9 +13,8 @@ import travel.ways.travelwaysapi._core.model.dto.BaseErrorResponse;
 @Order
 public class RunTimeExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<BaseErrorResponse> runtimeExceptionHandler(RuntimeException exception, WebRequest request) {
-        String path = ((ServletWebRequest)request).getRequest().getRequestURI();
-        var baseError = new BaseErrorResponse(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, path);
+    public ResponseEntity<BaseErrorResponse> runtimeExceptionHandler() {
+        var baseError = new BaseErrorResponse("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(baseError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

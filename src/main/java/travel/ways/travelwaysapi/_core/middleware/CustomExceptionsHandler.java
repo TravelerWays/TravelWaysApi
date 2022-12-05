@@ -27,20 +27,22 @@ import java.util.List;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
 
+    private final String defaultErrorMessage = "Something went wrong";
+
     @ExceptionHandler(ServerException.class)
-    public ResponseEntity<BaseErrorResponse> serverErrorHandler(ServerException exception, WebRequest request) {
-        String path = ((ServletWebRequest)request).getRequest().getRequestURI();
-        var baseError = new BaseErrorResponse(exception.getMessage(), exception.getHttpStatus(), path);
+    public ResponseEntity<BaseErrorResponse> serverErrorHandler(ServerException exception) {
+        var baseError = new BaseErrorResponse(exception.getMessage(), exception.getHttpStatus());
         return new ResponseEntity<>(baseError, exception.getHttpStatus());
     }
 
     @Override
     @NonNull
-    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException exception, @NonNull HttpHeaders headers,
+    protected ResponseEntity<Object> handleNoHandlerFoundException(@NonNull NoHandlerFoundException exception,
+                                                                   @NonNull HttpHeaders headers,
                                                                    @NonNull HttpStatus status,
                                                                    @NonNull WebRequest request) {
-        String path = ((ServletWebRequest)request).getRequest().getRequestURI();
-        var baseError = new BaseErrorResponse(exception.getMessage(), status, path);
+        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
+        var baseError = new BaseErrorResponse("Can not find: " + path, status);
         return new ResponseEntity<>(baseError, status);
     }
 
@@ -50,8 +52,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
                                                                          @NonNull HttpHeaders headers,
                                                                          @NonNull HttpStatus status,
                                                                          @NonNull WebRequest request) {
-        String path = ((ServletWebRequest)request).getRequest().getRequestURI();
-        var baseError = new BaseErrorResponse(exception.getMessage(), status, path);
+        var baseError = new BaseErrorResponse(defaultErrorMessage, status);
         return new ResponseEntity<>(baseError, status);
     }
 
@@ -61,8 +62,8 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatus status,
                                                                   @NonNull WebRequest request) {
-        String path = ((ServletWebRequest)request).getRequest().getRequestURI();
-        var baseError = new BaseErrorResponse(exception.getMessage(), status, path);
+        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
+        var baseError = new BaseErrorResponse(defaultErrorMessage, status);
         return new ResponseEntity<>(baseError, status);
     }
 
@@ -72,12 +73,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatus status,
                                                                   @NonNull WebRequest request) {
-        String path = ((ServletWebRequest)request).getRequest().getRequestURI();
-        List<String> messages = new ArrayList<>();
-        for(FieldError fieldError:  exception.getFieldErrors()){
-            messages.add(fieldError.getField() + " " + fieldError.getDefaultMessage());
-        }
-        var baseError = new BaseErrorResponse(messages.toString(), status, path);
+        var baseError = new BaseErrorResponse(defaultErrorMessage, status);
         return new ResponseEntity<>(baseError, status);
     }
 
@@ -86,9 +82,8 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(@NonNull HttpMediaTypeNotSupportedException exception,
                                                                      @NonNull HttpHeaders headers,
                                                                      @NonNull HttpStatus status,
-                                                                     @NonNull WebRequest request){
-        String path = ((ServletWebRequest)request).getRequest().getRequestURI();
-        var baseError = new BaseErrorResponse(exception.getMessage(), status, path);
+                                                                     @NonNull WebRequest request) {
+        var baseError = new BaseErrorResponse(defaultErrorMessage, status);
         return new ResponseEntity<>(baseError, status);
     }
 }

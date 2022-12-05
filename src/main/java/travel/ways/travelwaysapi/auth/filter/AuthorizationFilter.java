@@ -35,7 +35,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             }
         } catch (JWTDecodeException | TokenExpiredException e) {
             response.setContentType(APPLICATION_JSON_VALUE);
-            BaseErrorResponse baseError = new BaseErrorResponse(e.getMessage(), HttpStatus.FORBIDDEN, path);
+            BaseErrorResponse baseError = new BaseErrorResponse("JWT error", HttpStatus.FORBIDDEN);
             response.setStatus(baseError.getStatus().value());
             response.getWriter().write(new ObjectMapper().writeValueAsString(baseError));
             return;

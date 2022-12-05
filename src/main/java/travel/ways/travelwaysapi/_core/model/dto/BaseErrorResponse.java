@@ -11,12 +11,10 @@ public class BaseErrorResponse {
     private String message;
     private HttpStatus status;
     private String timestamp;
-    private String path;
 
-    public BaseErrorResponse(String message, HttpStatus status, String path) {
+    public BaseErrorResponse(String message, HttpStatus status) {
         this.message = message;
         this.status = status;
         this.timestamp = LocalDateTime.now().toString();
-        this.path = path;
     }
 }

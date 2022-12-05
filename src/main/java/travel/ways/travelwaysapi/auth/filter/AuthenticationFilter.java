@@ -72,7 +72,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @SneakyThrows
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         String path = "/api/auth/login";
-        var baseError = new BaseErrorResponse(failed.getMessage(), HttpStatus.UNAUTHORIZED, path);
+        var baseError = new BaseErrorResponse(failed.getMessage(), HttpStatus.UNAUTHORIZED);
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         new ObjectMapper().writeValue(response.getOutputStream(), baseError);
