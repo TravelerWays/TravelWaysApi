@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import travel.ways.travelwaysapi.auth.service.impl.UserDetailsServiceImpl;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.Role;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
@@ -21,11 +22,13 @@ class UserServiceImplTest {
     private UserRepository userRepository;
 
     private UserServiceImpl userService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         userService = new UserServiceImpl(userRepository);
+        userDetailsService = new UserDetailsServiceImpl(userService);
     }
 
     @Test
@@ -34,7 +37,7 @@ class UserServiceImplTest {
         Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(null);
 
         // act / assert
-        assertThrows(UsernameNotFoundException.class, () -> userService.loadUserByUsername("username"));
+        assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername("username"));
     }
 
     @Test
@@ -50,7 +53,7 @@ class UserServiceImplTest {
         ));
 
         // act
-        var result = userService.loadUserByUsername("username");
+        var result = userDetailsService.loadUserByUsername("username");
 
         // assert
         assertSame(result.getUsername(), "JD");
