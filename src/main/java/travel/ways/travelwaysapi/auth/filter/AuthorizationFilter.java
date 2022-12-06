@@ -26,7 +26,6 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @SneakyThrows
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) {
-        String path = request.getRequestURI();
         var token = request.getHeader(HttpHeaders.AUTHORIZATION);
         try {
             if (token != null && token.startsWith(JwtService.TOKEN_TYPE)) {

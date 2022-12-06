@@ -16,7 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import travel.ways.travelwaysapi.auth.filter.AuthenticationFilter;
 import travel.ways.travelwaysapi.auth.filter.AuthorizationFilter;
 import travel.ways.travelwaysapi.auth.service.internal.JwtService;
-import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -25,7 +24,6 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtService jwtUtils;
-    private final UserService userService;
 
     @Bean
     public AuthenticationManager authenticationManagerBean(HttpSecurity http) throws Exception {
@@ -42,7 +40,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         var authenticationFilter = new AuthenticationFilter(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class))
-                , jwtUtils, userService);
+                , jwtUtils);
         authenticationFilter.setFilterProcessesUrl("/api/auth/login");
         http.csrf().disable();
 
