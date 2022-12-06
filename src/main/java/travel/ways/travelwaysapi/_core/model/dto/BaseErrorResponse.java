@@ -2,11 +2,9 @@ package travel.ways.travelwaysapi._core.model.dto;
 
 import lombok.Data;
 import org.springframework.http.HttpStatus;
-
-import java.time.LocalDateTime;
+import travel.ways.travelwaysapi._core.util.TimeUtil;
 
 @Data
-
 public class BaseErrorResponse {
     private String message;
     private HttpStatus status;
@@ -15,6 +13,6 @@ public class BaseErrorResponse {
     public BaseErrorResponse(String message, HttpStatus status) {
         this.message = message;
         this.status = status;
-        this.timestamp = LocalDateTime.now().toString();
+        this.timestamp = TimeUtil.Now().toString();
     }
 }
