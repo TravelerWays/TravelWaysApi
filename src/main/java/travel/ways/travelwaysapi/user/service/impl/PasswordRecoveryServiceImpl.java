@@ -35,7 +35,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     public void initPasswordRecovery(InitPasswordRecoveryRequest request) {
         var user = userRepository.findByEmail(request.getEmail());
         if(user == null){
-            throw new ServerException("User doesn't exists", HttpStatus.BAD_REQUEST.value());
+            throw new ServerException("User doesn't exists", HttpStatus.BAD_REQUEST);
         }
 
         passwordRecoveryRepository.setAllRecoveryAsUsed(user);
@@ -47,7 +47,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
                 user
         );
 
-        mailService.sendMail(new SendMailRequest<RecoveryPasswordTemplateModel>(
+        mailService.sendMail(new SendMailRequest<>(
                 "Password recovery",
                 user.getEmail(),
                 "passwordRecovery.ftl",
@@ -62,7 +62,6 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         if(recoveryModel == null){
             return false;
         }
-
         return !recoveryModel.isUsed() && recoveryModel.getExpiredAt().compareTo(TimeUtil.Now().getTimestamp()) > 0;
     }
 
@@ -72,7 +71,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     public void setRecoveryHashAsUsed(String hash) {
         var recoveryModel = passwordRecoveryRepository.findByHash(hash);
         if(recoveryModel == null){
-            throw new ServerException("invalid recovery hash", HttpStatus.BAD_REQUEST.value());
+            throw new ServerException("invalid recovery hash", HttpStatus.BAD_REQUEST);
         }
         recoveryModel.setUsed(true);
     }

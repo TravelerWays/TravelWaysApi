@@ -37,7 +37,7 @@ public class AccountServiceImpl implements AccountService {
     public void changePassword(Long userId, String newPassword) {
         var optionalUser = userRepository.findById(userId);
         if(optionalUser.isEmpty()){
-            throw new ServerException("User doesn't exists", HttpStatus.BAD_REQUEST.value());
+            throw new ServerException("User doesn't exists", HttpStatus.BAD_REQUEST);
         }
         var user = optionalUser.get();
         user.setPassword(passwordEncoder.encode(newPassword));
@@ -49,11 +49,11 @@ public class AccountServiceImpl implements AccountService {
     public AppUser createUser(CreateUserRequest requestUser){
         if(userRepository.existsByEmail(requestUser.getEmail())){
             throw new ServerException("User with email: " + requestUser.getEmail() + " already exists.",
-                    HttpStatus.CONFLICT.value());
+                    HttpStatus.CONFLICT);
         }
         if(userRepository.existsByUsername(requestUser.getUsername())){
             throw new ServerException("User with username: " + requestUser.getEmail() + " already exists.",
-                    HttpStatus.CONFLICT.value());
+                    HttpStatus.CONFLICT);
         }
 
         requestUser.setPassword(passwordEncoder.encode(requestUser.getPassword()));
@@ -67,16 +67,16 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     @SneakyThrows
-    public void confirmUser(String hash){
+    public void activateUser(String hash){
         AppUser user = userRepository.findByHash(hash);
         if(user == null){
-            throw new ServerException("Can't find user for hash", HttpStatus.NOT_FOUND.value());
+            throw new ServerException("Can't find user for hash: " + hash, HttpStatus.NOT_FOUND);
         }
         user.setActive(true);
     }
 
     public void sendActivationMail(AppUser user){
-        mailService.sendMail(new SendMailRequest<ActiveAccountTemplateModel>(
+        mailService.sendMail(new SendMailRequest<>(
                 "Active account",
                 user.getEmail(),
                 "activeAccount.ftl",

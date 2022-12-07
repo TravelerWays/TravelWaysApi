@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import travel.ways.travelwaysapi.auth.model.dto.response.AuthResponse;
 import travel.ways.travelwaysapi.auth.service.internal.JwtService;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
@@ -20,7 +19,7 @@ public class AuthController {
 
     @SneakyThrows
     @PostMapping("/refresh")
-    public AuthResponse refresh(@CookieValue("refreshToken") String refreshToken, HttpServletRequest request, HttpServletResponse response) {
+    public AuthResponse refresh(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
         var newRefreshToken = jwtService.refreshToken(refreshToken);
         var jwt = jwtService.generateJwt(jwtService.getUserFromRefreshToken(newRefreshToken));
 

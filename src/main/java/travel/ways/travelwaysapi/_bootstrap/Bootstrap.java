@@ -46,7 +46,7 @@ public class Bootstrap {
             );
 
             AppUser user = accountService.createUser(createUser);
-            accountService.confirmUser(user.getHash());
+            accountService.activateUser(user.getHash());
         };
     }
 }
