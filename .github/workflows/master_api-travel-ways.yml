@@ -32,6 +32,11 @@ jobs:
                   push: true
                   tags: travelways.azurecr.io/travel-ways-api:lastes
                   file: ./Dockerfile
+                  build-args:
+                      - CONNECTION_STRING=${{secrets.CONNECTION_STRING}}
+                      - DB_PASSWORD=${{secrets.DB_PASSWORD}}
+                      - DB_USER=${{secrets.DB_USER}}
+                      - MAIL_PASSWORD=${{secrets.MAIL_PASSWORD}}
 
     deploy:
         runs-on: ubuntu-latest
