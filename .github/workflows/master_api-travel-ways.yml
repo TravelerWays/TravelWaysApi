@@ -22,15 +22,15 @@ jobs:
     - name: Log in to registry
       uses: docker/login-action@v1
       with:
-        registry: https://travelways.azurecr.io/
-        username: ${{ secrets.AzureAppService_ContainerUsername_e9a680fa94f043b1b4c508256c843e33 }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_7beaeee56b56472fbc21fda8633a1558 }}
+        registry: https://tavelways.azurecr.io/
+        username: ${{ secrets.AzureAppService_ContainerUsername_8957bc4e2476498482ab5c63929dce16 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_8d5c6fe295284a3192fe3fe3a95de20a }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: travelways.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_e9a680fa94f043b1b4c508256c843e33 }}/travelWays/travel-ways-api:${{ github.sha }}
+        tags: tavelways.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_8957bc4e2476498482ab5c63929dce16 }}/travel-ways-api:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -47,5 +47,5 @@ jobs:
       with:
         app-name: 'api-travel-ways'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_aceea56bb3ac4a8db375593db4dd34a0 }}
-        images: 'travelways.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_e9a680fa94f043b1b4c508256c843e33 }}/travelWays/travel-ways-api:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_75b6fe5a6e434ce2abd6ab5ad642271c }}
+        images: 'tavelways.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_8957bc4e2476498482ab5c63929dce16 }}/travel-ways-api:${{ github.sha }}'
