@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("all")
+    @GetMapping("/all")
     public List<UserResponse> GetAll() {
         return userService.getAll().stream().map(UserResponse::of).collect(Collectors.toList());
     }
 
-    @GetMapping("logged")
+    @GetMapping("/logged")
     public UserResponse getLogged() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         var user = userService.getByUsername(auth.getName());

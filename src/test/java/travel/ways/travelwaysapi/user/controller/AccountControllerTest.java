@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.Role;
 import travel.ways.travelwaysapi.user.model.dto.request.ChangePasswordRequest;
@@ -32,16 +33,12 @@ class AccountControllerTest {
 
 
     @Test
-    public void changePassword_whenInvalidRecoveryHash_thenReturnFail(){
+    public void changePassword_whenInvalidRecoveryHash_thenThrowException(){
         // arrange
         Mockito.when(passwordRecoveryService.isRecoveryHashValid(Mockito.any())).thenReturn(false);
 
-        // act
-        var result = accountController.changePassword(new ChangePasswordRequest("test"), "hash");
-
         // assert
-        assertFalse(result.isSuccess());
-        assertSame("invalid recovery hash", result.getMessage());
+        assertThrows(ServerException.class, () -> accountController.changePassword(new ChangePasswordRequest("test"), "hash"));
     }
 
     @Test
