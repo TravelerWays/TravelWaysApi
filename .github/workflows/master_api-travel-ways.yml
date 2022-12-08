@@ -1,9 +1,6 @@
 name: Build and deploy container app to Azure Web App - api-travel-ways
 
 on:
-    push:
-        branches:
-            - master
     workflow_dispatch:
 
 jobs:
