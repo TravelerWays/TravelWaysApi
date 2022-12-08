@@ -66,7 +66,7 @@ public class JwtServiceImpl implements JwtService {
         var token = refreshTokenRepository.findByToken(refreshToken);
         if (token.isUsed()) {
             revokeAllConnectedToken(token);
-            throw new ServerException("Invalid refresh token", HttpStatus.FORBIDDEN.value());
+            throw new ServerException("Invalid refresh token", HttpStatus.FORBIDDEN);
         }
 
         token.setUsed(true);
@@ -90,15 +90,13 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public void authenticationUser(String jwt) throws JWTVerificationException {
+    public void authenticateUser(String jwt) throws JWTVerificationException {
         var decodedJwt = verifierJwt(jwt);
         var username = decodedJwt.getSubject();
         var roles = decodedJwt.getClaim(ROLES_CLAIMS).asArray(String.class);
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
-        stream(roles).forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority(role));
-        });
+        stream(roles).forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, null, authorities);

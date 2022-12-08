@@ -3,8 +3,6 @@ package travel.ways.travelwaysapi.mail.models.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Map;
-
 @AllArgsConstructor
 @Getter
 public class SendMailRequest<T> {

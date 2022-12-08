@@ -1,7 +1,6 @@
 package travel.ways.travelwaysapi._core.util;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
