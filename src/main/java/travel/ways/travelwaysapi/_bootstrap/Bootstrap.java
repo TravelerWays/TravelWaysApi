@@ -13,13 +13,14 @@ import travel.ways.travelwaysapi.user.model.db.Role;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 import travel.ways.travelwaysapi.user.repository.RoleRepository;
 import travel.ways.travelwaysapi.user.service.shared.AccountService;
+import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 @Configuration
 @RequiredArgsConstructor
 public class Bootstrap {
     private final AccountService accountService;
     private final RoleRepository roleRepository;
-
+    private final UserService userService;
     @Bean
     @Transactional
     public CommandLineRunner setupRoles() {
@@ -44,9 +45,11 @@ public class Bootstrap {
                     "elo",
                     "test@example.com"
             );
+            if(userService.getByUsername(createUser.getUsername()) == null){
+                AppUser user = accountService.createUser(createUser);
+                accountService.activateUser(user.getHash());
+            }
 
-            AppUser user = accountService.createUser(createUser);
-            accountService.activateUser(user.getHash());
         };
     }
 }
