@@ -1,5 +1,6 @@
 package travel.ways.travelwaysapi._core.middleware;
 
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -18,16 +19,19 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.model.dto.BaseErrorResponse;
+import travel.ways.travelwaysapi._core.util.Time;
 
 @RestControllerAdvice
+@AllArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
+    private final Time time;
 
     private final String defaultErrorMessage = "Something went wrong";
 
     @ExceptionHandler(ServerException.class)
     public ResponseEntity<BaseErrorResponse> serverErrorHandler(ServerException exception) {
-        var baseError = new BaseErrorResponse(exception.getMessage(), exception.getHttpStatus());
+        var baseError = new BaseErrorResponse(exception.getMessage(), exception.getHttpStatus(), time.now().getTimestamp());
         return new ResponseEntity<>(baseError, exception.getHttpStatus());
     }
 
@@ -38,7 +42,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
                                                                    @NonNull HttpStatus status,
                                                                    @NonNull WebRequest request) {
         String path = ((ServletWebRequest) request).getRequest().getRequestURI();
-        var baseError = new BaseErrorResponse("Can not find: " + path, status);
+        var baseError = new BaseErrorResponse("Can not find: " + path, status, time.now().getTimestamp());
         return new ResponseEntity<>(baseError, status);
     }
 
@@ -48,7 +52,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
                                                                          @NonNull HttpHeaders headers,
                                                                          @NonNull HttpStatus status,
                                                                          @NonNull WebRequest request) {
-        var baseError = new BaseErrorResponse(defaultErrorMessage, status);
+        var baseError = new BaseErrorResponse(defaultErrorMessage, status, time.now().getTimestamp());
         return new ResponseEntity<>(baseError, status);
     }
 
@@ -58,8 +62,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatus status,
                                                                   @NonNull WebRequest request) {
-        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
-        var baseError = new BaseErrorResponse(defaultErrorMessage, status);
+        var baseError = new BaseErrorResponse(defaultErrorMessage, status, time.now().getTimestamp());
         return new ResponseEntity<>(baseError, status);
     }
 
@@ -69,7 +72,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatus status,
                                                                   @NonNull WebRequest request) {
-        var baseError = new BaseErrorResponse(defaultErrorMessage, status);
+        var baseError = new BaseErrorResponse(defaultErrorMessage, status, time.now().getTimestamp());
         return new ResponseEntity<>(baseError, status);
     }
 
@@ -79,7 +82,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
                                                                      @NonNull HttpHeaders headers,
                                                                      @NonNull HttpStatus status,
                                                                      @NonNull WebRequest request) {
-        var baseError = new BaseErrorResponse(defaultErrorMessage, status);
+        var baseError = new BaseErrorResponse(defaultErrorMessage, status, time.now().getTimestamp());
         return new ResponseEntity<>(baseError, status);
     }
 }
