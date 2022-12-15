@@ -30,7 +30,7 @@ public class AccountController {
         return new BaseResponse(true, "user registered");
     }
 
-    @GetMapping("/activate/{hash}")
+    @PostMapping("/activate/{hash}")
     public BaseResponse activateAccount(@PathVariable String hash){
         accountService.activateUser(hash);
         return new BaseResponse(true, "user active");
