@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.properity.CommonProperty;
-import travel.ways.travelwaysapi._core.util.TimeUtil;
+import travel.ways.travelwaysapi._core.util.Time;
 import travel.ways.travelwaysapi.mail.MailService;
 import travel.ways.travelwaysapi.mail.models.dto.request.SendMailRequest;
 import travel.ways.travelwaysapi.mail.models.mailTemplate.RecoveryPasswordTemplateModel;
@@ -27,6 +27,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     private final PasswordRecoveryRepository passwordRecoveryRepository;
     private final MailService mailService;
     private final CommonProperty commonProperty;
+    private final Time time;
 
 
     @Override
@@ -34,7 +35,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     @Transactional
     public void initPasswordRecovery(InitPasswordRecoveryRequest request) {
         var user = userRepository.findByEmail(request.getEmail());
-        if(user == null){
+        if (user == null) {
             throw new ServerException("User doesn't exists", HttpStatus.BAD_REQUEST);
         }
 
@@ -43,7 +44,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         var passwordRecoveryModel = new PasswordRecovery(
                 UUID.randomUUID().toString(),
                 false,
-                TimeUtil.Now().addMinutes(20).getTimestamp(),
+                time.now().addMinutes(20).getTimestamp(),
                 user
         );
 
@@ -59,10 +60,10 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     @Override
     public boolean isRecoveryHashValid(String hash) {
         var recoveryModel = passwordRecoveryRepository.findByHash(hash);
-        if(recoveryModel == null){
+        if (recoveryModel == null) {
             return false;
         }
-        return !recoveryModel.isUsed() && recoveryModel.getExpiredAt().compareTo(TimeUtil.Now().getTimestamp()) > 0;
+        return !recoveryModel.isUsed() && recoveryModel.getExpiredAt().compareTo(time.now().getTimestamp()) > 0;
     }
 
     @Override
@@ -70,7 +71,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     @Transactional
     public void setRecoveryHashAsUsed(String hash) {
         var recoveryModel = passwordRecoveryRepository.findByHash(hash);
-        if(recoveryModel == null){
+        if (recoveryModel == null) {
             throw new ServerException("invalid recovery hash", HttpStatus.BAD_REQUEST);
         }
         recoveryModel.setUsed(true);

@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import travel.ways.travelwaysapi._core.util.Time;
 import travel.ways.travelwaysapi.auth.filter.AuthenticationFilter;
 import travel.ways.travelwaysapi.auth.filter.AuthorizationFilter;
 import travel.ways.travelwaysapi.auth.service.internal.JwtService;
@@ -24,6 +25,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtService jwtUtils;
+    private final Time time;
 
     @Bean
     public AuthenticationManager authenticationManagerBean(HttpSecurity http) throws Exception {
@@ -40,7 +42,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         var authenticationFilter = new AuthenticationFilter(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class))
-                , jwtUtils);
+                , jwtUtils, time);
         authenticationFilter.setFilterProcessesUrl("/api/auth/login");
         http.csrf().disable();
 
@@ -48,7 +50,7 @@ public class SecurityConfig {
         http.authorizeRequests().antMatchers("/api/auth/**", "/api/account/**").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(authenticationFilter);
-        http.addFilterBefore(new AuthorizationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new AuthorizationFilter(jwtUtils, time), UsernamePasswordAuthenticationFilter.class);
         http.cors();
 
         return http.build();

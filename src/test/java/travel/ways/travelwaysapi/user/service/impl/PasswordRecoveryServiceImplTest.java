@@ -7,7 +7,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.properity.CommonProperty;
-import travel.ways.travelwaysapi._core.util.TimeUtil;
+import travel.ways.travelwaysapi._core.util.Time;
+import travel.ways.travelwaysapi._core.util.impl.TimeImpl;
 import travel.ways.travelwaysapi.mail.MailService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.PasswordRecovery;
@@ -27,6 +28,9 @@ class PasswordRecoveryServiceImplTest {
     private PasswordRecoveryRepository passwordRecoveryRepository;
     @Mock
     private MailService mailService;
+    @Mock
+    private Time time;
+
     private final CommonProperty commonProperty = new CommonProperty("frontApi");
 
     private PasswordRecoveryServiceImpl passwordRecoveryService;
@@ -34,7 +38,8 @@ class PasswordRecoveryServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        passwordRecoveryService = new PasswordRecoveryServiceImpl(userRepository, passwordRecoveryRepository, mailService, commonProperty);
+        Mockito.when(time.now()).thenReturn(new TimeImpl());
+        passwordRecoveryService = new PasswordRecoveryServiceImpl(userRepository, passwordRecoveryRepository, mailService, commonProperty, time);
     }
 
     @Test
@@ -65,8 +70,9 @@ class PasswordRecoveryServiceImplTest {
 
     @Test
     public void isRecoveryHashValid_whenIsInvalid_ReturnFalse() {
+
         // arrange
-        Mockito.when(passwordRecoveryRepository.findByHash(Mockito.any())).thenReturn(new PasswordRecovery("hash", true, TimeUtil.Now().addMinutes(-30).getTimestamp(), null));
+        Mockito.when(passwordRecoveryRepository.findByHash(Mockito.any())).thenReturn(new PasswordRecovery("hash", true, new TimeImpl().now().addMinutes(-30).getTimestamp(), null));
 
         // act
         var result = passwordRecoveryService.isRecoveryHashValid("hash");
@@ -78,7 +84,7 @@ class PasswordRecoveryServiceImplTest {
     @Test
     public void isRecoveryHashValid_whenIsValid_ReturnTrue() {
         // arrange
-        Mockito.when(passwordRecoveryRepository.findByHash(Mockito.any())).thenReturn(new PasswordRecovery("hash", false, TimeUtil.Now().addMinutes(2).getTimestamp(), null));
+        Mockito.when(passwordRecoveryRepository.findByHash(Mockito.any())).thenReturn(new PasswordRecovery("hash", false, new TimeImpl().now().addMinutes(2).getTimestamp(), null));
 
         // act
         var result = passwordRecoveryService.isRecoveryHashValid("hash");
