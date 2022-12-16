@@ -2,6 +2,7 @@ package travel.ways.travelwaysapi._core.middleware;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +22,7 @@ import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.model.dto.BaseErrorResponse;
 import travel.ways.travelwaysapi._core.util.Time;
 
+@Slf4j
 @RestControllerAdvice
 @AllArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -31,6 +33,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ServerException.class)
     public ResponseEntity<BaseErrorResponse> serverErrorHandler(ServerException exception) {
+        log.warn(exception.getMessage());
         var baseError = new BaseErrorResponse(exception.getMessage(), exception.getHttpStatus(), time.now().getTimestamp());
         return new ResponseEntity<>(baseError, exception.getHttpStatus());
     }
@@ -52,6 +55,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
                                                                          @NonNull HttpHeaders headers,
                                                                          @NonNull HttpStatus status,
                                                                          @NonNull WebRequest request) {
+        log.warn(exception.getMessage() + " for " + ((ServletWebRequest) request).getRequest().getRequestURI());
         var baseError = new BaseErrorResponse(defaultErrorMessage, status, time.now().getTimestamp());
         return new ResponseEntity<>(baseError, status);
     }
@@ -62,6 +66,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatus status,
                                                                   @NonNull WebRequest request) {
+        log.warn(exception.getMessage());
         var baseError = new BaseErrorResponse(defaultErrorMessage, status, time.now().getTimestamp());
         return new ResponseEntity<>(baseError, status);
     }
@@ -72,6 +77,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatus status,
                                                                   @NonNull WebRequest request) {
+        log.warn(exception.getMessage());
         var baseError = new BaseErrorResponse(defaultErrorMessage, status, time.now().getTimestamp());
         return new ResponseEntity<>(baseError, status);
     }
@@ -82,6 +88,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
                                                                      @NonNull HttpHeaders headers,
                                                                      @NonNull HttpStatus status,
                                                                      @NonNull WebRequest request) {
+        log.warn(exception.getMessage());
         var baseError = new BaseErrorResponse(defaultErrorMessage, status, time.now().getTimestamp());
         return new ResponseEntity<>(baseError, status);
     }

@@ -2,3 +2,4 @@ setup/
 postgres-data/
 .github/
 .git/
+logs/

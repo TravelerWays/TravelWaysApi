@@ -8,7 +8,7 @@ public interface AccountService {
 
     AppUser createUser(CreateUserRequest user);
 
-    void activateUser(String hash);
+    AppUser activateUser(String hash);
 
     void sendActivationMail(AppUser user);
 }
