@@ -33,7 +33,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ServerException.class)
     public ResponseEntity<BaseErrorResponse> serverErrorHandler(ServerException exception) {
-        log.warn(exception.getMessage());
+        log.info(exception.getMessage());
         var baseError = new BaseErrorResponse(exception.getMessage(), exception.getHttpStatus(), time.now().getTimestamp());
         return new ResponseEntity<>(baseError, exception.getHttpStatus());
     }
