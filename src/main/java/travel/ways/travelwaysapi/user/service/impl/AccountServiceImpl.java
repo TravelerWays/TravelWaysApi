@@ -70,7 +70,7 @@ public class AccountServiceImpl implements AccountService {
     public AppUser activateUser(String hash){
         AppUser user = userRepository.findByHash(hash);
         if(user == null){
-            throw new ServerException("Can't find user for hash: " + hash, HttpStatus.NOT_FOUND);
+            throw new ServerException("Can't find user for hash", HttpStatus.NOT_FOUND);
         }
         user.setActive(true);
         return user;

@@ -33,10 +33,10 @@
     <div class="content">
         <p class="title">Welcome, </p>
         <p>To activate your account please click <a
-                    href="${frontAppUrl}/active-account/${hash}" target="_blank">here</a> or copy below link into your
+                    href="${frontAppUrl}/activate/${hash}" target="_blank">here</a> or copy below link into your
             browser </p>
 
-        <a href="${frontAppUrl}/active-account/${hash}" target="_blank">${frontAppUrl}/active-account/${hash}</a>
+        <a href="${frontAppUrl}/activate/${hash}" target="_blank">${frontAppUrl}/active-account/${hash}</a>
 
         <p>if it's not you start the process, please contact with us <a href="mailto:app-travelWays@outlook.com">app-travelWays@outlook.com</a>
         </p>
