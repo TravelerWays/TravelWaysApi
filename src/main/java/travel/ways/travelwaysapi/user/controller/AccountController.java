@@ -2,6 +2,7 @@ package travel.ways.travelwaysapi.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.exception.ServerException;
@@ -16,6 +17,7 @@ import travel.ways.travelwaysapi.user.service.shared.AccountService;
 
 import javax.validation.Valid;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/account")
 @RequiredArgsConstructor
@@ -27,19 +29,22 @@ public class AccountController {
     public BaseResponse registerUser( @RequestBody @Valid CreateUserRequest createUserRequest) {
         AppUser user = accountService.createUser(createUserRequest);
         accountService.sendActivationMail(user);
+        log.info("User " + createUserRequest.getUsername() + " registered successfully");
         return new BaseResponse(true, "user registered");
     }
 
     @PostMapping("/activate/{hash}")
     public BaseResponse activateAccount(@PathVariable String hash){
-        accountService.activateUser(hash);
-        return new BaseResponse(true, "user active");
+        AppUser user = accountService.activateUser(hash);
+        log.info("User " + user.getUsername() + " activated successfully");
+        return new BaseResponse(true, "user activated");
     }
 
 
     @PostMapping("password-recovery/init")
     public BaseResponse passwordRecoverInit(@Valid @RequestBody InitPasswordRecoveryRequest request) {
         recoveryPasswordService.initPasswordRecovery(request);
+        log.info("Mail with recovery password link has been sent to " + request.getEmail());
         return new BaseResponse(true, "mail with link sent");
     }
 
@@ -48,7 +53,8 @@ public class AccountController {
     public ValidHashPasswordRecoveryResponse validPasswordRecovery(@PathVariable String hash) {
         var isValid = recoveryPasswordService.isRecoveryHashValid(hash);
         if(!isValid) throw new ServerException("Invalid hash", HttpStatus.BAD_REQUEST);
-        return new ValidHashPasswordRecoveryResponse(isValid);
+        log.debug("recovery hash is valid");
+        return new ValidHashPasswordRecoveryResponse(true);
     }
 
     @SneakyThrows
@@ -60,7 +66,7 @@ public class AccountController {
         var user = recoveryPasswordService.getUserByRecoveryHash(hash);
         accountService.changePassword(user.getId(), request.getPassword());
         recoveryPasswordService.setRecoveryHashAsUsed(hash);
-
+        log.info("password for user: " + user + " has been changed");
         return new BaseResponse(true, "password changed");
     }
 }

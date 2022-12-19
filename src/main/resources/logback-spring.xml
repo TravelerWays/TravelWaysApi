@@ -1,0 +1,43 @@
+<configuration>
+
+    <property resource="application.properties"/>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                ${CONSOLE_LOG_PATTERN}
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logging.file.path}/${logging.file.name}</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/${logging.file.name}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>${logging.file.size}</maxFileSize>
+            <!-- total size of all archive files -->
+            <totalSizeCap>1GB</totalSizeCap>
+            <!-- days to keep -->
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>
+                 %date{ISO8601} %-5level %F:%L - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <logger name="travel.ways.travelwaysapi" level="debug" additivity="false">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <root level="warn">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
