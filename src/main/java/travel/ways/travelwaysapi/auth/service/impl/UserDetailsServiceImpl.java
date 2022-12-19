@@ -22,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         var user = userService.getByUsername(username);
         if (user == null) {
-            log.warn("User " + username + "not found");
+            log.info("User " + username + "not found");
             throw new UsernameNotFoundException("User " + username + "not found");
         }
             return CustomUserDetails.build(user);
