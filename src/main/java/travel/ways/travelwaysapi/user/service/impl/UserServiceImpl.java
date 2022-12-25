@@ -2,6 +2,7 @@ package travel.ways.travelwaysapi.user.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
@@ -15,6 +16,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @Transactional
     public AppUser getByUsername(String username) {
         return userRepository.findByUsername(username);
     }
