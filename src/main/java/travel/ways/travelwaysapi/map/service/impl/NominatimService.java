@@ -1,5 +1,6 @@
 package travel.ways.travelwaysapi.map.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,7 @@ public class NominatimService implements SearchService {
         try {
             return mapper.readValue(response.body(), new TypeReference<>() {
             });
-        } catch (Exception ex) {
+        } catch (JsonProcessingException ex) {
             return List.of(mapper.readValue(response.body(), LocationDto.class));
         }
     }
