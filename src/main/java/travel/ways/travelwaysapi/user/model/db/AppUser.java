@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
+import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 
 import javax.persistence.*;
@@ -30,6 +31,9 @@ public class AppUser extends BaseEntity {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = Attraction.class, mappedBy = "user")
+    private Collection<Attraction> attractions = new ArrayList<>();
 
     @OneToMany(targetEntity = PasswordRecovery.class, mappedBy = "user")
     private Collection<PasswordRecovery> passwordRecoveries = new ArrayList<>();

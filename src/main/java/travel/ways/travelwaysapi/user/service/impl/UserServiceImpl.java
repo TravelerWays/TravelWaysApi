@@ -1,6 +1,7 @@
 package travel.ways.travelwaysapi.user.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
@@ -13,7 +14,6 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-
 
     @Override
     @Transactional
@@ -29,6 +29,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public AppUser getByHash(String hash) {
         return userRepository.findByHash(hash);
+    }
+
+    @Override
+    public AppUser getLoggedUser() {
+        return userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
 }

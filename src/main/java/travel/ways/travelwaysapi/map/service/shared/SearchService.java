@@ -1,6 +1,6 @@
 package travel.ways.travelwaysapi.map.service.shared;
 
-import travel.ways.travelwaysapi.map.model.dto.LocationDto;
+import travel.ways.travelwaysapi.map.model.dto.osm.LocationDto;
 
 import java.util.List;
 
