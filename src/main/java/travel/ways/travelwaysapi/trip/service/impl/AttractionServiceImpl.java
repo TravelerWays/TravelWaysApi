@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AttractionServiceImpl implements AttractionService {
     private final LocationService locationService;
-    private final AttractionRepository  attractionRepository;
+    private final AttractionRepository attractionRepository;
     private final UserService userService;
 
     @Override
@@ -25,9 +25,10 @@ public class AttractionServiceImpl implements AttractionService {
     public Attraction createAttraction(CreateAttractionRequest createAttractionRequest) {
         var attraction = Attraction.of(createAttractionRequest);
         var location = locationService.getByOsmId(createAttractionRequest.getOsmId());
-        attraction.setLocation(location);
 
+        attraction.setLocation(location);
         attraction.setUser(userService.getLoggedUser());
+
         attractionRepository.save(attraction);
         return attraction;
     }

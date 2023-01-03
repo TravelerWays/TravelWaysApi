@@ -16,13 +16,13 @@ import java.util.List;
 public class MapController {
     private final SearchService searchService;
 
-    @GetMapping("search/query")
-    public List<LocationDto> Search(@RequestParam String query){
+    @GetMapping("/search/query")
+    public List<LocationDto> search(@RequestParam String query) {
         return searchService.Search(query);
     }
 
-    @GetMapping("search/coordinates")
-    public List<LocationDto> Search(@RequestParam double lat, @RequestParam double lon){
+    @GetMapping("/search/coordinates")
+    public List<LocationDto> search(@RequestParam double lat, @RequestParam double lon) {
         return searchService.Search(lat, lon);
     }
 

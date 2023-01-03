@@ -6,7 +6,10 @@ import travel.ways.travelwaysapi.map.model.dto.response.LocationResponse;
 
 public interface LocationService {
     Location getLocation(Long id);
+
     Location getByOsmId(String osmId);
+
     boolean exitsByOsmId(String osmId);
+
     LocationResponse create(CreateLocationRequest createLocationRequest);
 }

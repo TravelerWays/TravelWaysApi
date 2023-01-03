@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.map.model.db.Location;
-import travel.ways.travelwaysapi.map.model.dto.osm.LocationDto;
 import travel.ways.travelwaysapi.map.model.dto.request.CreateLocationRequest;
 import travel.ways.travelwaysapi.map.model.dto.response.LocationResponse;
 import travel.ways.travelwaysapi.map.repository.LocationRepository;
@@ -20,10 +19,10 @@ public class LocationServiceImpl implements LocationService {
     @Override
     @SneakyThrows
     public Location getLocation(Long id) {
-        var location =  locationRepository.findById(id);
+        var location = locationRepository.findById(id);
 
-        if(location.isEmpty()){
-            throw new ServerException("Location with id " + id + " not found", HttpStatus.BAD_REQUEST);
+        if (location.isEmpty()) {
+            throw new ServerException("Location with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
 
         return location.get();
@@ -33,8 +32,8 @@ public class LocationServiceImpl implements LocationService {
     @SneakyThrows
     public Location getByOsmId(String osmId) {
         var location = locationRepository.findByOsmId(osmId);
-        if(location == null){
-            throw new ServerException("Location not found", HttpStatus.BAD_REQUEST);
+        if (location == null) {
+            throw new ServerException("Location not found", HttpStatus.NOT_FOUND);
         }
 
         return location;
@@ -48,7 +47,7 @@ public class LocationServiceImpl implements LocationService {
     @Override
     @SneakyThrows
     public LocationResponse create(CreateLocationRequest createLocationRequest) {
-        if(locationRepository.existsByOsmId(createLocationRequest.getOsmId())){
+        if (locationRepository.existsByOsmId(createLocationRequest.getOsmId())) {
             throw new ServerException("location with this osm exits", HttpStatus.CONFLICT);
         }
         var location = Location.of(createLocationRequest);

@@ -13,7 +13,7 @@ import travel.ways.travelwaysapi.map.service.shared.LocationService;
 public class LocationController {
     private final LocationService locationService;
 
-    @GetMapping("exists/{osmId}")
+    @GetMapping("/exists/{osmId}")
     public BaseResponse existsLocation(@PathVariable String osmId) {
         return new BaseResponse(
                 locationService.exitsByOsmId(osmId),
@@ -22,13 +22,13 @@ public class LocationController {
     }
 
     @PostMapping()
-    public LocationResponse Add(@RequestBody CreateLocationRequest createLocationRequest){
+    public LocationResponse add(@RequestBody CreateLocationRequest createLocationRequest) {
         return locationService.create(createLocationRequest);
     }
 
-    @PostMapping("add-if-not-exits")
-    public LocationResponse AddIfNotExits(@RequestBody CreateLocationRequest createLocationRequest){
-        if(!locationService.exitsByOsmId(createLocationRequest.getOsmId())) {
+    @PostMapping("/add-if-not-exits")
+    public LocationResponse addIfNotExits(@RequestBody CreateLocationRequest createLocationRequest) {
+        if (!locationService.exitsByOsmId(createLocationRequest.getOsmId())) {
             return locationService.create(createLocationRequest);
         }
 

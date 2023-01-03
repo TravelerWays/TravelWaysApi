@@ -19,13 +19,13 @@ public class AttractionController {
     private final UserService userService;
 
     @PostMapping()
-    public AttractionResponse add(@RequestBody CreateAttractionRequest createAttractionRequest){
+    public AttractionResponse add(@RequestBody CreateAttractionRequest createAttractionRequest) {
         var attraction = attractionService.createAttraction(createAttractionRequest);
         return AttractionResponse.of(attraction);
     }
 
-    @GetMapping("all")
-    public List<AttractionResponse> getAll(){
+    @GetMapping("/all")
+    public List<AttractionResponse> getAll() {
         var user = userService.getLoggedUser();
         return attractionService.getUserAttraction(user).stream().map(AttractionResponse::of).toList();
     }
