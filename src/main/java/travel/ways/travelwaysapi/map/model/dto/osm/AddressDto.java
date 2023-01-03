@@ -1,4 +1,4 @@
-package travel.ways.travelwaysapi.map.model.dto;
+package travel.ways.travelwaysapi.map.model.dto.osm;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

@@ -5,7 +5,10 @@ import travel.ways.travelwaysapi.user.model.dto.request.InitPasswordRecoveryRequ
 
 public interface PasswordRecoveryService {
     void initPasswordRecovery(InitPasswordRecoveryRequest request);
+
     boolean isRecoveryHashValid(String hash);
+
     void setRecoveryHashAsUsed(String hash);
+
     AppUser getUserByRecoveryHash(String hash);
 }

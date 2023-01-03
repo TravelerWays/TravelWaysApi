@@ -1,4 +1,4 @@
-package travel.ways.travelwaysapi.map.model.dto;
+package travel.ways.travelwaysapi.map.model.dto.osm;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -11,4 +11,6 @@ public class LocationDto {
     private String lat;
     private String lon;
     private String type;
+    @JsonProperty("osm_id")
+    private String OsmId;
 }

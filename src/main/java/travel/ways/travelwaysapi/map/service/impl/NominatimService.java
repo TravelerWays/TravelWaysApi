@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import travel.ways.travelwaysapi._core.properity.NominatimProperty;
-import travel.ways.travelwaysapi.map.model.dto.LocationDto;
+import travel.ways.travelwaysapi.map.model.dto.osm.LocationDto;
 import travel.ways.travelwaysapi.map.service.shared.SearchService;
 
 import java.net.URI;

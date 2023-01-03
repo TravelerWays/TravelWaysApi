@@ -12,7 +12,7 @@ services:
             - /var/run/docker.sock:/var/run/docker.sock:ro
             - ./portainer-data:/data
         ports:
-            - 9000:9000
+            - "9000:9000"
     db:
         image: postgres
         container_name: travelWayDb
@@ -20,7 +20,7 @@ services:
             POSTGRES_PASSWORD: passwd
             POSTGRES_USER: admin
         ports:
-            - 5432:5432
+            - "5432:5432"
         volumes:
             - ./postgres-data:/var/lib/postgresql/data
             - "./init.sql:/docker-entrypoint-initdb.d/init.sql"
