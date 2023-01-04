@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
+import travel.ways.travelwaysapi.trip.model.db.TripImage;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;

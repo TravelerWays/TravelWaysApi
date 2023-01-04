@@ -1,16 +1,18 @@
 package travel.ways.travelwaysapi.trip.model.dto.request;
 
-import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
-@Data
-public class CreateTripRequest {
+@Getter
+@Setter
+public class EditTripRequest {
+    @NotNull
+    private String hash;
     @NotNull
     private String title;
     @NotNull
     private Boolean isPublic;
-    private MultipartFile data;
     private String description;
 }

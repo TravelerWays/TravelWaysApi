@@ -7,4 +7,5 @@ public class TripDto {
     private String title;
     private String hash;
     private boolean isPublic;
+    private String description;
 }

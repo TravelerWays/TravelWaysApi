@@ -102,9 +102,8 @@ public class AppUser extends BaseEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof AppUser appUser)) return false;
         if (!super.equals(o)) return false;
-        AppUser appUser = (AppUser) o;
         return Objects.equals(email, appUser.email);
     }
 

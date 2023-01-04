@@ -1,8 +1,8 @@
-package travel.ways.travelwaysapi.file.model.db;
+package travel.ways.travelwaysapi.trip.model.db;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
-import travel.ways.travelwaysapi.trip.model.db.Trip;
+import travel.ways.travelwaysapi.file.model.db.Image;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -19,7 +19,7 @@ public class TripImage {
     @MapsId("tripId")
     private Trip trip;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId("imageId")
     @JsonBackReference
     private Image image;

@@ -1,14 +1,16 @@
 package travel.ways.travelwaysapi.trip.model.db;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "app_user_trip")
 public class AppUserTrip {
     @EmbeddedId

@@ -7,13 +7,15 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.db.TripImage;
+import travel.ways.travelwaysapi.file.model.dto.AddImageToTripRequest;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.AppUserTrip;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
+import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.TripDto;
 import travel.ways.travelwaysapi.trip.repository.TripRepository;
 import travel.ways.travelwaysapi.trip.service.shared.TripService;
@@ -36,21 +38,19 @@ public class TripServiceImpl implements TripService {
     @Override
     @Transactional
     @SneakyThrows
-    public Trip createTrip(CreateTripRequest request, AppUser user) {
+    public Trip createTrip(CreateTripRequest request) {
         Trip trip = new Trip();
         trip.setHash(UUID.randomUUID().toString());
         trip.setOpen(true);
-        if (request.getIsPublic().equalsIgnoreCase("true")) trip.setPublic(true);
-        else if (request.getIsPublic().equalsIgnoreCase("false")) trip.setPublic(true);
-        else throw new ServerException("Bad request", HttpStatus.BAD_REQUEST);
+        trip.setPublic(request.getIsPublic());
         trip.setTitle(request.getTitle());
+        trip.setDescription(request.getDescription());
         trip = tripRepository.save(trip);
-        user.addTrip(trip, true);
+        userService.getLoggedUser().addTrip(trip, true);
 
-        Image image = imageService.createImage(trip.getTitle() + "_" + user.getUsername(), request.getData().getBytes());
+        Image image = imageService.createImage(request.getData().getOriginalFilename(), request.getData());
 
         trip.addMainImage(image);
-
         return trip;
     }
 
@@ -58,10 +58,14 @@ public class TripServiceImpl implements TripService {
     @Transactional
     @SneakyThrows
     public void deleteTrip(Trip trip) {
-        AppUser appUser = trip.findOwner();
+        AppUser owner = trip.findOwner();
+        if (!userService.getLoggedUser().equals(owner)) {
+            throw new ServerException("You don't have permission to delete the trip", HttpStatus.UNAUTHORIZED);
+        }
+
         log.debug("removing trip with id: " + trip.getId());
-        appUser.removeTrip(trip);
         this.deleteMainImage(trip);
+        owner.removeTrip(trip);
         tripRepository.delete(trip);
     }
 
@@ -77,10 +81,16 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public List<TripDto> getAllTripsForUser(AppUser appUser) {
+        AppUser loggedUser = userService.getLoggedUser();
+        boolean showPrivate = loggedUser.equals(appUser);
+
         List<TripDto> trips = new ArrayList<>();
         for (AppUserTrip appUserTrip : appUser.getTrips()) {
-            System.out.println(appUserTrip.getTrip().getId());
-
+            if (!showPrivate) {
+                if (!appUserTrip.getTrip().isPublic() && !checkIfContributor(appUserTrip.getTrip(), loggedUser)) {
+                    continue;
+                }
+            }
             TripDto tripDto = mapper.map(appUserTrip.getTrip(), TripDto.class);
             trips.add(tripDto);
         }
@@ -91,61 +101,109 @@ public class TripServiceImpl implements TripService {
     @SneakyThrows
     public Image getMainImage(String hash) {
         Trip trip = getByHash(hash);
-        for (TripImage tripImage : trip.getImages()) {
-            if (tripImage.isMain()) return tripImage.getImage();
-        }
-        throw new ServerException("The trip does not have main image", HttpStatus.NOT_FOUND);
+        return this.getMainImage(trip);
     }
 
     @Override
+    @SneakyThrows
     public Image getMainImage(Trip trip) {
-        for (TripImage tripImage : trip.getImages()) {
-            if (tripImage.isMain()) return tripImage.getImage();
+        Image image = imageService.getMainImageForTrip(trip);
+        if (image != null) {
+            return image;
         }
-        return null;
+        throw new ServerException("The trip does not have main image", HttpStatus.NOT_FOUND);
+
+    }
+
+    public String getMainImageHash(Trip trip) {
+        return imageService.getMainImageHash(trip);
+    }
+
+    @Override
+    @Transactional
+    @SneakyThrows
+    public void closeTrip(String hash) {
+        Trip trip = this.getByHash(hash);
+        if (!trip.findOwner().equals(userService.getLoggedUser())) {
+            throw new ServerException("You do not have permission to open the trip", HttpStatus.FORBIDDEN);
+        }
+        trip.setOpen(false);
+    }
+
+    @Override
+    @Transactional
+    @SneakyThrows
+    public void openTrip(String hash) {
+        Trip trip = this.getByHash(hash);
+        if (!trip.findOwner().equals(userService.getLoggedUser())) {
+            throw new ServerException("You do not have permission to open the trip", HttpStatus.FORBIDDEN);
+        }
+        trip.setOpen(true);
     }
 
     @Override
     @Transactional
     @SneakyThrows
     public void deleteMainImage(Trip trip) {
+        if (!userService.getLoggedUser().equals(trip.findOwner())) {
+            throw new ServerException("You don't have permission to delete the image", HttpStatus.UNAUTHORIZED);
+        }
         log.debug("removing main image from trip with id: " + trip.getId());
-        Image imageToRemove = this.getMainImage(trip);
-        trip.removeImage(imageToRemove);
+        String hashImageToRemove = this.getMainImageHash(trip);
+        trip.removeImage(hashImageToRemove);
         tripRepository.save(trip);
-        imageService.deleteImage(imageToRemove);
+        imageService.deleteImageByHash(hashImageToRemove);
     }
 
     @Override
     @Transactional
-    public Trip editTitle(Trip trip, String title) {
-        trip.setTitle(title);
+    @SneakyThrows
+    public Trip editTrip(EditTripRequest request) {
+        AppUser appUser = userService.getLoggedUser();
+        Trip trip = this.getByHash(request.getHash());
+        if (!appUser.equals(trip.findOwner())) {
+            throw new ServerException("You don't have permission to edit the trip", HttpStatus.UNAUTHORIZED);
+        }
+        trip.setTitle(request.getTitle());
+        trip.setDescription(request.getDescription());
+        trip.setPublic(request.getIsPublic());
         return trip;
     }
 
     @Override
     @Transactional
-    public Trip editIsPublic(Trip trip, Boolean isPublic) {
-        trip.setPublic(isPublic);
-        return trip;
-    }
-
-    @Override
-    @Transactional
-    public void editMainImage(Trip trip, Image image) {
+    @SneakyThrows
+    public Image editMainImage(Trip trip, MultipartFile data) {
+        if (!userService.getLoggedUser().equals(trip.findOwner())) {
+            throw new ServerException("You don't have permission to edit the image", HttpStatus.FORBIDDEN);
+        }
+        Image image = imageService.createImage(data.getOriginalFilename(), data);
         this.deleteMainImage(trip);
         trip.addMainImage(image);
+        return image;
     }
 
     @Override
     @Transactional
-    public void addImage(Trip trip, Image image) {
+    @SneakyThrows
+    public Image addImage(AddImageToTripRequest request) {
+        Trip trip = this.getByHash(request.getHash());
+        if (!this.checkIfContributor(trip, userService.getLoggedUser())) {
+            throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
+        }
+        if (request.isMain()) {
+            return editMainImage(trip, request.getData());
+        }
+        Image image = imageService.createImage(request.getData().getOriginalFilename(), request.getData());
         trip.addImage(image);
+        return image;
     }
 
     @Override
     public boolean checkIfContributor(Trip trip, AppUser appUser) {
-        if (appUser == null || trip == null) return false;
+        if (appUser == null || trip == null) {
+            return false;
+        }
         for (AppUserTrip appUserTrip : trip.getUsers()) {
             if (appUserTrip.getUser() == appUser) return true;
         }

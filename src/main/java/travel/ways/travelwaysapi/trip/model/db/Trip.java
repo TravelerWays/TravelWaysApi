@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
 import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.db.TripImage;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 
 import javax.persistence.CascadeType;
@@ -31,6 +30,7 @@ public class Trip extends BaseEntity {
     private boolean isOpen;
     @Column(unique = true)
     private String hash;
+    private String description;
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
@@ -84,6 +84,17 @@ public class Trip extends BaseEntity {
         for (Iterator<TripImage> iterator = images.iterator(); iterator.hasNext(); ) {
             TripImage tripImage = iterator.next();
             if (tripImage.getTrip().equals(this) && tripImage.getImage().equals(image)) {
+                iterator.remove();
+                tripImage.setImage(null);
+                tripImage.setTrip(null);
+            }
+        }
+    }
+
+    public void removeImage(String hash) {
+        for (Iterator<TripImage> iterator = images.iterator(); iterator.hasNext(); ) {
+            TripImage tripImage = iterator.next();
+            if (tripImage.getTrip().equals(this) && tripImage.getImage().getHash().equals(hash)) {
                 iterator.remove();
                 tripImage.setImage(null);
                 tripImage.setTrip(null);

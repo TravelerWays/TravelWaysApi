@@ -1,15 +1,18 @@
 package travel.ways.travelwaysapi.trip.service.shared;
 
+import org.springframework.web.multipart.MultipartFile;
 import travel.ways.travelwaysapi.file.model.db.Image;
+import travel.ways.travelwaysapi.file.model.dto.AddImageToTripRequest;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
+import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.TripDto;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 
 import java.util.List;
 
 public interface TripService {
-    Trip createTrip(CreateTripRequest createTripRequest, AppUser user);
+    Trip createTrip(CreateTripRequest createTripRequest);
 
     void deleteTrip(Trip trip);
 
@@ -23,13 +26,17 @@ public interface TripService {
 
     void deleteMainImage(Trip trip);
 
-    Trip editTitle(Trip trip, String title);
+    Trip editTrip(EditTripRequest request);
 
-    Trip editIsPublic(Trip trip, Boolean isPublic);
+    Image editMainImage(Trip trip, MultipartFile data);
 
-    void editMainImage(Trip trip, Image image);
-
-    void addImage(Trip trip, Image image);
+    Image addImage(AddImageToTripRequest request);
 
     boolean checkIfContributor(Trip trip, AppUser appUser);
+
+    String getMainImageHash(Trip trip);
+
+    void closeTrip(String hash);
+
+    void openTrip(String hash);
 }
