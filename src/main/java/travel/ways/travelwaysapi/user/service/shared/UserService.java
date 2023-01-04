@@ -11,5 +11,7 @@ public interface UserService {
 
     AppUser getByHash(String hash);
 
+    void save(AppUser appUser);
+
     AppUser getLoggedUser();
 }

@@ -1,17 +1,18 @@
 package travel.ways.travelwaysapi.user.model.db;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
+import travel.ways.travelwaysapi.trip.model.db.AppUserTrip;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
+import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Data
@@ -38,6 +39,10 @@ public class AppUser extends BaseEntity {
     @OneToMany(targetEntity = PasswordRecovery.class, mappedBy = "user")
     private Collection<PasswordRecovery> passwordRecoveries = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private Set<AppUserTrip> trips = new HashSet<>();
+
     public AppUser(String name, String surname, String username, String email, String password, Collection<Role> roles) {
         this.name = name;
         this.surname = surname;
@@ -49,12 +54,12 @@ public class AppUser extends BaseEntity {
 
     public static AppUser of(@NotNull CreateUserRequest request) {
         return new AppUser(
-            request.getName(),
-            request.getSurname(),
-            request.getUsername(),
-            request.getEmail(),
-            request.getPassword(),
-            new ArrayList<>()
+                request.getName(),
+                request.getSurname(),
+                request.getUsername(),
+                request.getEmail(),
+                request.getPassword(),
+                new ArrayList<>()
         );
     }
 
@@ -67,5 +72,44 @@ public class AppUser extends BaseEntity {
                 request.getPassword(),
                 roles
         );
+    }
+
+    public void addTrip(Trip trip) {
+        AppUserTrip appUserTrip = new AppUserTrip(trip, this);
+        this.trips.add(appUserTrip);
+        trip.getUsers().add(appUserTrip);
+    }
+
+    public void addTrip(Trip trip, Boolean owner) {
+        AppUserTrip appUserTrip = new AppUserTrip(trip, this);
+        if (owner) appUserTrip.setOwner(true);
+        this.trips.add(appUserTrip);
+        trip.getUsers().add(appUserTrip);
+    }
+
+    public void removeTrip(Trip trip) {
+        for (Iterator<AppUserTrip> iterator = trips.iterator(); iterator.hasNext(); ) {
+            AppUserTrip appUserTrip = iterator.next();
+            if (appUserTrip.getUser().equals(this) && appUserTrip.getTrip().equals(trip)) {
+                iterator.remove();
+                appUserTrip.getTrip().getUsers().remove(appUserTrip);
+                appUserTrip.setUser(null);
+                appUserTrip.setTrip(null);
+            }
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        AppUser appUser = (AppUser) o;
+        return Objects.equals(email, appUser.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), email);
     }
 }

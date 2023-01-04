@@ -32,6 +32,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void save(AppUser appUser) {
+        userRepository.save(appUser);
+    }
+
+    @Override
     public AppUser getLoggedUser() {
         return userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
