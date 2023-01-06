@@ -18,16 +18,21 @@ import java.util.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "app_user")
 public class AppUser extends BaseEntity {
+    @Column(name = "name")
     private String name;
+    @Column(name = "surname")
     private String surname;
-    @Column(unique = true)
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
-    @Column(unique = true)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
+    @Column(name = "password", nullable = false)
     private String password;
+    @Column(name = "active", nullable = false)
     private boolean active;
-    @Column(unique = true)
+    @Column(name = "hash", unique = true, nullable = false)
     private String hash;
 
     @ManyToMany(fetch = FetchType.EAGER)

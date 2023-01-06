@@ -1,8 +1,8 @@
 package travel.ways.travelwaysapi.trip.service.shared;
 
-import travel.ways.travelwaysapi.file.model.ImageWithoutData;
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.AddImageToTripRequest;
+import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;

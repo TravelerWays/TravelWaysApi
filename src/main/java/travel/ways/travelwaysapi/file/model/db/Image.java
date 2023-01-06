@@ -7,22 +7,25 @@ import org.hibernate.annotations.Type;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
 import travel.ways.travelwaysapi.trip.model.db.TripImage;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.Objects;
 
-@Entity
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "image")
 public class Image extends BaseEntity {
+    @Column(name = "name", nullable = false)
     private String name;
     @Lob
     @Type(type = "org.hibernate.type.BinaryType")
+    @Column(name = "data", nullable = false)
     private byte[] data;
+    @Column(name = "extension", nullable = false, length = 20)
     private String extension;
+    @Column(name = "hash", nullable = false, unique = true)
     private String hash;
 
     @OneToOne(mappedBy = "image", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import travel.ways.travelwaysapi.file.model.ImageWithoutData;
+import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
 
 import java.util.List;
 

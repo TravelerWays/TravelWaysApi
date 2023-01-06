@@ -18,25 +18,27 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "attraction")
 public class Attraction extends BaseEntity {
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
-
+    @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "is_public", nullable = false)
     private boolean isPublic;
 
-    @Column(nullable = false)
+    @Column(name = "is_visited", nullable = false)
     private boolean isVisited;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
+    @Column(name = "visited_at", nullable = false)
     private Date visitedAt;
 
+    @Column(name = "rate", nullable = false)
     private Short rate;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "hash", nullable = false, unique = true)
     private String hash;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

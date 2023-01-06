@@ -1,4 +1,4 @@
-package travel.ways.travelwaysapi.file.model;
+package travel.ways.travelwaysapi.file.model.projection;
 
 import org.springframework.beans.factory.annotation.Value;
 

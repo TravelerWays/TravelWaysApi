@@ -12,7 +12,7 @@ public class AddImageToTripRequest {
     @NotNull
     String hash;
     @NotNull
-    MultipartFile data;
+    MultipartFile imageData;
     @NotNull
     Boolean isMain;
 }

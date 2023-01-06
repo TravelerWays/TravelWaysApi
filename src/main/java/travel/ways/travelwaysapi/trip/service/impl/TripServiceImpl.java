@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
-import travel.ways.travelwaysapi.file.model.ImageWithoutData;
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.AddImageToTripRequest;
+import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.AppUserTrip;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
@@ -176,7 +176,7 @@ public class TripServiceImpl implements TripService {
         if (!this.checkIfContributor(trip, userService.getLoggedUser())) {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
         }
-        Image image = imageService.createImage(request.getData().getOriginalFilename(), request.getData());
+        Image image = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
 
         TripImage newTripImage = new TripImage(trip, image);
         newTripImage = tripImageRepository.save(newTripImage);
