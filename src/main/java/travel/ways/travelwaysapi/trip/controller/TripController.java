@@ -1,13 +1,12 @@
 package travel.ways.travelwaysapi.trip.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
+import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
+import travel.ways.travelwaysapi.trip.model.dto.request.EditMainImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.TripDto;
 import travel.ways.travelwaysapi.trip.service.shared.TripService;
@@ -23,38 +22,46 @@ public class TripController {
 
     private final TripService tripService;
     private final UserService userService;
-    private final ModelMapper mapper = new ModelMapper();
 
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public TripDto createTrip(@Valid @ModelAttribute CreateTripRequest createTripRequest) {
+    @PostMapping
+    public TripDto createTrip(@Valid @RequestBody CreateTripRequest createTripRequest) {
         Trip trip = tripService.createTrip(createTripRequest);
-        return mapper.map(trip, TripDto.class);
+        return tripService.getTripDto(trip.getHash());
     }
 
-    @SneakyThrows
     @DeleteMapping("/{hash}")
     public BaseResponse deleteTrip(@PathVariable String hash) {
-        Trip trip = tripService.getByHash(hash);
-        tripService.deleteTrip(trip);
+        tripService.deleteTrip(tripService.getTrip(hash));
         return new BaseResponse(true, "trip deleted");
     }
 
-    @GetMapping("/all")
-    public List<TripDto> getAllTripsForUser(@RequestParam String username) {
+    @GetMapping("/all/{username}")
+    public List<TripDto> getAllTripsForUser(@PathVariable String username) {
         return tripService.getAllTripsForUser(userService.getByUsername(username));
     }
 
-    @GetMapping
-    public TripDto getTrip(@RequestParam String hash) {
-        return mapper.map(tripService.getByHash(hash), TripDto.class);
+    @GetMapping("/{hash}")
+    public TripDto getTrip(@PathVariable String hash) {
+        Trip trip = tripService.getTrip(hash);
+        return tripService.getTripDto(trip);
     }
 
-    @SneakyThrows
-    @PutMapping(value = "/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public TripDto editTrip(@Valid @ModelAttribute EditTripRequest editTripRequest) {
+    @PutMapping("/edit")
+    public TripDto editTrip(@Valid @RequestBody EditTripRequest editTripRequest) {
         Trip trip = tripService.editTrip(editTripRequest);
-        return mapper.map(trip, TripDto.class);
+        return tripService.getTripDto(trip.getHash());
+    }
+
+    @PutMapping("/edit/main-image")
+    public BaseResponse editMainImage(@Valid @RequestBody EditMainImageRequest editMainImageRequest) {
+
+        Trip trip = tripService.getTrip(editMainImageRequest.getTripHash());
+        Image image = tripService.editMainImage(trip, editMainImageRequest.getImageHash());
+        if (image == null) {
+            return new BaseResponse(true, "main image removed");
+        }
+        return new BaseResponse(true, "main image changed");
     }
 
     @PutMapping("close/{hash}")

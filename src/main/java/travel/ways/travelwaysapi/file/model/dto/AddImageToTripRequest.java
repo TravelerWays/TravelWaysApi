@@ -14,5 +14,5 @@ public class AddImageToTripRequest {
     @NotNull
     MultipartFile data;
     @NotNull
-    boolean isMain;
+    Boolean isMain;
 }

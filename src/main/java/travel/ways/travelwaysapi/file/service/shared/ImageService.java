@@ -1,8 +1,11 @@
 package travel.ways.travelwaysapi.file.service.shared;
 
 import org.springframework.web.multipart.MultipartFile;
+import travel.ways.travelwaysapi.file.model.ImageWithoutData;
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
+
+import java.util.List;
 
 public interface ImageService {
     Image saveImage(Image image);
@@ -11,10 +14,16 @@ public interface ImageService {
 
     Image createImage(String name, MultipartFile data);
 
-    Image getMainImageForTrip(Trip trip);
+    ImageWithoutData getImageWithoutData(String hash);
 
-    String getMainImageHash(Trip trip);
+    String getTripMainImageHash(Trip trip);
 
-    void deleteImageByHash(String hash);
+    void deleteImage(String hash);
+
+    Image getImage(String hash);
+
+    List<ImageWithoutData> getAllImagesWithoutDataForTrip(Trip trip);
+
+    Boolean checkIfImageExistsInTrip(Trip trip, String imageHash);
 
 }

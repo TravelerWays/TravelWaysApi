@@ -1,7 +1,6 @@
 package travel.ways.travelwaysapi.trip.model.dto.request;
 
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 
@@ -10,7 +9,6 @@ public class CreateTripRequest {
     @NotNull
     private String title;
     @NotNull
-    private Boolean isPublic;
-    private MultipartFile data;
+    private boolean isPublic;
     private String description;
 }
