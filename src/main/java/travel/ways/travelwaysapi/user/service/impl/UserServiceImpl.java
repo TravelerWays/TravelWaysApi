@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
@@ -32,8 +33,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void save(AppUser appUser) {
+        userRepository.save(appUser);
+    }
+
+    @Override
     public AppUser getLoggedUser() {
         return userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @Override
+    public AppUser getTripOwner(Trip trip) {
+        return userRepository.findOwnerByTripsTripAndTripsIsOwnerTrue(trip);
     }
 
 }

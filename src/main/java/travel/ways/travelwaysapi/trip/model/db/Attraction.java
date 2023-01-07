@@ -21,7 +21,7 @@ import java.util.UUID;
 public class Attraction extends BaseEntity {
     @Column(nullable = false)
     private String title;
-
+    @Column(nullable = false)
     private String description;
 
     @Column(nullable = false)
@@ -34,6 +34,7 @@ public class Attraction extends BaseEntity {
     @Column(nullable = false)
     private Date visitedAt;
 
+    @Column(nullable = false)
     private Short rate;
 
     @Column(nullable = false, unique = true)

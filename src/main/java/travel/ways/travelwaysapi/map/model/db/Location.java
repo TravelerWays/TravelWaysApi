@@ -2,6 +2,7 @@ package travel.ways.travelwaysapi.map.model.db;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
 import travel.ways.travelwaysapi.map.model.dto.request.CreateLocationRequest;
@@ -14,12 +15,13 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Location extends BaseEntity {
-    @Column
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
