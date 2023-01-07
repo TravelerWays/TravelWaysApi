@@ -18,21 +18,20 @@ import java.util.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "app_user")
 public class AppUser extends BaseEntity {
-    @Column(name = "name")
+    @Column
     private String name;
-    @Column(name = "surname")
+    @Column
     private String surname;
-    @Column(name = "username", unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String username;
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
-    @Column(name = "password", nullable = false)
+    @Column(nullable = false)
     private String password;
-    @Column(name = "active", nullable = false)
+    @Column(nullable = false)
     private boolean active;
-    @Column(name = "hash", unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String hash;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -90,18 +89,6 @@ public class AppUser extends BaseEntity {
         if (owner) appUserTrip.setOwner(true);
         this.trips.add(appUserTrip);
         trip.getUsers().add(appUserTrip);
-    }
-
-    public void removeTrip(Trip trip) {
-        for (Iterator<AppUserTrip> iterator = trips.iterator(); iterator.hasNext(); ) {
-            AppUserTrip appUserTrip = iterator.next();
-            if (appUserTrip.getUser().equals(this) && appUserTrip.getTrip().equals(trip)) {
-                iterator.remove();
-                appUserTrip.getTrip().getUsers().remove(appUserTrip);
-                appUserTrip.setUser(null);
-                appUserTrip.setTrip(null);
-            }
-        }
     }
 
     @Override

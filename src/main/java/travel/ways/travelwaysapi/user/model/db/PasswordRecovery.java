@@ -1,6 +1,5 @@
 package travel.ways.travelwaysapi.user.model.db;
 
-import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,13 +18,11 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Entity
 public class PasswordRecovery extends BaseEntity {
-    @NotNull
     @Column(unique = true, nullable = false, updatable = false)
     private String hash;
-    @NotNull
+    @Column(nullable = false)
     private boolean isUsed;
-    @NotNull
-    @Column(unique = false)
+    @Column(nullable = false)
     private Timestamp expiredAt;
 
     @ManyToOne(targetEntity = AppUser.class)

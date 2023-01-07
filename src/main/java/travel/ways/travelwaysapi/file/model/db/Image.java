@@ -15,17 +15,16 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "image")
 public class Image extends BaseEntity {
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
     @Lob
     @Type(type = "org.hibernate.type.BinaryType")
-    @Column(name = "data", nullable = false)
+    @Column(nullable = false)
     private byte[] data;
-    @Column(name = "extension", nullable = false, length = 20)
+    @Column(nullable = false, length = 20)
     private String extension;
-    @Column(name = "hash", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String hash;
 
     @OneToOne(mappedBy = "image", cascade = CascadeType.ALL, orphanRemoval = true)

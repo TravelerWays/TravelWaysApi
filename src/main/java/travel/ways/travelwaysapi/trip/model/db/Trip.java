@@ -6,7 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -15,17 +18,16 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "trip")
 public class Trip extends BaseEntity {
-    @Column(name = "title", nullable = false)
+    @Column(nullable = false)
     private String title;
-    @Column(name = "is_public", nullable = false)
+    @Column(nullable = false)
     private boolean isPublic;
-    @Column(name = "is_open", nullable = false)
+    @Column(nullable = false)
     private boolean isOpen;
-    @Column(name = "hash", unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String hash;
-    @Column(name = "description")
+    @Column
     private String description;
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)

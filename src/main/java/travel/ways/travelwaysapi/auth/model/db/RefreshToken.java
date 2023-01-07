@@ -7,18 +7,20 @@ import lombok.NoArgsConstructor;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @EqualsAndHashCode(callSuper = true)
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "refresh_token")
+@Entity
 public class RefreshToken extends BaseEntity {
-    @Column(name = "token", nullable = false)
+    @Column(nullable = false)
     private String token;
-    @Column(name = "is_used", nullable = false)
+    @Column(nullable = false)
     private boolean isUsed;
     @ManyToOne
     @JoinColumn(name = "user_id")

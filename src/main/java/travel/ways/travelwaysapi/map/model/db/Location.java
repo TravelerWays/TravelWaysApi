@@ -8,7 +8,10 @@ import travel.ways.travelwaysapi._core.model.db.BaseEntity;
 import travel.ways.travelwaysapi.map.model.dto.request.CreateLocationRequest;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,21 +20,20 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "location")
 public class Location extends BaseEntity {
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "lat", nullable = false)
+    @Column(nullable = false)
     private String lat;
 
-    @Column(name = "lon", nullable = false)
+    @Column(nullable = false)
     private String lon;
 
-    @Column(name = "display_name", nullable = false)
+    @Column(nullable = false)
     private String displayName;
 
-    @Column(name = "osm_id", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String osmId;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Attraction.class, mappedBy = "location")
