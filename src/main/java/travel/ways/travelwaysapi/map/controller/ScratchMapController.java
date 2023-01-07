@@ -1,14 +1,14 @@
 package travel.ways.travelwaysapi.map.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-import travel.ways.travelwaysapi.map.model.db.ScratchMapCountry;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import travel.ways.travelwaysapi.map.model.dto.response.VisitedCountriesResponse;
-import travel.ways.travelwaysapi.map.repository.ScratchMapCountryRepository;
-import travel.ways.travelwaysapi.user.model.db.AppUser;
-import travel.ways.travelwaysapi.user.service.shared.UserService;
+import travel.ways.travelwaysapi.map.service.impl.ScratchMapService;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,28 +17,19 @@ import java.util.List;
 @RequestMapping("/api/scratch-map")
 @RequiredArgsConstructor
 public class ScratchMapController {
-    private final ScratchMapCountryRepository scratchMapCountryRepository;
-
-    private final UserService userService;
+    private final ScratchMapService scratchMapService;
 
     @GetMapping("/visited-country")
     public VisitedCountriesResponse getVisitedCountries() {
-        AppUser user = userService.getLoggedUser();
-        List<String> visitedCountries = scratchMapCountryRepository.findAllByUser(user).stream()
-                .map(ScratchMapCountry::getCountryCode)
-                .toList();
+        List<String> visitedCountries = scratchMapService.getVisitedCountries();
+
         return VisitedCountriesResponse.builder()
                 .visitedCountries(visitedCountries)
-                .plannedCountries(List.of("GB", "MX")).build();
+                .plannedCountries(List.of()).build();
     }
 
     @PutMapping("/visited-country")
-    @Transactional
     public void setVisitedCountries(@RequestBody ArrayList<String> countryCodes) {
-        AppUser user = userService.getLoggedUser();
-        scratchMapCountryRepository.deleteAllByUser(user);
-        countryCodes.stream()
-                .map((code) -> new ScratchMapCountry(code, user))
-                .forEach(scratchMapCountryRepository::save);
+        scratchMapService.setVisitedCountries(countryCodes);
     }
 }
