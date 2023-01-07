@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
 import travel.ways.travelwaysapi.trip.model.db.AppUserTrip;
+import travel.ways.travelwaysapi.map.model.db.ScratchMapCountry;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
@@ -42,6 +43,9 @@ public class AppUser extends BaseEntity {
 
     @OneToMany(targetEntity = PasswordRecovery.class, mappedBy = "user")
     private Collection<PasswordRecovery> passwordRecoveries = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = ScratchMapCountry.class, mappedBy = "user")
+    private Collection<ScratchMapCountry> scratchedCountries = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
