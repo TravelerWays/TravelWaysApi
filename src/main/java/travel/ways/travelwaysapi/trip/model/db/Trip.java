@@ -1,10 +1,9 @@
 package travel.ways.travelwaysapi.trip.model.db;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
+import travel.ways.travelwaysapi.user.model.db.AppUserTrip;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,7 +14,9 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Trip extends BaseEntity {
@@ -32,11 +33,17 @@ public class Trip extends BaseEntity {
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
+    @ToString.Exclude
     private Set<AppUserTrip> users = new HashSet<>();
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
+    @ToString.Exclude
     private Set<TripImage> images = new HashSet<>();
+
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private Set<Attraction> attractions = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

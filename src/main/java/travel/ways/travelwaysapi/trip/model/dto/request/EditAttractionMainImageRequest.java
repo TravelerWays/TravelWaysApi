@@ -7,8 +7,8 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class EditMainImageRequest {
+public class EditAttractionMainImageRequest {
     @NotNull
-    private String tripHash;
+    private String attractionHash;
     private String imageHash;
 }

@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
-import travel.ways.travelwaysapi.trip.model.db.AppUserTrip;
 import travel.ways.travelwaysapi.map.model.db.ScratchMapCountry;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;

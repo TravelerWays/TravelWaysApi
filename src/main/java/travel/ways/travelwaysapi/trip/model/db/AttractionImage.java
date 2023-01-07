@@ -13,27 +13,28 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "trip_image")
-public class TripImage {
+@Table(name = "attraction_image")
+public class AttractionImage {
+
     @EmbeddedId
-    private TripImageId id;
+    private AttractionImageId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
-    @MapsId("tripId")
-    private Trip trip;
+    @MapsId("attractionId")
+    private Attraction attraction;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId("imageId")
     @JsonBackReference
+    @MapsId("imageId")
     private Image image;
 
     @Column(name = "is_main", nullable = false)
     private boolean isMain;
 
-    public TripImage(Trip trip, Image image) {
-        this.id = new TripImageId(trip.getId(), image.getId());
-        this.trip = trip;
+    public AttractionImage(Attraction attraction, Image image) {
+        this.id = new AttractionImageId(attraction.getId(), image.getId());
+        this.attraction = attraction;
         this.image = image;
     }
 
@@ -41,18 +42,18 @@ public class TripImage {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TripImage tripImage = (TripImage) o;
-        return Objects.equals(trip, tripImage.trip) && Objects.equals(image, tripImage.image);
+        AttractionImage that = (AttractionImage) o;
+        return isMain == that.isMain && Objects.equals(id, that.id) && Objects.equals(attraction, that.attraction) && Objects.equals(image, that.image);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(trip, image);
+        return Objects.hash(id, attraction, image, isMain);
     }
 
     @Override
     public String toString() {
-        return "TripImage{" +
+        return "AttractionImage{" +
                 "id=" + id +
                 ", isMain=" + isMain +
                 '}';

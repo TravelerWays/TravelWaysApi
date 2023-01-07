@@ -3,6 +3,7 @@ package travel.ways.travelwaysapi.file.service.shared;
 import org.springframework.web.multipart.MultipartFile;
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
+import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 
 import java.util.List;
@@ -16,14 +17,20 @@ public interface ImageService {
 
     ImageWithoutData getImageWithoutData(String hash);
 
-    String getTripMainImageHash(Trip trip);
+    String getMainImageHash(Trip trip);
+
+    String getMainImageHash(Attraction attraction);
 
     void deleteImage(String hash);
 
     Image getImage(String hash);
 
-    List<ImageWithoutData> getAllImagesWithoutDataForTrip(Trip trip);
+    List<ImageWithoutData> getAllImagesWithoutData(Trip trip);
+
+    List<ImageWithoutData> getAllImagesWithoutData(Attraction attraction);
 
     Boolean checkIfImageExistsInTrip(Trip trip, String imageHash);
+
+    Boolean checkIfImageExistsInAttraction(Attraction attraction, String imageHash);
 
 }

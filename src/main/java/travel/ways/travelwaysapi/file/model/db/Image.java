@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
+import travel.ways.travelwaysapi.trip.model.db.AttractionImage;
 import travel.ways.travelwaysapi.trip.model.db.TripImage;
 
 import javax.persistence.*;
@@ -29,6 +30,9 @@ public class Image extends BaseEntity {
 
     @OneToOne(mappedBy = "image", cascade = CascadeType.ALL, orphanRemoval = true)
     private TripImage trip;
+
+    @OneToOne(mappedBy = "image", cascade = CascadeType.ALL, orphanRemoval = true)
+    private AttractionImage attraction;
 
     @Override
     public boolean equals(Object o) {

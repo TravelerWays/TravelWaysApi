@@ -12,11 +12,12 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TripDto {
+public class TripResponse {
     private String title;
     private String hash;
     private boolean isPublic;
     private String description;
     private List<ImageWithoutData> images;
     private  boolean isOpen;
+    private List<AttractionResponse> attractions;
 }

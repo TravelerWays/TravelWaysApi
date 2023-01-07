@@ -1,12 +1,12 @@
 package travel.ways.travelwaysapi.trip.service.shared;
 
 import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.dto.AddImageToTripRequest;
+import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
 import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
-import travel.ways.travelwaysapi.trip.model.dto.response.TripDto;
+import travel.ways.travelwaysapi.trip.model.dto.response.TripResponse;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 
 import java.util.List;
@@ -18,13 +18,13 @@ public interface TripService {
 
     Trip getTrip(String hash);
 
-    List<TripDto> getAllTripsForUser(AppUser user);
+    List<TripResponse> getUserTrips(AppUser user);
 
     Trip editTrip(EditTripRequest request);
 
     Image editMainImage(Trip trip, String newImageHash);
 
-    Image addImage(AddImageToTripRequest request);
+    Image addImage(AddImageRequest request);
 
     boolean checkIfContributor(Trip trip, AppUser appUser);
 
@@ -38,7 +38,7 @@ public interface TripService {
 
     List<ImageWithoutData> getAllImagesWithoutData(Trip trip);
 
-    TripDto getTripDto(String hash);
+    TripResponse createTripResponse(String hash);
 
-    TripDto getTripDto(Trip trip);
+    TripResponse createTripResponse(Trip trip);
 }

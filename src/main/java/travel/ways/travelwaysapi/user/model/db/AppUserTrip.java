@@ -1,9 +1,9 @@
-package travel.ways.travelwaysapi.trip.model.db;
+package travel.ways.travelwaysapi.user.model.db;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
-import travel.ways.travelwaysapi.user.model.db.AppUser;
+import travel.ways.travelwaysapi.trip.model.db.Trip;
 
 import javax.persistence.*;
 import java.util.Objects;

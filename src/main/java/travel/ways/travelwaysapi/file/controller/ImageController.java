@@ -7,9 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
 import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.dto.AddImageToTripRequest;
+import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
 import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
+import travel.ways.travelwaysapi.trip.service.internal.AttractionService;
 import travel.ways.travelwaysapi.trip.service.shared.TripService;
 
 import javax.validation.Valid;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 public class ImageController {
     private final TripService tripService;
     private final ImageService imageService;
+    private final AttractionService attractionService;
 
     @DeleteMapping(value = "/{hash}")
     public BaseResponse deleteImage(@PathVariable String hash) {
@@ -28,8 +30,14 @@ public class ImageController {
     }
 
     @PutMapping(value = "/trip", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageWithoutData addImageToTrip(@Valid @ModelAttribute AddImageToTripRequest addImageToTripRequest) {
-        Image image = tripService.addImage(addImageToTripRequest);
+    public ImageWithoutData addImageToTrip(@Valid @ModelAttribute AddImageRequest addImageRequest) {
+        Image image = tripService.addImage(addImageRequest);
+        return imageService.getImageWithoutData(image.getHash());
+    }
+
+    @PutMapping(value = "/attraction", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImageWithoutData addImageToAttraction(@Valid @ModelAttribute AddImageRequest addImageRequest) {
+        Image image = attractionService.addImage(addImageRequest);
         return imageService.getImageWithoutData(image.getHash());
     }
 
