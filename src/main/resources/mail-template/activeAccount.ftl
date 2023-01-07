@@ -36,7 +36,7 @@
                     href="${frontAppUrl}/activate/${hash}" target="_blank">here</a> or copy below link into your
             browser </p>
 
-        <a href="${frontAppUrl}/activate/${hash}" target="_blank">${frontAppUrl}/active-account/${hash}</a>
+        <a href="${frontAppUrl}/activate/${hash}" target="_blank">${frontAppUrl}/activate/${hash}</a>
 
         <p>if it's not you start the process, please contact with us <a href="mailto:app-travelWays@outlook.com">app-travelWays@outlook.com</a>
         </p>

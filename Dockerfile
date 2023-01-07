@@ -16,11 +16,15 @@ ARG MAIL_PASSWORD
 
 ENV APP_ENV=production
 ENV spring_profiles_active = production
-ENV travel_ways_mail_send=true
-ENV travel_ways_mail_password=${MAIL_PASSWORD}
+
 ENV spring_datasource_url=${CONNECTION_STRING}
 ENV spring_datasource_password=${DB_PASSWORD}
 ENV spring.datasource.username=${DB_USER}
+
+ENV travel_ways_mail_send=true
+ENV travel_ways_mail_password=${MAIL_PASSWORD}
+ENV travel_ways_frontAppUrl=https://travel-ways.azurewebsites.net
+
 
 WORKDIR /opt/app
 EXPOSE 8080
