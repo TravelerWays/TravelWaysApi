@@ -45,7 +45,7 @@ public class TripController {
     }
 
     @GetMapping("/all")
-    public List<TripResponse> getUserTrips() {
+    public List<TripResponse> getLoggedUserTrips() {
         return tripService.getUserTrips(userService.getLoggedUser());
     }
 
