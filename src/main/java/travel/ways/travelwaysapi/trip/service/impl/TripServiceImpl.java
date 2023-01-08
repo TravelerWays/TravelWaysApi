@@ -16,6 +16,7 @@ import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.db.TripImage;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
+import travel.ways.travelwaysapi.trip.model.dto.response.TripDetailsResponse;
 import travel.ways.travelwaysapi.trip.model.dto.response.TripResponse;
 import travel.ways.travelwaysapi.trip.repository.TripImageRepository;
 import travel.ways.travelwaysapi.trip.repository.TripRepository;
@@ -241,6 +242,18 @@ public class TripServiceImpl implements TripService {
 
     public TripResponse createTripResponse(Trip sourceTrip) {
         return new TripResponse(
+                sourceTrip.getTitle(),
+                sourceTrip.getHash(),
+                sourceTrip.isPublic(),
+                sourceTrip.getDescription(),
+                this.getAllImagesWithoutData(sourceTrip),
+                sourceTrip.isOpen()
+        );
+    }
+
+    @Override
+    public TripDetailsResponse createTripDetailsResponse(Trip sourceTrip) {
+        return new TripDetailsResponse(
                 sourceTrip.getTitle(),
                 sourceTrip.getHash(),
                 sourceTrip.isPublic(),

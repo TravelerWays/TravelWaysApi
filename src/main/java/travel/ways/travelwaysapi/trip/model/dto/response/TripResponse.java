@@ -19,5 +19,4 @@ public class TripResponse {
     private String description;
     private List<ImageWithoutData> images;
     private  boolean isOpen;
-    private List<AttractionResponse> attractions;
 }

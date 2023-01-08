@@ -23,9 +23,15 @@ public class ImageController {
     private final ImageService imageService;
     private final AttractionService attractionService;
 
-    @DeleteMapping(value = "/{hash}")
-    public BaseResponse deleteImage(@PathVariable String hash) {
-        tripService.deleteImage(hash);
+    @DeleteMapping(value = "/{imageHash}")
+    public BaseResponse deleteImage(@PathVariable String imageHash) {
+        if(imageService.isAttractionImage(imageHash)){
+            attractionService.deleteImage(imageHash);
+        }else if(imageService.isTripImage(imageHash)){
+            tripService.deleteImage(imageHash);
+        }else{
+            imageService.deleteImage(imageHash);
+        }
         return new BaseResponse(true, "deleted image");
     }
 
@@ -41,9 +47,9 @@ public class ImageController {
         return imageService.getImageWithoutData(image.getHash());
     }
 
-    @GetMapping("/{hash}")
-    public ResponseEntity<byte[]> getImage(@PathVariable String hash) {
-        Image image = imageService.getImage(hash);
+    @GetMapping("/{imageHash}")
+    public ResponseEntity<byte[]> getImage(@PathVariable String imageHash) {
+        Image image = imageService.getImage(imageHash);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .header("Content-Type", image.getExtension())

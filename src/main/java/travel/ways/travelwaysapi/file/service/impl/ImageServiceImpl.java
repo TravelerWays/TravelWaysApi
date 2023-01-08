@@ -140,5 +140,14 @@ public class ImageServiceImpl implements ImageService {
         return imageRepository.existsImageByHashAndAttractionAttraction(imageHash, attraction);
     }
 
+    @Override
+    public Boolean isAttractionImage(String imageHash) {
+        return imageRepository.existsImageByHashAndAttractionIsNotNull(imageHash);
+    }
+
+    @Override
+    public Boolean isTripImage(String imageHash) {
+        return imageRepository.existsImageByHashAndTripIsNotNull(imageHash);
+    }
 
 }

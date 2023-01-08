@@ -27,7 +27,7 @@ public class TripController {
     @PostMapping
     public TripResponse createTrip(@Valid @RequestBody CreateTripRequest createTripRequest) {
         Trip trip = tripService.createTrip(createTripRequest);
-        return tripService.createTripResponse(trip.getHash());
+        return tripService.createTripResponse(trip);
     }
 
     @DeleteMapping("/{hash}")
@@ -44,7 +44,7 @@ public class TripController {
     @GetMapping("/{hash}")
     public TripResponse getTrip(@PathVariable String hash) {
         Trip trip = tripService.getTrip(hash);
-        return tripService.createTripResponse(trip);
+        return tripService.createTripDetailsResponse(trip);
     }
 
     @PutMapping("/edit")

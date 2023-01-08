@@ -27,5 +27,9 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
     Boolean existsImageByHashAndAttractionAttraction(String hash, Attraction attraction);
 
+    Boolean existsImageByHashAndAttractionIsNotNull(String hash);
+
+    Boolean existsImageByHashAndTripIsNotNull(String hash);
+
     List<ImageWithoutData> findAllWithoutDataByAttractionAttraction(Attraction attraction);
 }

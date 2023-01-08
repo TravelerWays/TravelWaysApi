@@ -33,4 +33,7 @@ public interface ImageService {
 
     Boolean checkIfImageExistsInAttraction(Attraction attraction, String imageHash);
 
+    Boolean isAttractionImage(String imageHash);
+
+    Boolean isTripImage(String imageHash);
 }
