@@ -26,13 +26,14 @@ public class AttractionController {
 
     @GetMapping("/{attractionHash}")
     public AttractionResponse getAttraction(@PathVariable String attractionHash) {
-        return attractionService.createAttractionResponse(attractionService.getAttraction(attractionHash));
+        Attraction attraction = attractionService.getAttraction(attractionHash);
+        return AttractionResponse.of(attraction, attractionService.getAllImagesWithoutData(attraction));
     }
 
     @PostMapping
     public AttractionResponse add(@Valid @RequestBody CreateAttractionRequest createAttractionRequest) {
         var attraction = attractionService.createAttraction(createAttractionRequest);
-        return attractionService.createAttractionResponse(attraction);
+        return AttractionResponse.of(attraction, attractionService.getAllImagesWithoutData(attraction));
     }
 
     @GetMapping("/all/{username}")
@@ -50,7 +51,7 @@ public class AttractionController {
     @PutMapping("/edit")
     public AttractionResponse editAttraction(@RequestBody EditAttractionRequest editAttractionRequest) {
         Attraction attraction = attractionService.editAttraction(editAttractionRequest);
-        return attractionService.createAttractionResponse(attraction);
+        return AttractionResponse.of(attraction, attractionService.getAllImagesWithoutData(attraction));
     }
 
     @PutMapping("/edit/main-image")

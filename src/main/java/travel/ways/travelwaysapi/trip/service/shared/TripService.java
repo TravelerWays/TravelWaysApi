@@ -6,7 +6,6 @@ import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
-import travel.ways.travelwaysapi.trip.model.dto.response.TripDetailsResponse;
 import travel.ways.travelwaysapi.trip.model.dto.response.TripResponse;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 
@@ -38,10 +37,4 @@ public interface TripService {
     void deleteImage(String hash);
 
     List<ImageWithoutData> getAllImagesWithoutData(Trip trip);
-
-    TripResponse createTripResponse(String hash);
-
-    TripResponse createTripResponse(Trip trip);
-
-    TripDetailsResponse createTripDetailsResponse(Trip sourceTrip);
 }

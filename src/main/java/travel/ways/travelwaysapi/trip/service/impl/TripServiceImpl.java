@@ -16,11 +16,9 @@ import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.db.TripImage;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
-import travel.ways.travelwaysapi.trip.model.dto.response.TripDetailsResponse;
 import travel.ways.travelwaysapi.trip.model.dto.response.TripResponse;
 import travel.ways.travelwaysapi.trip.repository.TripImageRepository;
 import travel.ways.travelwaysapi.trip.repository.TripRepository;
-import travel.ways.travelwaysapi.trip.service.internal.AttractionService;
 import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.AppUserTrip;
@@ -38,7 +36,6 @@ public class TripServiceImpl implements TripService {
     private final ImageService imageService;
     private final UserService userService;
     private final TripImageRepository tripImageRepository;
-    private final AttractionService attractionService;
 
     @Override
     @Transactional
@@ -98,7 +95,7 @@ public class TripServiceImpl implements TripService {
             if (!showPrivate && !appUserTrip.getTrip().isPublic() && !checkIfContributor(appUserTrip.getTrip(), loggedUser)) {
                 continue;
             }
-            trips.add(this.createTripResponse(appUserTrip.getTrip()));
+            trips.add(TripResponse.of(appUserTrip.getTrip(), this.getAllImagesWithoutData(appUserTrip.getTrip())));
         }
         return trips;
     }
@@ -231,36 +228,5 @@ public class TripServiceImpl implements TripService {
             throw new ServerException("you do not have permission to see the images", HttpStatus.FORBIDDEN);
         }
         return imageService.getAllImagesWithoutData(trip);
-    }
-
-
-    @Override
-    public TripResponse createTripResponse(String hash) {
-        Trip sourceTrip = this.getTrip(hash);
-        return this.createTripResponse(sourceTrip);
-    }
-
-    public TripResponse createTripResponse(Trip sourceTrip) {
-        return new TripResponse(
-                sourceTrip.getTitle(),
-                sourceTrip.getHash(),
-                sourceTrip.isPublic(),
-                sourceTrip.getDescription(),
-                this.getAllImagesWithoutData(sourceTrip),
-                sourceTrip.isOpen()
-        );
-    }
-
-    @Override
-    public TripDetailsResponse createTripDetailsResponse(Trip sourceTrip) {
-        return new TripDetailsResponse(
-                sourceTrip.getTitle(),
-                sourceTrip.getHash(),
-                sourceTrip.isPublic(),
-                sourceTrip.getDescription(),
-                this.getAllImagesWithoutData(sourceTrip),
-                sourceTrip.isOpen(),
-                attractionService.getTripAttractions(sourceTrip)
-        );
     }
 }

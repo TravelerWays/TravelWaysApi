@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
+import travel.ways.travelwaysapi.trip.model.db.Attraction;
+import travel.ways.travelwaysapi.trip.model.db.Trip;
 
 import java.util.Date;
 import java.util.List;
@@ -23,4 +25,24 @@ public class AttractionResponse {
     private Short rate;
     private List<ImageWithoutData> images;
     private String tripHash;
+
+    public static AttractionResponse of(Attraction attraction, List<ImageWithoutData> imagesWithoutData) {
+        Trip trip = attraction.getTrip();
+        String tripHash = null;
+        if (trip != null) {
+            tripHash = trip.getHash();
+        }
+
+        return new AttractionResponse(
+                attraction.getHash(),
+                attraction.getTitle(),
+                attraction.getDescription(),
+                attraction.isPublic(),
+                attraction.isVisited(),
+                attraction.getVisitedAt(),
+                attraction.getRate(),
+                imagesWithoutData,
+                tripHash
+        );
+    }
 }

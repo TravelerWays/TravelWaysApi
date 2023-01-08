@@ -46,8 +46,7 @@ public class AttractionServiceImpl implements AttractionService {
         var location = locationService.getByOsmId(createAttractionRequest.getOsmId());
 
         attraction.setLocation(location);
-        AppUser appUser = userService.getLoggedUser();
-        attraction.setUser(appUser);
+        attraction.setUser(userService.getLoggedUser());
         String tripHash = createAttractionRequest.getTripHash();
         if (tripHash != null) {
             Trip trip = tripService.getTrip(tripHash);
@@ -115,7 +114,7 @@ public class AttractionServiceImpl implements AttractionService {
             if (!showPrivate && !attraction.isPublic() && !this.checkIfContributor(attraction, loggedUser)) {
                 continue;
             }
-            attractions.add(this.createAttractionResponse(attraction));
+            attractions.add(AttractionResponse.of(attraction, getAllImagesWithoutData(attraction)));
         }
         return attractions;
     }
@@ -142,7 +141,7 @@ public class AttractionServiceImpl implements AttractionService {
             if (!showPrivate && !attraction.isPublic() && !this.checkIfContributor(attraction, loggedUser)) {
                 continue;
             }
-            attractions.add(this.createAttractionResponse(attraction));
+            attractions.add(AttractionResponse.of(attraction, getAllImagesWithoutData(attraction)));
         }
         return attractions;
     }
@@ -192,26 +191,6 @@ public class AttractionServiceImpl implements AttractionService {
             throw new ServerException("you do not have permission to see the images", HttpStatus.FORBIDDEN);
         }
         return imageService.getAllImagesWithoutData(attraction);
-    }
-
-    @Override
-    public AttractionResponse createAttractionResponse(Attraction sourceAttraction) {
-        Trip trip = sourceAttraction.getTrip();
-        String tripHash = null;
-        if (trip != null) {
-            tripHash = trip.getHash();
-        }
-        return new AttractionResponse(
-                sourceAttraction.getHash(),
-                sourceAttraction.getTitle(),
-                sourceAttraction.getDescription(),
-                sourceAttraction.isPublic(),
-                sourceAttraction.isVisited(),
-                sourceAttraction.getVisitedAt(),
-                sourceAttraction.getRate(),
-                this.getAllImagesWithoutData(sourceAttraction),
-                tripHash
-        );
     }
 
     @Override

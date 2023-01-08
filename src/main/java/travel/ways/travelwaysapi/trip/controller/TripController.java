@@ -8,7 +8,9 @@ import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripMainImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
+import travel.ways.travelwaysapi.trip.model.dto.response.TripDetailsResponse;
 import travel.ways.travelwaysapi.trip.model.dto.response.TripResponse;
+import travel.ways.travelwaysapi.trip.service.internal.AttractionService;
 import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
@@ -22,12 +24,13 @@ public class TripController {
 
     private final TripService tripService;
     private final UserService userService;
+    private final AttractionService attractionService;
 
 
     @PostMapping
     public TripResponse createTrip(@Valid @RequestBody CreateTripRequest createTripRequest) {
         Trip trip = tripService.createTrip(createTripRequest);
-        return tripService.createTripResponse(trip);
+        return TripResponse.of(trip, tripService.getAllImagesWithoutData(trip));
     }
 
     @DeleteMapping("/{hash}")
@@ -44,13 +47,14 @@ public class TripController {
     @GetMapping("/{hash}")
     public TripResponse getTrip(@PathVariable String hash) {
         Trip trip = tripService.getTrip(hash);
-        return tripService.createTripDetailsResponse(trip);
+        return TripDetailsResponse.of(trip, tripService.getAllImagesWithoutData(trip),
+                attractionService.getTripAttractions(trip));
     }
 
     @PutMapping("/edit")
     public TripResponse editTrip(@Valid @RequestBody EditTripRequest editTripRequest) {
         Trip trip = tripService.editTrip(editTripRequest);
-        return tripService.createTripResponse(trip.getHash());
+        return TripResponse.of(trip, tripService.getAllImagesWithoutData(trip));
     }
 
     @PutMapping("/edit/main-image")

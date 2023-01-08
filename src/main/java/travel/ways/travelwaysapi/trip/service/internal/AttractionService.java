@@ -1,7 +1,5 @@
 package travel.ways.travelwaysapi.trip.service.internal;
 
-import lombok.SneakyThrows;
-import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
 import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
@@ -23,8 +21,6 @@ public interface AttractionService {
 
     List<AttractionResponse> getUserAttractions(AppUser user);
 
-    @Transactional
-    @SneakyThrows
     Attraction addAttractionToTrip(Attraction attraction, Trip trip);
 
     List<AttractionResponse> getTripAttractions(Trip trip);
@@ -35,10 +31,7 @@ public interface AttractionService {
 
     boolean checkIfContributor(Attraction attraction, AppUser appUser);
 
-    @SneakyThrows
     List<ImageWithoutData> getAllImagesWithoutData(Attraction attraction);
-
-    AttractionResponse createAttractionResponse(Attraction attraction);
 
     void deleteImage(String imageHash);
 
