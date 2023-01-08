@@ -3,15 +3,20 @@ package travel.ways.travelwaysapi.trip.model.dto.request;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Getter
 @Setter
-public class CreateAttractionRequest {
-    private String osmId;
+public class EditAttractionRequest {
+    @NotNull
+    private String attractionHash;
+    @NotNull
     private String title;
     private String description;
+    @NotNull
     private boolean isPublic;
+    @NotNull
     private boolean isVisited;
     private Date visitedAt;
     private String tripHash;

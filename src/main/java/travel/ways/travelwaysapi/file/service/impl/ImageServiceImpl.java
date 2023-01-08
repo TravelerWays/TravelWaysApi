@@ -14,6 +14,7 @@ import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
 import travel.ways.travelwaysapi.file.repository.ImageRepository;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
+import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
@@ -73,8 +74,18 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     @SneakyThrows
-    public String getTripMainImageHash(Trip trip) {
+    public String getMainImageHash(Trip trip) {
         ImageWithoutData imageWithoutData = imageRepository.findImageWithoutDataByTripTripAndTripIsMainTrue(trip);
+        if (imageWithoutData == null) {
+            return null;
+        }
+        return imageWithoutData.getHash();
+    }
+
+    @Override
+    @SneakyThrows
+    public String getMainImageHash(Attraction attraction) {
+        ImageWithoutData imageWithoutData = imageRepository.findImageWithoutDataByAttractionAttractionAndAttractionIsMainTrue(attraction);
         if (imageWithoutData == null) {
             return null;
         }
@@ -108,8 +119,13 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<ImageWithoutData> getAllImagesWithoutDataForTrip(Trip trip) {
+    public List<ImageWithoutData> getAllImagesWithoutData(Trip trip) {
         return imageRepository.findAllWithoutDataByTripTrip(trip);
+    }
+
+    @Override
+    public List<ImageWithoutData> getAllImagesWithoutData(Attraction attraction) {
+        return imageRepository.findAllWithoutDataByAttractionAttraction(attraction);
     }
 
 
@@ -119,5 +135,19 @@ public class ImageServiceImpl implements ImageService {
         return imageRepository.existsImageByHashAndTripTrip(imageHash, trip);
     }
 
+    @Override
+    public Boolean checkIfImageExistsInAttraction(Attraction attraction, String imageHash) {
+        return imageRepository.existsImageByHashAndAttractionAttraction(imageHash, attraction);
+    }
+
+    @Override
+    public Boolean isAttractionImage(String imageHash) {
+        return imageRepository.existsImageByHashAndAttractionIsNotNull(imageHash);
+    }
+
+    @Override
+    public Boolean isTripImage(String imageHash) {
+        return imageRepository.existsImageByHashAndTripIsNotNull(imageHash);
+    }
 
 }

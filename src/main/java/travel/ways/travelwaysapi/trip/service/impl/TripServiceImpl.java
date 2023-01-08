@@ -3,24 +3,25 @@ package travel.ways.travelwaysapi.trip.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.dto.AddImageToTripRequest;
+import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
 import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
-import travel.ways.travelwaysapi.trip.model.db.AppUserTrip;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.db.TripImage;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
-import travel.ways.travelwaysapi.trip.model.dto.response.TripDto;
+import travel.ways.travelwaysapi.trip.model.dto.response.TripResponse;
 import travel.ways.travelwaysapi.trip.repository.TripImageRepository;
 import travel.ways.travelwaysapi.trip.repository.TripRepository;
 import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
+import travel.ways.travelwaysapi.user.model.db.AppUserTrip;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor_ = {@Lazy})
 @Slf4j
 public class TripServiceImpl implements TripService {
     private final TripRepository tripRepository;
@@ -62,7 +63,7 @@ public class TripServiceImpl implements TripService {
         }
 
         log.debug("removing trip with id: " + trip.getId());
-        for (ImageWithoutData imageWithoutData : imageService.getAllImagesWithoutDataForTrip(trip)) {
+        for (ImageWithoutData imageWithoutData : imageService.getAllImagesWithoutData(trip)) {
             this.deleteImage(imageWithoutData.getHash());
         }
 
@@ -85,16 +86,16 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public List<TripDto> getAllTripsForUser(AppUser appUser) {
+    public List<TripResponse> getUserTrips(AppUser user) {
         AppUser loggedUser = userService.getLoggedUser();
-        boolean showPrivate = loggedUser.equals(appUser);
+        boolean showPrivate = loggedUser.equals(user);
 
-        List<TripDto> trips = new ArrayList<>();
-        for (AppUserTrip appUserTrip : appUser.getTrips()) {
+        List<TripResponse> trips = new ArrayList<>();
+        for (AppUserTrip appUserTrip : user.getTrips()) {
             if (!showPrivate && !appUserTrip.getTrip().isPublic() && !checkIfContributor(appUserTrip.getTrip(), loggedUser)) {
                 continue;
             }
-            trips.add(this.getTripDto(appUserTrip.getTrip().getHash()));
+            trips.add(TripResponse.of(appUserTrip.getTrip(), this.getAllImagesWithoutData(appUserTrip.getTrip())));
         }
         return trips;
     }
@@ -131,9 +132,9 @@ public class TripServiceImpl implements TripService {
     @Transactional
     @SneakyThrows
     public Trip editTrip(EditTripRequest request) {
-        AppUser appUser = userService.getLoggedUser();
+        AppUser loggedUser = userService.getLoggedUser();
         Trip trip = this.getTrip(request.getHash());
-        if (!appUser.equals(this.findOwner(trip))) {
+        if (!checkIfContributor(trip, loggedUser)) {
             throw new ServerException("You don't have permission to edit the trip", HttpStatus.FORBIDDEN);
         }
         trip.setTitle(request.getTitle());
@@ -154,7 +155,7 @@ public class TripServiceImpl implements TripService {
             throw new ServerException("this image is not in the trip", HttpStatus.BAD_REQUEST);
         }
 
-        String oldMainImageHash = imageService.getTripMainImageHash(trip);
+        String oldMainImageHash = imageService.getMainImageHash(trip);
         if (oldMainImageHash != null) {
             TripImage oldMainTripImage = tripImageRepository.findByImageHash(oldMainImageHash);
             oldMainTripImage.setMain(false);
@@ -171,7 +172,7 @@ public class TripServiceImpl implements TripService {
     @Override
     @Transactional
     @SneakyThrows
-    public Image addImage(AddImageToTripRequest request) {
+    public Image addImage(AddImageRequest request) {
         Trip trip = this.getTrip(request.getHash());
         if (!this.checkIfContributor(trip, userService.getLoggedUser())) {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
@@ -226,23 +227,6 @@ public class TripServiceImpl implements TripService {
         if (!trip.isPublic() && !this.checkIfContributor(trip, appUser)) {
             throw new ServerException("you do not have permission to see the images", HttpStatus.FORBIDDEN);
         }
-        return imageService.getAllImagesWithoutDataForTrip(trip);
-    }
-
-    @Override
-    public TripDto getTripDto(String hash) {
-        Trip sourceTrip = this.getTrip(hash);
-        return this.getTripDto(sourceTrip);
-    }
-
-    public TripDto getTripDto(Trip sourceTrip) {
-        return new TripDto(
-                sourceTrip.getTitle(),
-                sourceTrip.getHash(),
-                sourceTrip.isPublic(),
-                sourceTrip.getDescription(),
-                this.getAllImagesWithoutData(sourceTrip),
-                sourceTrip.isOpen()
-        );
+        return imageService.getAllImagesWithoutData(trip);
     }
 }

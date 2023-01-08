@@ -9,7 +9,7 @@ public interface ImageWithoutData {
 
     String getName();
 
-    @Value("#{target.trip.main}")
+    @Value("#{target.trip != null ? target.trip.main : target.attraction.main }")
     Boolean getMain();
 
 }

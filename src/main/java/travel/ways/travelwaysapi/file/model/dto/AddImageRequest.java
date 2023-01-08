@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class AddImageToTripRequest {
+public class AddImageRequest {
     @NotNull
     String hash;
     @NotNull
