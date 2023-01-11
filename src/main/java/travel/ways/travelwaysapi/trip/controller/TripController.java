@@ -30,7 +30,7 @@ public class TripController {
     @PostMapping
     public TripResponse createTrip(@Valid @RequestBody CreateTripRequest createTripRequest) {
         Trip trip = tripService.createTrip(createTripRequest);
-        return TripResponse.of(trip, tripService.getAllImagesWithoutData(trip));
+        return TripResponse.of(trip, tripService.getImageSummaryList(trip));
     }
 
     @DeleteMapping("/{hash}")
@@ -47,14 +47,14 @@ public class TripController {
     @GetMapping("/{hash}")
     public TripDetailsResponse getTrip(@PathVariable String hash) {
         Trip trip = tripService.getTrip(hash);
-        return TripDetailsResponse.of(trip, tripService.getAllImagesWithoutData(trip),
+        return TripDetailsResponse.of(trip, tripService.getImageSummaryList(trip),
                 attractionService.getTripAttractions(trip));
     }
 
     @PutMapping("/edit")
     public TripResponse editTrip(@Valid @RequestBody EditTripRequest editTripRequest) {
         Trip trip = tripService.editTrip(editTripRequest);
-        return TripResponse.of(trip, tripService.getAllImagesWithoutData(trip));
+        return TripResponse.of(trip, tripService.getImageSummaryList(trip));
     }
 
     @PutMapping("/edit/main-image")

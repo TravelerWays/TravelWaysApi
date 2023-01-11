@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
-import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
+import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.db.TripImage;
@@ -63,8 +63,8 @@ public class TripServiceImpl implements TripService {
         }
 
         log.debug("removing trip with id: " + trip.getId());
-        for (ImageWithoutData imageWithoutData : imageService.getAllImagesWithoutData(trip)) {
-            this.deleteImage(imageWithoutData.getHash());
+        for (ImageSummary imageSummary : imageService.getImageSummaryList(trip)) {
+            this.deleteImage(imageSummary.getHash());
         }
 
         for (AppUserTrip appUserTrip : trip.getUsers()) {
@@ -95,7 +95,7 @@ public class TripServiceImpl implements TripService {
             if (!showPrivate && !appUserTrip.getTrip().isPublic() && !checkIfContributor(appUserTrip.getTrip(), loggedUser)) {
                 continue;
             }
-            trips.add(TripResponse.of(appUserTrip.getTrip(), this.getAllImagesWithoutData(appUserTrip.getTrip())));
+            trips.add(TripResponse.of(appUserTrip.getTrip(), this.getImageSummaryList(appUserTrip.getTrip())));
         }
         return trips;
     }
@@ -222,11 +222,11 @@ public class TripServiceImpl implements TripService {
 
     @Override
     @SneakyThrows
-    public List<ImageWithoutData> getAllImagesWithoutData(Trip trip) {
+    public List<ImageSummary> getImageSummaryList(Trip trip) {
         AppUser appUser = userService.getLoggedUser();
         if (!trip.isPublic() && !this.checkIfContributor(trip, appUser)) {
             throw new ServerException("you do not have permission to see the images", HttpStatus.FORBIDDEN);
         }
-        return imageService.getAllImagesWithoutData(trip);
+        return imageService.getImageSummaryList(trip);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
-import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
+import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.service.internal.AttractionService;
 import travel.ways.travelwaysapi.trip.service.shared.TripService;
@@ -36,15 +36,15 @@ public class ImageController {
     }
 
     @PutMapping(value = "/trip", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageWithoutData addImageToTrip(@Valid @ModelAttribute AddImageRequest addImageRequest) {
+    public ImageSummary addImageToTrip(@Valid @ModelAttribute AddImageRequest addImageRequest) {
         Image image = tripService.addImage(addImageRequest);
-        return imageService.getImageWithoutData(image.getHash());
+        return imageService.getImageSummary(image.getHash());
     }
 
     @PutMapping(value = "/attraction", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageWithoutData addImageToAttraction(@Valid @ModelAttribute AddImageRequest addImageRequest) {
+    public ImageSummary addImageToAttraction(@Valid @ModelAttribute AddImageRequest addImageRequest) {
         Image image = attractionService.addImage(addImageRequest);
-        return imageService.getImageWithoutData(image.getHash());
+        return imageService.getImageSummary(image.getHash());
     }
 
     @GetMapping("/{imageHash}")

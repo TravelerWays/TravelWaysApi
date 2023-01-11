@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
+import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
 import travel.ways.travelwaysapi.file.repository.ImageRepository;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
@@ -63,33 +63,33 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     @SneakyThrows
-    public ImageWithoutData getImageWithoutData(String hash) {
-        ImageWithoutData imageWithoutData = imageRepository.findImageWithoutDataByHash(hash);
-        if (imageWithoutData == null) {
+    public ImageSummary getImageSummary(String hash) {
+        ImageSummary imageSummary = imageRepository.findImageSummaryByHash(hash);
+        if (imageSummary == null) {
             log.debug("can not find image for hash " + hash);
             throw new ServerException("can not find image for the hash", HttpStatus.NOT_FOUND);
         }
-        return imageWithoutData;
+        return imageSummary;
     }
 
     @Override
     @SneakyThrows
     public String getMainImageHash(Trip trip) {
-        ImageWithoutData imageWithoutData = imageRepository.findImageWithoutDataByTripTripAndTripIsMainTrue(trip);
-        if (imageWithoutData == null) {
+        ImageSummary imageSummary = imageRepository.findImageSummaryByTripTripAndTripIsMainTrue(trip);
+        if (imageSummary == null) {
             return null;
         }
-        return imageWithoutData.getHash();
+        return imageSummary.getHash();
     }
 
     @Override
     @SneakyThrows
     public String getMainImageHash(Attraction attraction) {
-        ImageWithoutData imageWithoutData = imageRepository.findImageWithoutDataByAttractionAttractionAndAttractionIsMainTrue(attraction);
-        if (imageWithoutData == null) {
+        ImageSummary imageSummary = imageRepository.findImageSummaryByAttractionAttractionAndAttractionIsMainTrue(attraction);
+        if (imageSummary == null) {
             return null;
         }
-        return imageWithoutData.getHash();
+        return imageSummary.getHash();
     }
 
     @Override
@@ -119,13 +119,13 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<ImageWithoutData> getAllImagesWithoutData(Trip trip) {
-        return imageRepository.findAllWithoutDataByTripTrip(trip);
+    public List<ImageSummary> getImageSummaryList(Trip trip) {
+        return imageRepository.findAllImageSummaryByTripTrip(trip);
     }
 
     @Override
-    public List<ImageWithoutData> getAllImagesWithoutData(Attraction attraction) {
-        return imageRepository.findAllWithoutDataByAttractionAttraction(attraction);
+    public List<ImageSummary> getImageSummaryList(Attraction attraction) {
+        return imageRepository.findAllImageSummaryByAttractionAttraction(attraction);
     }
 
 

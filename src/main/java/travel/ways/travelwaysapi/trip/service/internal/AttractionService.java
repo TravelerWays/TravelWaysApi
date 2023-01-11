@@ -2,7 +2,7 @@ package travel.ways.travelwaysapi.trip.service.internal;
 
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
-import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
+import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
@@ -31,7 +31,7 @@ public interface AttractionService {
 
     boolean checkIfContributor(Attraction attraction, AppUser appUser);
 
-    List<ImageWithoutData> getAllImagesWithoutData(Attraction attraction);
+    List<ImageSummary> getImageSummaryList(Attraction attraction);
 
     void deleteImage(String imageHash);
 
