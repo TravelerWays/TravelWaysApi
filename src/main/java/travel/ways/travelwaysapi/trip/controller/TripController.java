@@ -45,7 +45,7 @@ public class TripController {
     }
 
     @GetMapping("/{hash}")
-    public TripResponse getTrip(@PathVariable String hash) {
+    public TripDetailsResponse getTrip(@PathVariable String hash) {
         Trip trip = tripService.getTrip(hash);
         return TripDetailsResponse.of(trip, tripService.getAllImagesWithoutData(trip),
                 attractionService.getTripAttractions(trip));
