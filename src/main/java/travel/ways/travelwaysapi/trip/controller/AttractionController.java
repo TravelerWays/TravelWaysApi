@@ -36,10 +36,15 @@ public class AttractionController {
         return AttractionResponse.of(attraction, attractionService.getAllImagesWithoutData(attraction));
     }
 
-    @GetMapping("/all/{username}")
-    public List<AttractionResponse> getAll(@PathVariable String username) {
-        var user = userService.getByUsername(username);
+    @GetMapping("/all/{hash}")
+    public List<AttractionResponse> getAll(@PathVariable String hash) {
+        var user = userService.getByHash(hash);
         return attractionService.getUserAttractions(user);
+    }
+
+    @GetMapping("/all")
+    public List<AttractionResponse> getAllLoggedUser() {
+        return attractionService.getUserAttractions(userService.getLoggedUser());
     }
 
     @DeleteMapping("/{attractionHash}")

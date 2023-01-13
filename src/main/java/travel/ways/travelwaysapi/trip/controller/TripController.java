@@ -39,9 +39,14 @@ public class TripController {
         return new BaseResponse(true, "trip deleted");
     }
 
-    @GetMapping("/all/{username}")
-    public List<TripResponse> getUserTrips(@PathVariable String username) {
-        return tripService.getUserTrips(userService.getByUsername(username));
+    @GetMapping("/all/{userHash}")
+    public List<TripResponse> getUserTrips(@PathVariable String userHash) {
+        return tripService.getUserTrips(userService.getByUsername(userHash));
+    }
+
+    @GetMapping("/all")
+    public List<TripResponse> getLoggedUserTrips() {
+        return tripService.getUserTrips(userService.getLoggedUser());
     }
 
     @GetMapping("/{hash}")
