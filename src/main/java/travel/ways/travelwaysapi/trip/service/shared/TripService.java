@@ -24,7 +24,7 @@ public interface TripService {
 
     Image editMainImage(Trip trip, String newImageHash);
 
-    Image addImage(AddImageRequest request);
+    Image addImage(AddImageRequest request, String tripHash);
 
     boolean checkIfContributor(Trip trip, AppUser appUser);
 
@@ -37,4 +37,6 @@ public interface TripService {
     void deleteImage(String hash);
 
     List<ImageSummary> getImageSummaryList(Trip trip);
+
+    Trip getTripByImageHash(String imageHash);
 }

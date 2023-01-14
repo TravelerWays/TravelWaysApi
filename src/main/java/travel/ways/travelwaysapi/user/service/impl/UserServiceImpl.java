@@ -65,8 +65,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @SneakyThrows
-    public Image addImage(AddImageRequest request) {
-        AppUser user = this.getByHash(request.getHash());
+    public Image addImage(AddImageRequest request, String userHash) {
+        AppUser user = this.getByHash(userHash);
         if (!user.equals(this.getLoggedUser())) {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
         }

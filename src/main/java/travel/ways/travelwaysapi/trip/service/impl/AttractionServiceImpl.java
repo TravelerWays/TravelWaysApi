@@ -61,8 +61,8 @@ public class AttractionServiceImpl implements AttractionService {
     @Override
     @Transactional
     @SneakyThrows
-    public Image addImage(AddImageRequest request) {
-        Attraction attraction = this.getAttraction(request.getHash());
+    public Image addImage(AddImageRequest request, String attractionHash) {
+        Attraction attraction = this.getAttraction(attractionHash);
         if (!this.checkIfContributor(attraction, userService.getLoggedUser())) {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
         }
@@ -197,21 +197,11 @@ public class AttractionServiceImpl implements AttractionService {
     @Transactional
     @SneakyThrows
     public void deleteImage(String imageHash) {
-        //TODO zrob tak z innymi (czary)
-        //TODO cascade detached
-//        AttractionImage attractionImage = attractionImageRepository.findByImageHash(imageHash);
-//        Attraction attraction = attractionImage.getAttraction();
-//        if (!(this.checkIfContributor(attraction, userService.getLoggedUser()))) {
-//            throw new ServerException("You don't have permission to delete the image", HttpStatus.FORBIDDEN);
-//        }
-//        if (attractionImage.isMain() && !userService.getLoggedUser().equals(attraction.getUser())) {
-//            throw new ServerException("You don't have permission to delete the main image", HttpStatus.FORBIDDEN);
-//        }
-//
-//        log.debug("removing image main= " + attractionImage.isMain() + " from attraction with id: " + attraction.getId());
-//        attraction.getImages().remove(attractionImage);
-//        attractionImage.setImage(null);
-//        attractionImage.setAttraction(null);
+        Attraction attraction = this.getAttractionByImageHash(imageHash);
+        if (!(this.checkIfContributor(attraction, userService.getLoggedUser()))) {
+            throw new ServerException("You don't have permission to delete the image", HttpStatus.FORBIDDEN);
+        }
+        log.debug("removing image from attraction with id: " + attraction.getId());
         imageService.deleteImage(imageHash);
     }
 
@@ -235,6 +225,17 @@ public class AttractionServiceImpl implements AttractionService {
             attraction = this.addAttractionToTrip(attraction, trip);
         } else {
             attraction.setTrip(null);
+        }
+        return attraction;
+    }
+
+    @Override
+    @SneakyThrows
+    @Transactional
+    public Attraction getAttractionByImageHash(String imageHash) {
+        Attraction attraction = attractionRepository.findByImagesImageHash(imageHash);
+        if(attraction == null){
+            throw new ServerException("Attraction not found", HttpStatus.NOT_FOUND);
         }
         return attraction;
     }

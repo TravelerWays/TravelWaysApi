@@ -15,7 +15,7 @@ import java.util.List;
 public interface AttractionService {
     Attraction createAttraction(CreateAttractionRequest createAttractionRequest);
 
-    Image addImage(AddImageRequest request);
+    Image addImage(AddImageRequest request, String attractionHash);
 
     Image editMainImage(Attraction attraction, String newMainImageHash);
 
@@ -36,4 +36,6 @@ public interface AttractionService {
     void deleteImage(String imageHash);
 
     Attraction editAttraction(EditAttractionRequest request);
+
+    Attraction getAttractionByImageHash(String imageHash);
 }

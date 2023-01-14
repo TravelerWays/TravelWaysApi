@@ -35,8 +35,8 @@ public class UserController {
     }
 
     @PostMapping(value = "/{userHash}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageSummary addUserImage(@Valid @ModelAttribute AddImageRequest addImageRequest) {
-        Image image = userService.addImage(addImageRequest);
+    public ImageSummary addUserImage(@PathVariable String userHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
+        Image image = userService.addImage(addImageRequest, userHash);
         return imageService.getImageSummary(image.getHash());
     }
 

@@ -21,7 +21,7 @@ public interface UserService {
 
     AppUser getTripOwner(Trip trip);
 
-    Image addImage(AddImageRequest request);
+    Image addImage(AddImageRequest request, String userHash);
 
     void deleteImage(String hashImage);
 }
