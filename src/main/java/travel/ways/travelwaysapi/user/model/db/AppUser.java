@@ -54,7 +54,7 @@ public class AppUser extends BaseEntity {
     @ToString.Exclude
     private Set<AppUserTrip> trips = new HashSet<>();
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Image image;
 
     public AppUser(String name, String surname, String username, String email, String password, Collection<Role> roles) {

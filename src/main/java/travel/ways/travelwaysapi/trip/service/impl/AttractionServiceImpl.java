@@ -197,19 +197,21 @@ public class AttractionServiceImpl implements AttractionService {
     @Transactional
     @SneakyThrows
     public void deleteImage(String imageHash) {
-        AttractionImage attractionImage = attractionImageRepository.findByImageHash(imageHash);
-        Attraction attraction = attractionImage.getAttraction();
-        if (!(this.checkIfContributor(attraction, userService.getLoggedUser()))) {
-            throw new ServerException("You don't have permission to delete the image", HttpStatus.FORBIDDEN);
-        }
-        if (attractionImage.isMain() && !userService.getLoggedUser().equals(attraction.getUser())) {
-            throw new ServerException("You don't have permission to delete the main image", HttpStatus.FORBIDDEN);
-        }
-
-        log.debug("removing image main= " + attractionImage.isMain() + " from attraction with id: " + attraction.getId());
-        attraction.getImages().remove(attractionImage);
-        attractionImage.setImage(null);
-        attractionImage.setAttraction(null);
+        //TODO zrob tak z innymi (czary)
+        //TODO cascade detached
+//        AttractionImage attractionImage = attractionImageRepository.findByImageHash(imageHash);
+//        Attraction attraction = attractionImage.getAttraction();
+//        if (!(this.checkIfContributor(attraction, userService.getLoggedUser()))) {
+//            throw new ServerException("You don't have permission to delete the image", HttpStatus.FORBIDDEN);
+//        }
+//        if (attractionImage.isMain() && !userService.getLoggedUser().equals(attraction.getUser())) {
+//            throw new ServerException("You don't have permission to delete the main image", HttpStatus.FORBIDDEN);
+//        }
+//
+//        log.debug("removing image main= " + attractionImage.isMain() + " from attraction with id: " + attraction.getId());
+//        attraction.getImages().remove(attractionImage);
+//        attractionImage.setImage(null);
+//        attractionImage.setAttraction(null);
         imageService.deleteImage(imageHash);
     }
 

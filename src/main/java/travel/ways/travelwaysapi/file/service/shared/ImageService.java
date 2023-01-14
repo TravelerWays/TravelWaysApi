@@ -5,6 +5,7 @@ import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
+import travel.ways.travelwaysapi.user.model.db.AppUser;
 
 import java.util.List;
 
@@ -28,6 +29,8 @@ public interface ImageService {
     List<ImageSummary> getImageSummaryList(Trip trip);
 
     List<ImageSummary> getImageSummaryList(Attraction attraction);
+
+    ImageSummary getImageSummary(AppUser user);
 
     Boolean checkIfImageExistsInTrip(Trip trip, String imageHash);
 

@@ -128,6 +128,11 @@ public class ImageServiceImpl implements ImageService {
         return imageRepository.findAllImageSummaryByAttractionAttraction(attraction);
     }
 
+    @Override
+    public ImageSummary getImageSummary(AppUser user) {
+        return imageRepository.findImageSummaryByUserIs(user);
+    }
+
 
     @Override
     public Boolean checkIfImageExistsInTrip(Trip trip, String imageHash) {

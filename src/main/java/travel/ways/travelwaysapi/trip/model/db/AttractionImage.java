@@ -19,12 +19,12 @@ public class AttractionImage {
     @EmbeddedId
     private AttractionImageId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @JsonBackReference
     @MapsId("attractionId")
     private Attraction attraction;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonBackReference
     @MapsId("imageId")
     private Image image;

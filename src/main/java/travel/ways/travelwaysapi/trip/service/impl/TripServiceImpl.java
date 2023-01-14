@@ -204,19 +204,20 @@ public class TripServiceImpl implements TripService {
     @Override
     @SneakyThrows
     public void deleteImage(String imageHash) {
-        TripImage tripImage = tripImageRepository.findByImageHash(imageHash);
-        Trip trip = tripImage.getTrip();
-
-        if (!(this.checkIfContributor(trip, userService.getLoggedUser()))) {
-            throw new ServerException("You don't have permission to delete the image", HttpStatus.FORBIDDEN);
-        }
-        if (tripImage.isMain() && !userService.getLoggedUser().equals(this.findOwner(trip))) {
-            throw new ServerException("You don't have permission to delete the main image", HttpStatus.FORBIDDEN);
-        }
-        log.debug("removing image main= " + tripImage.isMain() + " from trip with id: " + trip.getId());
-        trip.getImages().remove(tripImage);
-        tripImage.setImage(null);
-        tripImage.setTrip(null);
+        //TODO add some magic
+//        TripImage tripImage = tripImageRepository.findByImageHash(imageHash);
+//        Trip trip = tripImage.getTrip();
+//
+//        if (!(this.checkIfContributor(trip, userService.getLoggedUser()))) {
+//            throw new ServerException("You don't have permission to delete the image", HttpStatus.FORBIDDEN);
+//        }
+//        if (tripImage.isMain() && !userService.getLoggedUser().equals(this.findOwner(trip))) {
+//            throw new ServerException("You don't have permission to delete the main image", HttpStatus.FORBIDDEN);
+//        }
+//        log.debug("removing image main= " + tripImage.isMain() + " from trip with id: " + trip.getId());
+//        trip.getImages().remove(tripImage);
+//        tripImage.setImage(null);
+//        tripImage.setTrip(null);
         imageService.deleteImage(imageHash);
     }
 

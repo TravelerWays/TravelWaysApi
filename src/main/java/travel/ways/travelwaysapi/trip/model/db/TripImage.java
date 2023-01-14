@@ -18,12 +18,12 @@ public class TripImage {
     @EmbeddedId
     private TripImageId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @JsonBackReference
     @MapsId("tripId")
     private Trip trip;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId("imageId")
     @JsonBackReference
     private Image image;

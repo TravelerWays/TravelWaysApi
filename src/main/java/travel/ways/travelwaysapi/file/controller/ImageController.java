@@ -25,11 +25,11 @@ public class ImageController {
 
     @DeleteMapping(value = "/{imageHash}")
     public BaseResponse deleteImage(@PathVariable String imageHash) {
-        if(imageService.isAttractionImage(imageHash)){
+        if (imageService.isAttractionImage(imageHash)) {
             attractionService.deleteImage(imageHash);
-        }else if(imageService.isTripImage(imageHash)){
+        } else if (imageService.isTripImage(imageHash)) {
             tripService.deleteImage(imageHash);
-        }else{
+        } else {
             imageService.deleteImage(imageHash);
         }
         return new BaseResponse(true, "deleted image");

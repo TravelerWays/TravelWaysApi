@@ -5,6 +5,7 @@ import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
+import travel.ways.travelwaysapi.user.model.db.AppUser;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     ImageSummary findImageSummaryByTripTripAndTripIsMainTrue(Trip trip);
 
     ImageSummary findImageSummaryByAttractionAttractionAndAttractionIsMainTrue(Attraction attraction);
+
+    ImageSummary findImageSummaryByUserIs(AppUser user);
 
     void deleteImageByHash(String hash);
 
