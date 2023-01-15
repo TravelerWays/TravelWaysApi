@@ -49,9 +49,9 @@ public class AccountController {
     }
 
     @SneakyThrows
-    @GetMapping("password-recovery/valid/{refactorHash}")
-    public ValidHashPasswordRecoveryResponse validPasswordRecovery(@PathVariable String refactorHash) {
-        var isValid = recoveryPasswordService.isRecoveryHashValid(refactorHash);
+    @GetMapping("password-recovery/valid/{recoveryHash}")
+    public ValidHashPasswordRecoveryResponse validPasswordRecovery(@PathVariable String recoveryHash) {
+        var isValid = recoveryPasswordService.isRecoveryHashValid(recoveryHash);
         if(!isValid) throw new ServerException("Invalid hash", HttpStatus.BAD_REQUEST);
         log.debug("recovery hash is valid");
         return new ValidHashPasswordRecoveryResponse(true);
