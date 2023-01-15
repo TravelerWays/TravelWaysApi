@@ -24,8 +24,8 @@ public class AttractionResponse {
     private boolean isVisited;
     private Date visitedAt;
     private Short rate;
-    private LocationResponse locationResponse;
-    private List<ImageSummary> images;
+    private LocationResponse location;
+    private List<ImageWithoutData> images;
     private String tripHash;
 
     public static AttractionResponse of(Attraction attraction, List<ImageSummary> imageSummaryList) {

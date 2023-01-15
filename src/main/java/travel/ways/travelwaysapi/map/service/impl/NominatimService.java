@@ -27,7 +27,7 @@ public class NominatimService implements SearchService {
     @Override
     @SneakyThrows
     public List<LocationDto> Search(String query) {
-        return makeRequest(URI.create(nominatimProperty.getUrl() + "search" + baseParams + "q=" + query));
+        return makeRequest(URI.create(nominatimProperty.getUrl() + "search" + baseParams + "q=" + query.replace(" ", "+")));
     }
 
     @Override

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import travel.ways.travelwaysapi.map.model.db.Location;
+import travel.ways.travelwaysapi.map.model.dto.osm.LocationDto;
 
 @Getter
 @Setter
@@ -24,6 +25,16 @@ public class LocationResponse {
                 location.getLon(),
                 location.getDisplayName(),
                 location.getOsmId()
+        );
+    }
+
+    public static LocationResponse of(LocationDto osmModel) {
+        return new LocationResponse(
+                osmModel.getDisplayName().split(",")[0],
+                osmModel.getLat(),
+                osmModel.getLon(),
+                osmModel.getDisplayName(),
+                osmModel.getOsmId()
         );
     }
 }
