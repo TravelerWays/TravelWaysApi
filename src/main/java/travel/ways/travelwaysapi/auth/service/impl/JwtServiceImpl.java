@@ -38,7 +38,7 @@ public class JwtServiceImpl implements JwtService {
     private final AuthProperty authProperty;
 
     private final static String ROLES_CLAIMS = "roles";
-    private final static String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+
 
     @Override
     public String generateJwt(String username) {
@@ -90,6 +90,13 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
+    @Transactional
+    public void revokeRefreshToken(String refreshToken) {
+        var token = refreshTokenRepository.findByToken(refreshToken);
+        token.setUsed(true);
+    }
+
+    @Override
     public void authenticateUser(String jwt) throws JWTVerificationException {
         var decodedJwt = verifierJwt(jwt);
         var username = decodedJwt.getSubject();
@@ -109,7 +116,13 @@ public class JwtServiceImpl implements JwtService {
         var cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
+        return cookie;
+    }
 
+    @Override
+    public Cookie getLogoutCookie() {
+        var cookie = this.getRefreshCookie("");
+        cookie.setMaxAge(1);
         return cookie;
     }
 
