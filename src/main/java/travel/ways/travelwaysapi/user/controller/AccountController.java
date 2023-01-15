@@ -33,9 +33,9 @@ public class AccountController {
         return new BaseResponse(true, "user registered");
     }
 
-    @PostMapping("/activate/{hash}")
-    public BaseResponse activateAccount(@PathVariable String hash){
-        AppUser user = accountService.activateUser(hash);
+    @PostMapping("/activate/{activateHash}")
+    public BaseResponse activateAccount(@PathVariable String activateHash){
+        AppUser user = accountService.activateUser(activateHash);
         log.info("User " + user.getUsername() + " activated successfully");
         return new BaseResponse(true, "user activated");
     }
@@ -49,9 +49,9 @@ public class AccountController {
     }
 
     @SneakyThrows
-    @GetMapping("password-recovery/valid/{hash}")
-    public ValidHashPasswordRecoveryResponse validPasswordRecovery(@PathVariable String hash) {
-        var isValid = recoveryPasswordService.isRecoveryHashValid(hash);
+    @GetMapping("password-recovery/valid/{recoveryHash}")
+    public ValidHashPasswordRecoveryResponse validPasswordRecovery(@PathVariable String recoveryHash) {
+        var isValid = recoveryPasswordService.isRecoveryHashValid(recoveryHash);
         if(!isValid) throw new ServerException("Invalid hash", HttpStatus.BAD_REQUEST);
         log.debug("recovery hash is valid");
         return new ValidHashPasswordRecoveryResponse(true);
