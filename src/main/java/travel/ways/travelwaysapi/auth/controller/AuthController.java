@@ -27,4 +27,10 @@ public class AuthController {
 
         return new AuthResponse(jwt);
     }
+
+    @PostMapping("/logout")
+    public void logout(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+        jwtService.revokeRefreshToken(refreshToken);
+        response.addCookie(jwtService.getLogoutCookie());
+    }
 }
