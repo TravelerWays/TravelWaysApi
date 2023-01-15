@@ -7,6 +7,7 @@ import org.hibernate.annotations.Type;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
 import travel.ways.travelwaysapi.trip.model.db.AttractionImage;
 import travel.ways.travelwaysapi.trip.model.db.TripImage;
+import travel.ways.travelwaysapi.user.model.db.AppUser;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -33,6 +34,9 @@ public class Image extends BaseEntity {
 
     @OneToOne(mappedBy = "image", cascade = CascadeType.ALL, orphanRemoval = true)
     private AttractionImage attraction;
+
+    @OneToOne(mappedBy = "image")
+    private AppUser user;
 
     @Override
     public boolean equals(Object o) {

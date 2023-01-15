@@ -2,10 +2,9 @@ package travel.ways.travelwaysapi.user.model.db;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sun.istack.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
+import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.map.model.db.ScratchMapCountry;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
@@ -15,7 +14,8 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppUser extends BaseEntity {
@@ -38,17 +38,24 @@ public class AppUser extends BaseEntity {
     private Collection<Role> roles = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Attraction.class, mappedBy = "user")
+    @ToString.Exclude
     private Collection<Attraction> attractions = new ArrayList<>();
 
     @OneToMany(targetEntity = PasswordRecovery.class, mappedBy = "user")
+    @ToString.Exclude
     private Collection<PasswordRecovery> passwordRecoveries = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = ScratchMapCountry.class, mappedBy = "user")
+    @ToString.Exclude
     private Collection<ScratchMapCountry> scratchedCountries = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
+    @ToString.Exclude
     private Set<AppUserTrip> trips = new HashSet<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private Image image;
 
     public AppUser(String name, String surname, String username, String email, String password, Collection<Role> roles) {
         this.name = name;

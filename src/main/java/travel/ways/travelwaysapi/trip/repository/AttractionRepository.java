@@ -12,5 +12,7 @@ public interface AttractionRepository extends JpaRepository<Attraction, Long> {
 
     Attraction findByHash(String attractionHash);
 
+    Attraction findByImagesImageHash(String imageHash);
+
     List<Attraction> findAllByTrip(Trip trip);
 }

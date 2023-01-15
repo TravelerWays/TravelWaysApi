@@ -10,8 +10,6 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class AddImageRequest {
     @NotNull
-    String hash;
-    @NotNull
     MultipartFile imageData;
     @NotNull
     Boolean isMain;

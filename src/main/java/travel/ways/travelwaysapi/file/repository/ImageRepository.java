@@ -2,26 +2,29 @@ package travel.ways.travelwaysapi.file.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.projection.ImageWithoutData;
+import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
+import travel.ways.travelwaysapi.user.model.db.AppUser;
 
 import java.util.List;
 
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
 
-    ImageWithoutData findImageWithoutDataByTripTripAndTripIsMainTrue(Trip trip);
+    ImageSummary findImageSummaryByTripTripAndTripIsMainTrue(Trip trip);
 
-    ImageWithoutData findImageWithoutDataByAttractionAttractionAndAttractionIsMainTrue(Attraction attraction);
+    ImageSummary findImageSummaryByAttractionAttractionAndAttractionIsMainTrue(Attraction attraction);
+
+    ImageSummary findImageSummaryByUserIs(AppUser user);
 
     void deleteImageByHash(String hash);
 
     Image findByHash(String hash);
 
-    ImageWithoutData findImageWithoutDataByHash(String hash);
+    ImageSummary findImageSummaryByHash(String hash);
 
-    List<ImageWithoutData> findAllWithoutDataByTripTrip(Trip trip);
+    List<ImageSummary> findAllImageSummaryByTripTrip(Trip trip);
 
     Boolean existsImageByHashAndTripTrip(String hash, Trip trip);
 
@@ -31,5 +34,5 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
     Boolean existsImageByHashAndTripIsNotNull(String hash);
 
-    List<ImageWithoutData> findAllWithoutDataByAttractionAttraction(Attraction attraction);
+    List<ImageSummary> findAllImageSummaryByAttractionAttraction(Attraction attraction);
 }

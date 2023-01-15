@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import travel.ways.travelwaysapi.auth.service.impl.UserDetailsServiceImpl;
+import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.Role;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
@@ -22,12 +23,13 @@ class UserServiceImplTest {
     private UserRepository userRepository;
 
     private UserServiceImpl userService;
+    private ImageService imageService;
     private UserDetailsServiceImpl userDetailsService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        userService = new UserServiceImpl(userRepository);
+        userService = new UserServiceImpl(userRepository, imageService);
         userDetailsService = new UserDetailsServiceImpl(userService);
     }
 
