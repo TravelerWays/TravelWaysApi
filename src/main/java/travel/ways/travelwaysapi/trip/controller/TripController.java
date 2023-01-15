@@ -46,7 +46,7 @@ public class TripController {
 
     @GetMapping("/all/{userHash}")
     public List<TripResponse> getUserTrips(@PathVariable String userHash) {
-        return tripService.getUserTrips(userService.getByUsername(userHash));
+        return tripService.getUserTrips(userService.getByHash(userHash));
     }
 
     @GetMapping("/all")

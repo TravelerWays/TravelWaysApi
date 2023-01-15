@@ -41,9 +41,9 @@ public class AttractionController {
         return AttractionResponse.of(attraction, attractionService.getImageSummaryList(attraction));
     }
 
-    @GetMapping("/all/{hash}")
-    public List<AttractionResponse> getAll(@PathVariable String hash) {
-        var user = userService.getByHash(hash);
+    @GetMapping("/all/{userHash}")
+    public List<AttractionResponse> getAll(@PathVariable String userHash) {
+        var user = userService.getByHash(userHash);
         return attractionService.getUserAttractions(user);
     }
 
