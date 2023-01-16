@@ -6,10 +6,9 @@ import springfox.documentation.builders.ExampleBuilder;
 import springfox.documentation.builders.OperationBuilder;
 import springfox.documentation.builders.RequestParameterBuilder;
 import springfox.documentation.builders.ResponseBuilder;
+import springfox.documentation.schema.Example;
 import springfox.documentation.schema.ScalarType;
-import springfox.documentation.service.ApiDescription;
-import springfox.documentation.service.ParameterType;
-import springfox.documentation.service.Response;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.ApiListingScannerPlugin;
 import springfox.documentation.spi.service.contexts.DocumentationContext;
@@ -37,32 +36,7 @@ public class SwaggerLoginConfig implements ApiListingScannerPlugin {
                                 "/api/auth/login",
                                 "Login",
                                 "Login",
-                                singletonList(
-                                        new OperationBuilder(operationNames)
-                                                .authorizations(new ArrayList<>())
-                                                .codegenMethodNameStem("login")
-                                                .method(HttpMethod.POST)
-                                                .notes("This is a login method")
-                                                .requestParameters(
-                                                        List.of(
-                                                                new RequestParameterBuilder()
-                                                                        .name("LoginForm")
-                                                                        .description("LoginForm")
-                                                                        .in(ParameterType.BODY)
-                                                                        .query(q -> q.model(m -> m.scalarModel(ScalarType.STRING)))
-                                                                        .example(new ExampleBuilder()
-                                                                                .value("""
-                                                                                        {
-                                                                                            "username":"JD",
-                                                                                            "password":"elo"
-                                                                                        }
-                                                                                        """)
-                                                                                .build())
-                                                                        .build()
-                                                        )
-                                                )
-                                                .responses(responses())
-                                                .build()),
+                                operations(),
                                 false)));
     }
 
@@ -81,4 +55,37 @@ public class SwaggerLoginConfig implements ApiListingScannerPlugin {
         return DocumentationType.SWAGGER_2.equals(delimiter);
     }
 
+    private List<Operation> operations() {
+        return List.of(
+                new OperationBuilder(operationNames)
+                        .authorizations(new ArrayList<>())
+                        .codegenMethodNameStem("login")
+                        .method(HttpMethod.POST)
+                        .notes("This is a login method")
+                        .requestParameters(requestParameters())
+                        .responses(responses())
+                        .build());
+    }
+
+    private List<RequestParameter> requestParameters() {
+        return List.of(
+                new RequestParameterBuilder()
+                        .name("LoginForm")
+                        .description("LoginForm")
+                        .in(ParameterType.BODY)
+                        .query(q -> q.model(m -> m.scalarModel(ScalarType.STRING)))
+                        .example(example())
+                        .build());
+    }
+
+    private Example example() {
+        return new ExampleBuilder()
+                .value("""
+                        {
+                            "username":"JD",
+                            "password":"elo"
+                        }
+                        """)
+                .build();
+    }
 }
