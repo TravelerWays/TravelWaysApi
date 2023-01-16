@@ -36,7 +36,7 @@ public class SwaggerLoginConfig implements ApiListingScannerPlugin {
                                 "/api/auth/login",
                                 "Login",
                                 "Login",
-                                operations(),
+                                getOperations(),
                                 false)));
     }
 
@@ -55,30 +55,30 @@ public class SwaggerLoginConfig implements ApiListingScannerPlugin {
         return DocumentationType.SWAGGER_2.equals(delimiter);
     }
 
-    private List<Operation> operations() {
+    private List<Operation> getOperations() {
         return List.of(
                 new OperationBuilder(operationNames)
                         .authorizations(new ArrayList<>())
                         .codegenMethodNameStem("login")
                         .method(HttpMethod.POST)
                         .notes("This is a login method")
-                        .requestParameters(requestParameters())
+                        .requestParameters(getRequestParameters())
                         .responses(responses())
                         .build());
     }
 
-    private List<RequestParameter> requestParameters() {
+    private List<RequestParameter> getRequestParameters() {
         return List.of(
                 new RequestParameterBuilder()
                         .name("LoginForm")
                         .description("LoginForm")
                         .in(ParameterType.BODY)
                         .query(q -> q.model(m -> m.scalarModel(ScalarType.STRING)))
-                        .example(example())
+                        .example(getExample())
                         .build());
     }
 
-    private Example example() {
+    private Example getExample() {
         return new ExampleBuilder()
                 .value("""
                         {
