@@ -15,4 +15,5 @@ public class CreateAttractionRequest {
     private boolean isVisited;
     private Date visitedAt;
     private String tripHash;
+    private Short rete;
 }
