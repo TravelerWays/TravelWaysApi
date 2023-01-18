@@ -75,7 +75,7 @@ public class Attraction extends BaseEntity {
                 createAttractionRequest.isPublic(),
                 createAttractionRequest.isVisited(),
                 createAttractionRequest.getVisitedAt(),
-                createAttractionRequest.getRete()
+                createAttractionRequest.getRate()
         );
     }
 }
