@@ -16,7 +16,6 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Trip extends BaseEntity {
@@ -44,6 +43,9 @@ public class Trip extends BaseEntity {
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
     @ToString.Exclude
     private Set<Attraction> attractions = new HashSet<>();
+
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
+    private Set<TripInvitation> invitations = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

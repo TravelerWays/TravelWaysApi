@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
     public List<UserResponse> getAll() {
         List<UserResponse> users = new ArrayList<>();
         UserResponse userResponse;
-        for(AppUser appUser : userRepository.findAll()){
+        for (AppUser appUser : userRepository.findAll()) {
             userResponse = UserResponse.of(appUser, imageService.getImageSummary(appUser));
             users.add(userResponse);
         }
@@ -43,8 +43,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @SneakyThrows
     public AppUser getByHash(String hash) {
-        return userRepository.findByHash(hash);
+        AppUser user = userRepository.findByHash(hash);
+        if (user == null) {
+            throw new ServerException("user not found", HttpStatus.NOT_FOUND);
+        }
+        return user;
     }
 
     @Override

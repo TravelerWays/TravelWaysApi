@@ -22,10 +22,12 @@ import travel.ways.travelwaysapi.trip.repository.TripRepository;
 import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.AppUserTrip;
+import travel.ways.travelwaysapi.user.repository.AppUserTripRepository;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -36,6 +38,7 @@ public class TripServiceImpl implements TripService {
     private final ImageService imageService;
     private final UserService userService;
     private final TripImageRepository tripImageRepository;
+    private final AppUserTripRepository appUserTripRepository;
 
     @Override
     @Transactional
@@ -231,5 +234,33 @@ public class TripServiceImpl implements TripService {
             throw new ServerException("Trip not found", HttpStatus.NOT_FOUND);
         }
         return trip;
+    }
+
+    @Override
+    @Transactional
+    @SneakyThrows
+    public void deleteUserFromTrip(String userHash, String tripHash) {
+        Trip trip = this.getTrip(tripHash);
+        AppUser owner = this.findOwner(trip);
+        if (!owner.equals(userService.getLoggedUser())) {
+            throw new ServerException("You do not have permission to remove user from the trip", HttpStatus.FORBIDDEN);
+        }
+        AppUser userToRemove = userService.getByHash(userHash);
+
+        if (owner.equals(userToRemove)) {
+            throw new ServerException("You can not remove owner", HttpStatus.BAD_REQUEST);
+        }
+        Optional<AppUserTrip> appUserTrip = userToRemove.getTrips().stream()
+                .filter(auTrip -> auTrip.getTrip().equals(trip)).findAny();
+        if (appUserTrip.isEmpty()) {
+            throw new ServerException("This user is not in the trip", HttpStatus.BAD_REQUEST);
+        }
+        appUserTrip.get().getUser().getTrips().remove(appUserTrip.get());
+        appUserTrip.get().getTrip().getUsers().remove(appUserTrip.get());
+//        appUserTrip.get().setUser(null);
+//        appUserTrip.get().setTrip(null);
+        appUserTripRepository.delete(appUserTrip.get());
+
+
     }
 }

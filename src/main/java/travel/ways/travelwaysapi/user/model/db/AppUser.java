@@ -8,6 +8,7 @@ import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.map.model.db.ScratchMapCountry;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
+import travel.ways.travelwaysapi.trip.model.db.TripInvitation;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 
 import javax.persistence.*;
@@ -56,6 +57,9 @@ public class AppUser extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     private Image image;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<TripInvitation> invitations = new HashSet<>();
 
     public AppUser(String name, String surname, String username, String email, String password, Collection<Role> roles) {
         this.name = name;
@@ -106,7 +110,7 @@ public class AppUser extends BaseEntity {
         if (this == o) return true;
         if (!(o instanceof AppUser appUser)) return false;
         if (!super.equals(o)) return false;
-        return Objects.equals(email, appUser.email);
+        return Objects.equals(email, appUser.getEmail());
     }
 
     @Override

@@ -78,13 +78,13 @@ public class TripController {
         return new BaseResponse(true, "main image changed");
     }
 
-    @PutMapping("close/{tripHash}")
+    @PutMapping("/close/{tripHash}")
     public BaseResponse closeTrip(@PathVariable String tripHash) {
         tripService.closeTrip(tripHash);
         return new BaseResponse(true, "trip closed");
     }
 
-    @PutMapping("open/{tripHash}")
+    @PutMapping("/open/{tripHash}")
     public BaseResponse openTrip(@PathVariable String tripHash) {
         tripService.openTrip(tripHash);
         return new BaseResponse(true, "trip opened");
@@ -97,8 +97,14 @@ public class TripController {
     }
 
     @DeleteMapping("/image/{imageHash}")
-    public BaseResponse deleteImage(@PathVariable String imageHash){
+    public BaseResponse deleteImage(@PathVariable String imageHash) {
         tripService.deleteImage(imageHash);
         return new BaseResponse(true, "image deleted");
+    }
+
+    @DeleteMapping("/{tripHash}/user/{userHash}")
+    public BaseResponse deleteUserFromTrip(@PathVariable String tripHash, @PathVariable String userHash) {
+        tripService.deleteUserFromTrip(userHash, tripHash);
+        return new BaseResponse(true, "user deleted from trip");
     }
 }
