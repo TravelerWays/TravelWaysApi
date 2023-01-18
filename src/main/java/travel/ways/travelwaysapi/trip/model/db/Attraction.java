@@ -31,7 +31,7 @@ public class Attraction extends BaseEntity {
     private boolean isVisited;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
+    @Column()
     private Date visitedAt;
 
     @Column
@@ -57,23 +57,25 @@ public class Attraction extends BaseEntity {
     @ToString.Exclude
     private Set<AttractionImage> images = new HashSet<>();
 
-    public Attraction(String hash, String title, String description, boolean isPublic, boolean isVisited, Date visitedAt) {
+    public Attraction(String hash, String title, String description, boolean isPublic, boolean isVisited, Date visitedAt, Short rate) {
         this.hash = hash;
         this.title = title;
         this.description = description;
         this.isPublic = isPublic;
         this.isVisited = isVisited;
         this.visitedAt = visitedAt;
+        this.rate = rate;
     }
 
-    public static Attraction of(CreateAttractionRequest createAttractionRequest){
+    public static Attraction of(CreateAttractionRequest createAttractionRequest) {
         return new Attraction(
                 UUID.randomUUID().toString(),
                 createAttractionRequest.getTitle(),
                 createAttractionRequest.getDescription(),
                 createAttractionRequest.isPublic(),
                 createAttractionRequest.isVisited(),
-                createAttractionRequest.getVisitedAt()
+                createAttractionRequest.getVisitedAt(),
+                createAttractionRequest.getRate()
         );
     }
 }
