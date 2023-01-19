@@ -39,4 +39,6 @@ public interface TripService {
     List<ImageSummary> getImageSummaryList(Trip trip);
 
     Trip getTripByImageHash(String imageHash);
+
+    void deleteUserFromTrip(String userHash, String tripHash);
 }

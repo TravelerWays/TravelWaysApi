@@ -3,13 +3,9 @@ package travel.ways.travelwaysapi.trip.model.dto.request;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
-
 @Getter
 @Setter
-public class AddUserToTripRequest {
-    @NotNull
-    private String username;
-    @NotNull
+public class CreateTripInvitationRequest {
     private String tripHash;
+    private String userHash;
 }
