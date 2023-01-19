@@ -17,7 +17,6 @@ import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -78,20 +77,16 @@ public class TripInvitationServiceImpl implements TripInvitationService {
         if (!tripInvitation.getActive()) {
             throw new ServerException("invitation is no longer active", HttpStatus.BAD_REQUEST);
         }
-        if(accepted){
+        if (accepted) {
             invitedUser.addTrip(tripInvitation.getTrip());
-            tripInvitation.setAccepted(true);
-        }else{
-            tripInvitation.setAccepted(false);
         }
+        tripInvitation.setAccepted(accepted);
         tripInvitation.setActive(false);
     }
 
     @Override
     public List<TripInvitationResponse> getAllActiveForLoggedUser() {
-        List<TripInvitationResponse> invitations = new ArrayList<>();
-        tripInvitationRepository.findAllByUserAndActiveTrue(userService.getLoggedUser())
-                .forEach(invitation -> invitations.add(TripInvitationResponse.of(invitation)));
-        return invitations;
+        return tripInvitationRepository.findAllByUserAndActiveTrue(userService.getLoggedUser())
+                .stream().map(TripInvitationResponse::of).toList();
     }
 }
