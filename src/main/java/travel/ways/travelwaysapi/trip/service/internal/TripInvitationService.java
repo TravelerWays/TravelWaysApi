@@ -13,9 +13,7 @@ public interface TripInvitationService {
 
     TripInvitation getByHash(String invitationHash);
 
-    void accept(String invitationHash);
+    void updateInvitation(String invitationHash, Boolean accepted);
 
-    void decline(String invitationHash);
-
-    List<TripInvitationResponse> getAll();
+    List<TripInvitationResponse> getAllActiveForLoggedUser();
 }

@@ -257,8 +257,6 @@ public class TripServiceImpl implements TripService {
         }
         appUserTrip.get().getUser().getTrips().remove(appUserTrip.get());
         appUserTrip.get().getTrip().getUsers().remove(appUserTrip.get());
-//        appUserTrip.get().setUser(null);
-//        appUserTrip.get().setTrip(null);
         appUserTripRepository.delete(appUserTrip.get());
 
 

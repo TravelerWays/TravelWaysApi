@@ -42,9 +42,13 @@ public class TripInvitationServiceImpl implements TripInvitationService {
     }
 
     @Override
+    @SneakyThrows
     @Transactional
     public void deleteTripInvitation(String invitationHash) {
         TripInvitation tripInvitation = this.getByHash(invitationHash);
+        if (!userService.getLoggedUser().equals(userService.getTripOwner(tripInvitation.getTrip()))) {
+            throw new ServerException("You do not have permission to delete invitation", HttpStatus.FORBIDDEN);
+        }
         tripInvitationRepository.delete(tripInvitation);
     }
 
@@ -56,8 +60,7 @@ public class TripInvitationServiceImpl implements TripInvitationService {
             throw new ServerException("Can not find invitation", HttpStatus.NOT_FOUND);
         }
         AppUser loggedUser = userService.getLoggedUser();
-        if (!loggedUser.equals(userService.getTripOwner(tripInvitation.getTrip()))
-                && !loggedUser.equals(tripInvitation.getUser())) {
+        if (!loggedUser.equals(userService.getTripOwner(tripInvitation.getTrip())) && !loggedUser.equals(tripInvitation.getUser())) {
             throw new ServerException("You do not have permission to see invitation", HttpStatus.FORBIDDEN);
         }
         return tripInvitation;
@@ -66,40 +69,29 @@ public class TripInvitationServiceImpl implements TripInvitationService {
     @Override
     @SneakyThrows
     @Transactional
-    public void accept(String invitationHash) {
+    public void updateInvitation(String invitationHash, Boolean accepted) {
         TripInvitation tripInvitation = this.getByHash(invitationHash);
         AppUser invitedUser = tripInvitation.getUser();
         if (!userService.getLoggedUser().equals(invitedUser)) {
-            throw new ServerException("You do not have permission to accept invitation", HttpStatus.FORBIDDEN);
-        }
-        Trip trip = tripInvitation.getTrip();
-        invitedUser.addTrip(trip);
-        tripInvitation.setAccepted(true);
-        tripInvitation.setActive(false);
-    }
-
-    @Override
-    @SneakyThrows
-    @Transactional
-    public void decline(String invitationHash) {
-        TripInvitation tripInvitation = this.getByHash(invitationHash);
-        AppUser invitedUser = tripInvitation.getUser();
-        if (!userService.getLoggedUser().equals(invitedUser)) {
-            throw new ServerException("You do not have permission to decline invitation", HttpStatus.FORBIDDEN);
+            throw new ServerException("You do not have permission to update invitation", HttpStatus.FORBIDDEN);
         }
         if (!tripInvitation.getActive()) {
             throw new ServerException("invitation is no longer active", HttpStatus.BAD_REQUEST);
         }
-        tripInvitation.setAccepted(false);
+        if(accepted){
+            invitedUser.addTrip(tripInvitation.getTrip());
+            tripInvitation.setAccepted(true);
+        }else{
+            tripInvitation.setAccepted(false);
+        }
         tripInvitation.setActive(false);
     }
 
     @Override
-    public List<TripInvitationResponse> getAll() {
+    public List<TripInvitationResponse> getAllActiveForLoggedUser() {
         List<TripInvitationResponse> invitations = new ArrayList<>();
-        for (TripInvitation tripInvitation : tripInvitationRepository.findAllByUserAndActiveTrue(userService.getLoggedUser())) {
-            invitations.add(TripInvitationResponse.of(tripInvitation));
-        }
+        tripInvitationRepository.findAllByUserAndActiveTrue(userService.getLoggedUser())
+                .forEach(invitation -> invitations.add(TripInvitationResponse.of(invitation)));
         return invitations;
     }
 }

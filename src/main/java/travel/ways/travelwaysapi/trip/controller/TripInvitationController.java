@@ -28,18 +28,18 @@ public class TripInvitationController {
 
     @PutMapping("/{invitationHash}/accept")
     public BaseResponse acceptInvitation(@PathVariable String invitationHash) {
-        tripInvitationService.accept(invitationHash);
+        tripInvitationService.updateInvitation(invitationHash, true);
         return new BaseResponse(true, "user added to trip");
     }
 
     @PutMapping("/{invitationHash}/decline")
     public BaseResponse declineInvitation(@PathVariable String invitationHash) {
-        tripInvitationService.decline(invitationHash);
+        tripInvitationService.updateInvitation(invitationHash, false);
         return new BaseResponse(true, "declined invitation");
     }
 
     @GetMapping("/all")
-    public List<TripInvitationResponse> getAllInvitationForUser() {
-        return tripInvitationService.getAll();
+    public List<TripInvitationResponse> getAllActiveInvitationForUser() {
+        return tripInvitationService.getAllActiveForLoggedUser();
     }
 }
