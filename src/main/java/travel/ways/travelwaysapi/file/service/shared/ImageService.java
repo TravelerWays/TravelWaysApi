@@ -2,7 +2,7 @@ package travel.ways.travelwaysapi.file.service.shared;
 
 import org.springframework.web.multipart.MultipartFile;
 import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
+import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
@@ -16,7 +16,7 @@ public interface ImageService {
 
     Image createImage(String name, MultipartFile data);
 
-    ImageSummary getImageSummary(String hash);
+    ImageSummaryDto getImageSummary(String hash);
 
     String getMainImageHash(Trip trip);
 
@@ -26,17 +26,8 @@ public interface ImageService {
 
     Image getImage(String hash);
 
-    List<ImageSummary> getImageSummaryList(Trip trip);
+    List<ImageSummaryDto> getImageSummaryList(List<Long> ids);
 
-    List<ImageSummary> getImageSummaryList(Attraction attraction);
+    ImageSummaryDto getImageSummary(AppUser user);
 
-    ImageSummary getImageSummary(AppUser user);
-
-    Boolean checkIfImageExistsInTrip(Trip trip, String imageHash);
-
-    Boolean checkIfImageExistsInAttraction(Attraction attraction, String imageHash);
-
-    Boolean isAttractionImage(String imageHash);
-
-    Boolean isTripImage(String imageHash);
 }

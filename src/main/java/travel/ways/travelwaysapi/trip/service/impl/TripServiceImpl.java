@@ -66,7 +66,7 @@ public class TripServiceImpl implements TripService {
         }
 
         log.debug("removing trip with id: " + trip.getId());
-        for (ImageSummary imageSummary : imageService.getImageSummaryList(trip)) {
+        for (var imageSummary : imageService.getImageSummaryList(trip)) {
             this.deleteImage(imageSummary.getHash());
         }
 

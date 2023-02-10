@@ -19,15 +19,4 @@ public interface ImageSummary {
     String getExtension();
 
     String getName();
-
-    default Boolean getMain() {
-        if (getTripImage() != null) {
-            return getTripImage().isMain();
-        }
-        if (getAttractionImage() != null) {
-            return getAttractionImage().isMain();
-        }
-        return true;
-    }
-
 }

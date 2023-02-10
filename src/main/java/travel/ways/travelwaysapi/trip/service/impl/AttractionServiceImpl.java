@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
-import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
+import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.map.service.shared.LocationService;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
@@ -156,7 +156,7 @@ public class AttractionServiceImpl implements AttractionService {
             throw new ServerException("You do not have permission to delete the attraction", HttpStatus.FORBIDDEN);
         }
         log.debug("removing attraction with id: " + attraction.getId());
-        for (ImageSummary imageSummary : imageService.getImageSummaryList(attraction)) {
+        for (var imageSummary : imageService.getImageSummaryList(attraction)) {
             this.deleteImage(imageSummary.getHash());
         }
         attractionRepository.delete(attraction);
@@ -185,7 +185,7 @@ public class AttractionServiceImpl implements AttractionService {
 
     @Override
     @SneakyThrows
-    public List<ImageSummary> getImageSummaryList(Attraction attraction) {
+    public List<ImageSummaryDto> getImageSummaryList(Attraction attraction) {
         AppUser appUser = userService.getLoggedUser();
         if (!attraction.isPublic() && !this.checkIfContributor(attraction, appUser)) {
             throw new ServerException("you do not have permission to see the images", HttpStatus.FORBIDDEN);
@@ -234,7 +234,7 @@ public class AttractionServiceImpl implements AttractionService {
     @Transactional
     public Attraction getAttractionByImageHash(String imageHash) {
         Attraction attraction = attractionRepository.findByImagesImageHash(imageHash);
-        if(attraction == null){
+        if (attraction == null) {
             throw new ServerException("Attraction not found", HttpStatus.NOT_FOUND);
         }
         return attraction;

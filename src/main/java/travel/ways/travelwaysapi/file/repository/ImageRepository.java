@@ -7,6 +7,7 @@ import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -24,15 +25,5 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
     ImageSummary findImageSummaryByHash(String hash);
 
-    List<ImageSummary> findAllImageSummaryByTripTrip(Trip trip);
-
-    Boolean existsImageByHashAndTripTrip(String hash, Trip trip);
-
-    Boolean existsImageByHashAndAttractionAttraction(String hash, Attraction attraction);
-
-    Boolean existsImageByHashAndAttractionIsNotNull(String hash);
-
-    Boolean existsImageByHashAndTripIsNotNull(String hash);
-
-    List<ImageSummary> findAllImageSummaryByAttractionAttraction(Attraction attraction);
+    List<ImageSummary> getAllByIdIn(Collection<Long> id);
 }
