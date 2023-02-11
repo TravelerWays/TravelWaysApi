@@ -5,15 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
-import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
-import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
+import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditAttractionMainImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.AttractionResponse;
+import travel.ways.travelwaysapi.trip.model.dto.response.ImageDto;
 import travel.ways.travelwaysapi.trip.service.internal.AttractionService;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
@@ -68,17 +67,13 @@ public class AttractionController {
     public BaseResponse editMainImage(@Valid @RequestBody EditAttractionMainImageRequest editMainImageRequest) {
 
         Attraction attraction = attractionService.getAttraction(editMainImageRequest.getAttractionHash());
-        Image image = attractionService.editMainImage(attraction, editMainImageRequest.getImageHash());
-        if (image == null) {
-            return new BaseResponse(true, "main image removed");
-        }
+        attractionService.editMainImage(attraction, editMainImageRequest.getImageHash());
         return new BaseResponse(true, "main image changed");
     }
 
     @PostMapping(value = "/{attractionHash}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageSummaryDto addImageToAttraction(@PathVariable String attractionHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
-        Image image = attractionService.addImage(addImageRequest, attractionHash);
-        return imageService.getImageSummary(image.getHash());
+    public ImageDto addImageToAttraction(@PathVariable String attractionHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
+        return attractionService.addImage(addImageRequest, attractionHash);
     }
 
     @DeleteMapping("/image/{imageHash}")

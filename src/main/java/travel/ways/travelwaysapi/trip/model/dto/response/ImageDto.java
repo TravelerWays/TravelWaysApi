@@ -3,6 +3,7 @@ package travel.ways.travelwaysapi.trip.model.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 
 @Data
@@ -19,6 +20,15 @@ public class ImageDto {
                 summaryDto.getHash(),
                 summaryDto.getExtension(),
                 summaryDto.getName(),
+                isMain
+        );
+    }
+
+    public static ImageDto of(Image image, boolean isMain) {
+        return new ImageDto(
+                image.getHash(),
+                image.getExtension(),
+                image.getName(),
                 isMain
         );
     }

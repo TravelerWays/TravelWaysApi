@@ -1,7 +1,10 @@
 package travel.ways.travelwaysapi.trip.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
+import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.AttractionImage;
 import travel.ways.travelwaysapi.trip.model.db.AttractionImageId;
 
@@ -21,6 +24,11 @@ public interface AttractionImageRepository extends JpaRepository<AttractionImage
 
     @Query("select (count(a) > 0) from AttractionImage a where a.id.attractionId = ?1 and a.image.hash = ?2")
     boolean existsImageInAttraction(Long attractionId, String hash);
+
+    @Transactional
+    @Modifying
+    @Query("update AttractionImage a set a.isMain = false where a.attraction = ?1")
+    int unsetMainImage(Attraction attraction);
 
 
 }

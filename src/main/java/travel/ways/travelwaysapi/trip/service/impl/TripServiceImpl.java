@@ -8,11 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
-import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.db.TripImage;
+import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.ImageDto;
@@ -142,47 +141,46 @@ public class TripServiceImpl implements TripService {
     @Override
     @Transactional
     @SneakyThrows
-    public Image editMainImage(Trip trip, String newMainImageHash) {
+    public ImageDto editMainImage(Trip trip, String newMainImageHash) {
         if (!userService.getLoggedUser().equals(this.findOwner(trip))) {
             throw new ServerException("You don't have permission to edit the image", HttpStatus.FORBIDDEN);
         }
 
-        if (newMainImageHash != null && !tripImageRepository.ExistsImageInTrip(trip.getId(), newMainImageHash)) {
+        if (newMainImageHash != null && !tripImageRepository.existsImageInTrip(trip.getId(), newMainImageHash)) {
             throw new ServerException("this image is not in the trip", HttpStatus.BAD_REQUEST);
         }
 
-        String oldMainImageHash = imageService.getMainImageHash(trip);
-        if (oldMainImageHash != null) {
-            TripImage oldMainTripImage = tripImageRepository.findByImageHash(oldMainImageHash);
-            oldMainTripImage.setMain(false);
-        }
         if (newMainImageHash == null) {
-            return null;
+            throw new ServerException("missing new main image hash", HttpStatus.BAD_REQUEST);
         }
-        Image newMainImage = imageService.getImage(newMainImageHash);
-        TripImage newMainTripImage = tripImageRepository.findByImageHash(newMainImageHash);
+
+        tripImageRepository.unsetMainImageForTrip(trip);
+
+        var newMainTripImage = tripImageRepository.findByImageHash(newMainImageHash);
         newMainTripImage.setMain(true);
-        return newMainImage;
+        var imageMetadata = imageService.getImageSummary(newMainImageHash);
+
+        return ImageDto.of(imageMetadata, true);
     }
 
     @Override
     @Transactional
     @SneakyThrows
-    public Image addImage(AddImageRequest request, String tripHash) {
-        Trip trip = this.getTrip(tripHash);
+    public ImageDto addImage(AddImageRequest request, String tripHash) {
+        var trip = this.getTrip(tripHash);
         if (!this.checkIfContributor(trip, userService.getLoggedUser())) {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
         }
-        Image image = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
+        var imageId = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
+        // here we have to download whole image, because hybernate can't update object only by id :)
+        var image = imageService.getImage(imageId);
+        var newTripImage = new TripImage(trip, image);
 
-        TripImage newTripImage = new TripImage(trip, image);
-        newTripImage = tripImageRepository.save(newTripImage);
+        tripImageRepository.save(newTripImage);
         if (request.getIsMain()) {
-            image = this.editMainImage(trip, image.getHash());
+            this.editMainImage(trip, image.getHash());
         }
-        trip.getImages().add(newTripImage);
-        image.setTrip(newTripImage);
-        return image;
+        return ImageDto.of(image, request.getIsMain());
     }
 
     @Override

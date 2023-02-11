@@ -7,13 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
-import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.map.service.shared.LocationService;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.AttractionImage;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
+import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.AttractionResponse;
@@ -60,27 +59,30 @@ public class AttractionServiceImpl implements AttractionService {
     @Override
     @Transactional
     @SneakyThrows
-    public Image addImage(AddImageRequest request, String attractionHash) {
+    public ImageDto addImage(AddImageRequest request, String attractionHash) {
         Attraction attraction = this.getAttraction(attractionHash);
         if (!this.checkIfContributor(attraction, userService.getLoggedUser())) {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
         }
-        Image image = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
+        var imageId = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
+        // here we have to download whole image, because hybernate can't update object only by id :)
+        var image = imageService.getImage(imageId);
+        var newAttractionImage = new AttractionImage(attraction, image);
 
-        AttractionImage newAttractionImage = new AttractionImage(attraction, image);
         newAttractionImage = attractionImageRepository.save(newAttractionImage);
         if (request.getIsMain()) {
-            image = this.editMainImage(attraction, image.getHash());
+            this.editMainImage(attraction, image.getHash());
         }
         attraction.getImages().add(newAttractionImage);
         image.setAttraction(newAttractionImage);
-        return image;
+
+        return ImageDto.of(image, request.getIsMain());
     }
 
     @Override
     @Transactional
     @SneakyThrows
-    public Image editMainImage(Attraction attraction, String newMainImageHash) {
+    public void editMainImage(Attraction attraction, String newMainImageHash) {
         if (!userService.getLoggedUser().equals(attraction.getUser())) {
             throw new ServerException("You don't have permission to edit the image", HttpStatus.FORBIDDEN);
         }
@@ -89,18 +91,10 @@ public class AttractionServiceImpl implements AttractionService {
             throw new ServerException("this image is not in the attraction", HttpStatus.BAD_REQUEST);
         }
 
-        String oldMainImageHash = imageService.getMainImageHash(attraction);
-        if (oldMainImageHash != null) {
-            AttractionImage oldMainAttractionImage = attractionImageRepository.findByImageHash(oldMainImageHash);
-            oldMainAttractionImage.setMain(false);
-        }
-        if (newMainImageHash == null) {
-            return null;
-        }
-        Image newMainImage = imageService.getImage(newMainImageHash);
-        AttractionImage newMainAttractionImage = attractionImageRepository.findByImageHash(newMainImageHash);
+        attractionImageRepository.unsetMainImage(attraction);
+
+        var newMainAttractionImage = attractionImageRepository.findByImageHash(newMainImageHash);
         newMainAttractionImage.setMain(true);
-        return newMainImage;
     }
 
     @Override

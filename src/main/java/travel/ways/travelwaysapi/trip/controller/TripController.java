@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
-import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
 import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
+import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripMainImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
@@ -68,12 +68,8 @@ public class TripController {
 
     @PutMapping("/edit/main-image")
     public BaseResponse editMainImage(@Valid @RequestBody EditTripMainImageRequest editMainImageRequest) {
-
         var trip = tripService.getTrip(editMainImageRequest.getTripHash());
-        var image = tripService.editMainImage(trip, editMainImageRequest.getImageHash());
-        if (image == null) {
-            return new BaseResponse(true, "main image removed");
-        }
+        tripService.editMainImage(trip, editMainImageRequest.getImageHash());
         return new BaseResponse(true, "main image changed");
     }
 
