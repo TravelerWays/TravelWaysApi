@@ -10,12 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
-import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.db.TripImage;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
+import travel.ways.travelwaysapi.trip.model.dto.response.ImageDto;
 import travel.ways.travelwaysapi.trip.model.dto.response.TripResponse;
 import travel.ways.travelwaysapi.trip.repository.TripImageRepository;
 import travel.ways.travelwaysapi.trip.repository.TripRepository;
@@ -25,7 +25,6 @@ import travel.ways.travelwaysapi.user.model.db.AppUserTrip;
 import travel.ways.travelwaysapi.user.repository.AppUserTripRepository;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -66,9 +65,7 @@ public class TripServiceImpl implements TripService {
         }
 
         log.debug("removing trip with id: " + trip.getId());
-        for (var imageSummary : imageService.getImageSummaryList(trip)) {
-            this.deleteImage(imageSummary.getHash());
-        }
+        getImageSummaryList(trip).forEach(x -> deleteImage(x.getHash()));
 
         for (AppUserTrip appUserTrip : trip.getUsers()) {
             appUserTrip.setUser(null);
@@ -93,14 +90,10 @@ public class TripServiceImpl implements TripService {
         AppUser loggedUser = userService.getLoggedUser();
         boolean showPrivate = loggedUser.equals(user);
 
-        List<TripResponse> trips = new ArrayList<>();
-        for (AppUserTrip appUserTrip : user.getTrips()) {
-            if (!showPrivate && !appUserTrip.getTrip().isPublic() && !checkIfContributor(appUserTrip.getTrip(), loggedUser)) {
-                continue;
-            }
-            trips.add(TripResponse.of(appUserTrip.getTrip(), this.getImageSummaryList(appUserTrip.getTrip())));
-        }
-        return trips;
+        return user.getTrips().stream().filter(x -> {
+            var trip = x.getTrip();
+            return showPrivate || trip.isPublic() || checkIfContributor(trip, loggedUser);
+        }).map(x -> TripResponse.of(x.getTrip(), getImageSummaryList(x.getTrip()))).toList();
     }
 
     @Override
@@ -154,7 +147,7 @@ public class TripServiceImpl implements TripService {
             throw new ServerException("You don't have permission to edit the image", HttpStatus.FORBIDDEN);
         }
 
-        if (newMainImageHash != null && !imageService.checkIfImageExistsInTrip(trip, newMainImageHash)) {
+        if (newMainImageHash != null && !tripImageRepository.ExistsImageInTrip(trip.getId(), newMainImageHash)) {
             throw new ServerException("this image is not in the trip", HttpStatus.BAD_REQUEST);
         }
 
@@ -217,12 +210,13 @@ public class TripServiceImpl implements TripService {
 
     @Override
     @SneakyThrows
-    public List<ImageSummary> getImageSummaryList(Trip trip) {
+    public List<ImageDto> getImageSummaryList(Trip trip) {
         AppUser appUser = userService.getLoggedUser();
         if (!trip.isPublic() && !this.checkIfContributor(trip, appUser)) {
             throw new ServerException("you do not have permission to see the images", HttpStatus.FORBIDDEN);
         }
-        return imageService.getImageSummaryList(trip);
+        return imageService.getImageSummaryList(tripImageRepository.findAllImageIdInTrip(trip.getId())).stream().map(x ->
+                ImageDto.of(x, tripImageRepository.isMain(x.getHash()))).toList();
     }
 
     @Override
@@ -258,7 +252,5 @@ public class TripServiceImpl implements TripService {
         appUserTrip.get().getUser().getTrips().remove(appUserTrip.get());
         appUserTrip.get().getTrip().getUsers().remove(appUserTrip.get());
         appUserTripRepository.delete(appUserTrip.get());
-
-
     }
 }

@@ -2,12 +2,12 @@ package travel.ways.travelwaysapi.trip.service.internal;
 
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
-import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.AttractionResponse;
+import travel.ways.travelwaysapi.trip.model.dto.response.ImageDto;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public interface AttractionService {
 
     boolean checkIfContributor(Attraction attraction, AppUser appUser);
 
-    List<ImageSummaryDto> getImageSummaryList(Attraction attraction);
+    List<ImageDto> getImageSummaryList(Attraction attraction);
 
     void deleteImage(String imageHash);
 

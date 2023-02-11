@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
-import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
-import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
+import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
-import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripMainImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
@@ -19,6 +17,7 @@ import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -34,8 +33,8 @@ public class TripController {
 
     @PostMapping
     public TripResponse createTrip(@Valid @RequestBody CreateTripRequest createTripRequest) {
-        Trip trip = tripService.createTrip(createTripRequest);
-        return TripResponse.of(trip, tripService.getImageSummaryList(trip));
+        var trip = tripService.createTrip(createTripRequest);
+        return TripResponse.of(trip, new ArrayList<>());
     }
 
     @DeleteMapping("/{tripHash}")
@@ -56,22 +55,22 @@ public class TripController {
 
     @GetMapping("/{tripHash}")
     public TripDetailsResponse getTrip(@PathVariable String tripHash) {
-        Trip trip = tripService.getTrip(tripHash);
+        var trip = tripService.getTrip(tripHash);
         return TripDetailsResponse.of(trip, tripService.getImageSummaryList(trip),
                 attractionService.getTripAttractions(trip));
     }
 
     @PutMapping("/edit")
     public TripResponse editTrip(@Valid @RequestBody EditTripRequest editTripRequest) {
-        Trip trip = tripService.editTrip(editTripRequest);
+        var trip = tripService.editTrip(editTripRequest);
         return TripResponse.of(trip, tripService.getImageSummaryList(trip));
     }
 
     @PutMapping("/edit/main-image")
     public BaseResponse editMainImage(@Valid @RequestBody EditTripMainImageRequest editMainImageRequest) {
 
-        Trip trip = tripService.getTrip(editMainImageRequest.getTripHash());
-        Image image = tripService.editMainImage(trip, editMainImageRequest.getImageHash());
+        var trip = tripService.getTrip(editMainImageRequest.getTripHash());
+        var image = tripService.editMainImage(trip, editMainImageRequest.getImageHash());
         if (image == null) {
             return new BaseResponse(true, "main image removed");
         }
@@ -91,8 +90,8 @@ public class TripController {
     }
 
     @PostMapping(value = "/{tripHash}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageSummary addImageToTrip(@PathVariable String tripHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
-        Image image = tripService.addImage(addImageRequest, tripHash);
+    public ImageSummaryDto addImageToTrip(@PathVariable String tripHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
+        var image = tripService.addImage(addImageRequest, tripHash);
         return imageService.getImageSummary(image.getHash());
     }
 

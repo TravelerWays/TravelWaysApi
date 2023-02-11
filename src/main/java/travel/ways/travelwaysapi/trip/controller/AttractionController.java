@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
-import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
+import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
@@ -76,13 +76,13 @@ public class AttractionController {
     }
 
     @PostMapping(value = "/{attractionHash}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageSummary addImageToAttraction(@PathVariable String attractionHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
+    public ImageSummaryDto addImageToAttraction(@PathVariable String attractionHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
         Image image = attractionService.addImage(addImageRequest, attractionHash);
         return imageService.getImageSummary(image.getHash());
     }
 
     @DeleteMapping("/image/{imageHash}")
-    public BaseResponse deleteImage(@PathVariable String imageHash){
+    public BaseResponse deleteImage(@PathVariable String imageHash) {
         attractionService.deleteImage(imageHash);
         return new BaseResponse(true, "image deleted");
     }

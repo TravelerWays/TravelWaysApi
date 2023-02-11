@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
-import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.map.service.shared.LocationService;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
@@ -18,6 +17,7 @@ import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.AttractionResponse;
+import travel.ways.travelwaysapi.trip.model.dto.response.ImageDto;
 import travel.ways.travelwaysapi.trip.repository.AttractionImageRepository;
 import travel.ways.travelwaysapi.trip.repository.AttractionRepository;
 import travel.ways.travelwaysapi.trip.service.internal.AttractionService;
@@ -25,7 +25,6 @@ import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -86,7 +85,7 @@ public class AttractionServiceImpl implements AttractionService {
             throw new ServerException("You don't have permission to edit the image", HttpStatus.FORBIDDEN);
         }
 
-        if (newMainImageHash != null && !imageService.checkIfImageExistsInAttraction(attraction, newMainImageHash)) {
+        if (newMainImageHash != null && !attractionImageRepository.existsImageInAttraction(attraction.getId(), newMainImageHash)) {
             throw new ServerException("this image is not in the attraction", HttpStatus.BAD_REQUEST);
         }
 
@@ -109,14 +108,8 @@ public class AttractionServiceImpl implements AttractionService {
         AppUser loggedUser = userService.getLoggedUser();
         boolean showPrivate = loggedUser.equals(user);
 
-        List<AttractionResponse> attractions = new ArrayList<>();
-        for (Attraction attraction : attractionRepository.findAllByUser(user)) {
-            if (!showPrivate && !attraction.isPublic() && !this.checkIfContributor(attraction, loggedUser)) {
-                continue;
-            }
-            attractions.add(AttractionResponse.of(attraction, getImageSummaryList(attraction)));
-        }
-        return attractions;
+        return mapToAttractionResponse(attractionRepository.findAllByUser(user), showPrivate);
+
     }
 
     @Override
@@ -136,14 +129,7 @@ public class AttractionServiceImpl implements AttractionService {
         AppUser loggedUser = userService.getLoggedUser();
         boolean showPrivate = loggedUser.equals(tripService.findOwner(trip));
 
-        List<AttractionResponse> attractions = new ArrayList<>();
-        for (Attraction attraction : attractionRepository.findAllByTrip(trip)) {
-            if (!showPrivate && !attraction.isPublic() && !this.checkIfContributor(attraction, loggedUser)) {
-                continue;
-            }
-            attractions.add(AttractionResponse.of(attraction, getImageSummaryList(attraction)));
-        }
-        return attractions;
+        return mapToAttractionResponse(attractionRepository.findAllByTrip(trip), showPrivate);
     }
 
     @Override
@@ -156,9 +142,8 @@ public class AttractionServiceImpl implements AttractionService {
             throw new ServerException("You do not have permission to delete the attraction", HttpStatus.FORBIDDEN);
         }
         log.debug("removing attraction with id: " + attraction.getId());
-        for (var imageSummary : imageService.getImageSummaryList(attraction)) {
-            this.deleteImage(imageSummary.getHash());
-        }
+        imageService.getImageSummaryList(attractionImageRepository.findAllImageIdInAttraction(attraction.getId())).forEach(x -> deleteImage(x.getHash()));
+
         attractionRepository.delete(attraction);
     }
 
@@ -177,20 +162,17 @@ public class AttractionServiceImpl implements AttractionService {
         if (attraction.getTrip() != null && !tripService.checkIfContributor(attraction.getTrip(), appUser)) {
             return false;
         }
-        if (attraction.getTrip() == null && !attraction.getUser().equals(appUser)) {
-            return false;
-        }
-        return true;
+        return attraction.getTrip() != null || attraction.getUser().equals(appUser);
     }
 
     @Override
     @SneakyThrows
-    public List<ImageSummaryDto> getImageSummaryList(Attraction attraction) {
+    public List<ImageDto> getImageSummaryList(Attraction attraction) {
         AppUser appUser = userService.getLoggedUser();
         if (!attraction.isPublic() && !this.checkIfContributor(attraction, appUser)) {
             throw new ServerException("you do not have permission to see the images", HttpStatus.FORBIDDEN);
         }
-        return imageService.getImageSummaryList(attraction);
+        return imageService.getImageSummaryList(attractionImageRepository.findAllImageIdInAttraction(attraction.getId())).stream().map(x -> ImageDto.of(x, attractionImageRepository.isMain(x.getHash()))).toList();
     }
 
     @Override
@@ -238,5 +220,13 @@ public class AttractionServiceImpl implements AttractionService {
             throw new ServerException("Attraction not found", HttpStatus.NOT_FOUND);
         }
         return attraction;
+    }
+
+    private List<AttractionResponse> mapToAttractionResponse(List<Attraction> attractions, boolean showPrivate) {
+        var loggedUser = userService.getLoggedUser();
+
+        return attractions.stream()
+                .filter(x -> showPrivate || x.isPublic() || checkIfContributor(x, loggedUser))
+                .map(x -> AttractionResponse.of(x, getImageSummaryList(x))).toList();
     }
 }

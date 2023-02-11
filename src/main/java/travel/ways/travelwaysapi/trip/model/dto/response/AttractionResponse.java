@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.map.model.dto.response.LocationResponse;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
@@ -25,10 +24,10 @@ public class AttractionResponse {
     private Date visitedAt;
     private Short rate;
     private LocationResponse location;
-    private List<ImageSummaryDto> images;
+    private List<ImageDto> images;
     private String tripHash;
 
-    public static AttractionResponse of(Attraction attraction, List<ImageSummaryDto> imageSummaryList) {
+    public static AttractionResponse of(Attraction attraction, List<ImageDto> imageSummaryList) {
         Trip trip = attraction.getTrip();
         String tripHash = null;
         if (trip != null) {

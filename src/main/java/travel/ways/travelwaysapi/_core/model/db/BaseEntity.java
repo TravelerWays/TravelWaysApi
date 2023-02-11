@@ -13,13 +13,13 @@ import java.util.Date;
 public class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long id;
+    protected Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    public Date createAt;
+    protected Date createAt;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    public Date updateAt;
+    protected Date updateAt;
 }
