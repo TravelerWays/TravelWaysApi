@@ -136,8 +136,7 @@ public class AttractionServiceImpl implements AttractionService {
             throw new ServerException("You do not have permission to delete the attraction", HttpStatus.FORBIDDEN);
         }
         log.debug("removing attraction with id: " + attraction.getId());
-        imageService.getImageSummaryList(attractionImageRepository.findAllImageIdInAttraction(attraction.getId())).forEach(x -> deleteImage(x.getHash()));
-
+        // maybe here should be soft delete?
         attractionRepository.delete(attraction);
     }
 
@@ -185,19 +184,23 @@ public class AttractionServiceImpl implements AttractionService {
     @Transactional
     @SneakyThrows
     public Attraction editAttraction(EditAttractionRequest request) {
-        AppUser loggedUser = userService.getLoggedUser();
-        Attraction attraction = this.getAttraction(request.getAttractionHash());
+        var loggedUser = userService.getLoggedUser();
+        var attraction = this.getAttraction(request.getAttractionHash());
         if (!this.checkIfContributor(attraction, loggedUser)) {
             throw new ServerException("You don't have permission to edit the trip", HttpStatus.FORBIDDEN);
+        }
+        if (!request.isValid()) {
+            throw new ServerException("Invalid field values", HttpStatus.BAD_REQUEST);
         }
         attraction.setTitle(request.getTitle());
         attraction.setDescription(request.getDescription());
         attraction.setPublic(request.isPublic());
         attraction.setVisited(request.isVisited());
         attraction.setVisitedAt(request.getVisitedAt());
-        String tripHash = request.getTripHash();
+        attraction.setRate(request.getRate());
+        var tripHash = request.getTripHash();
         if (tripHash != null) {
-            Trip trip = tripService.getTrip(tripHash);
+            var trip = tripService.getTrip(tripHash);
             attraction = this.addAttractionToTrip(attraction, trip);
         } else {
             attraction.setTrip(null);
@@ -209,7 +212,7 @@ public class AttractionServiceImpl implements AttractionService {
     @SneakyThrows
     @Transactional
     public Attraction getAttractionByImageHash(String imageHash) {
-        Attraction attraction = attractionRepository.findByImagesImageHash(imageHash);
+        var attraction = attractionRepository.findByImagesImageHash(imageHash);
         if (attraction == null) {
             throw new ServerException("Attraction not found", HttpStatus.NOT_FOUND);
         }

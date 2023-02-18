@@ -20,4 +20,13 @@ public class EditAttractionRequest {
     private boolean isVisited;
     private Date visitedAt;
     private String tripHash;
+    private Short rate;
+
+    public boolean isValid() {
+        if (isVisited) {
+            return visitedAt == null && rate == null;
+        }
+
+        return true;
+    }
 }
