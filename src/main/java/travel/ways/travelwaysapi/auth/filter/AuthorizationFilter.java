@@ -9,6 +9,7 @@ import lombok.SneakyThrows;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
+import travel.ways.travelwaysapi._core.config.SecurityConfig;
 import travel.ways.travelwaysapi._core.model.dto.BaseErrorResponse;
 import travel.ways.travelwaysapi._core.util.Time;
 import travel.ways.travelwaysapi.auth.service.internal.JwtService;
@@ -35,11 +36,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 jwtService.authenticateUser(token);
             }
         } catch (JWTDecodeException | TokenExpiredException e) {
-            response.setContentType(APPLICATION_JSON_VALUE);
-            BaseErrorResponse baseError = new BaseErrorResponse("JWT error", HttpStatus.FORBIDDEN, time.now().getTimestamp());
-            response.setStatus(baseError.getStatus().value());
-            response.getWriter().write(new ObjectMapper().writeValueAsString(baseError));
-            return;
+            if (SecurityConfig.PublicURI.stream().noneMatch(x -> request.getRequestURI().startsWith(x.replace("**", "")))) {
+                response.setContentType(APPLICATION_JSON_VALUE);
+                BaseErrorResponse baseError = new BaseErrorResponse("JWT error", HttpStatus.FORBIDDEN, time.now().getTimestamp());
+                response.setStatus(baseError.getStatus().value());
+                response.getWriter().write(new ObjectMapper().writeValueAsString(baseError));
+                return;
+            }
         }
 
         filterChain.doFilter(request, response);
