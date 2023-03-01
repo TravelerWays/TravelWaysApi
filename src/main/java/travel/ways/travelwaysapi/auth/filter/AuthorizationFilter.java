@@ -9,6 +9,7 @@ import lombok.SneakyThrows;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
+import travel.ways.travelwaysapi._core.config.SecurityConfig;
 import travel.ways.travelwaysapi._core.model.dto.BaseErrorResponse;
 import travel.ways.travelwaysapi._core.util.Time;
 import travel.ways.travelwaysapi.auth.service.internal.JwtService;
@@ -30,7 +31,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) {
         var token = request.getHeader(HttpHeaders.AUTHORIZATION);
         try {
-            if (token != null && token.startsWith(JwtService.TOKEN_TYPE)) {
+            var isPublicApiRequest = SecurityConfig.PublicURI.stream().noneMatch(x -> request.getRequestURI().startsWith(x.replace("**", "")));
+            if (!isPublicApiRequest) {
                 token = token.substring(JwtService.TOKEN_TYPE.length()).trim();
                 jwtService.authenticateUser(token);
             }

@@ -1,4 +1,4 @@
-package travel.ways.travelwaysapi.file.model.dto;
+package travel.ways.travelwaysapi.trip.model.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

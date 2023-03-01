@@ -21,7 +21,7 @@ import java.util.UUID;
 public class Attraction extends BaseEntity {
     @Column(nullable = false)
     private String title;
-    @Column
+    @Column(length = 500)
     private String description;
 
     @Column(nullable = false)
@@ -40,15 +40,15 @@ public class Attraction extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String hash;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
     @JoinColumn(name = "location_id")
     private Location location;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "trip_id")
     private Trip trip;
 

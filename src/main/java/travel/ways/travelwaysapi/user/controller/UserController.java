@@ -6,9 +6,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
 import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
-import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
+import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
+import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.user.model.dto.response.UserResponse;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
@@ -35,13 +35,13 @@ public class UserController {
     }
 
     @PostMapping(value = "/{userHash}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageSummary addUserImage(@PathVariable String userHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
+    public ImageSummaryDto addUserImage(@PathVariable String userHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
         Image image = userService.addImage(addImageRequest, userHash);
         return imageService.getImageSummary(image.getHash());
     }
 
     @DeleteMapping("/{userHash}/image")
-    public BaseResponse deleteUserImage(@PathVariable String userHash){
+    public BaseResponse deleteUserImage(@PathVariable String userHash) {
         userService.deleteImage(userHash);
         return new BaseResponse(true, "user image deleted");
     }

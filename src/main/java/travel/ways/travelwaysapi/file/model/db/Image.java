@@ -29,6 +29,7 @@ public class Image extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String hash;
 
+    // TODO: In the future, we should removed this, and completely remove depends file to trip, and user modules
     @OneToOne(mappedBy = "image", cascade = CascadeType.ALL, orphanRemoval = true)
     private TripImage trip;
 

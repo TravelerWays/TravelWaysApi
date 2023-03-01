@@ -1,6 +1,7 @@
 package travel.ways.travelwaysapi._core.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +19,8 @@ import travel.ways.travelwaysapi.auth.filter.AuthenticationFilter;
 import travel.ways.travelwaysapi.auth.filter.AuthorizationFilter;
 import travel.ways.travelwaysapi.auth.service.internal.JwtService;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -26,6 +29,8 @@ public class SecurityConfig {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtService jwtUtils;
     private final Time time;
+
+    public static List<String> PublicURI = List.of("/api/auth/**", "/api/account/**", "/swagger-ui/**", "/swagger-resources/**", "/v2/api-docs/**");
 
     @Bean
     public AuthenticationManager authenticationManagerBean(HttpSecurity http) throws Exception {
@@ -40,16 +45,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @SneakyThrows
+    public SecurityFilterChain filterChain(HttpSecurity http) {
         var authenticationFilter = new AuthenticationFilter(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class))
                 , jwtUtils, time);
         authenticationFilter.setFilterProcessesUrl("/api/auth/login");
         http.csrf().disable();
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.authorizeRequests().antMatchers("/api/auth/**", "/api/account/**").permitAll();
-        http.authorizeRequests().antMatchers("/swagger-ui/**","/swagger-resources/**", "/v2/api-docs/**").permitAll();
+        for (var URI : PublicURI) {
+            http.authorizeRequests().antMatchers(URI).permitAll();
+        }
         http.authorizeRequests().anyRequest().authenticated();
+
         http.addFilter(authenticationFilter);
         http.addFilterBefore(new AuthorizationFilter(jwtUtils, time), UsernamePasswordAuthenticationFilter.class);
         http.cors();

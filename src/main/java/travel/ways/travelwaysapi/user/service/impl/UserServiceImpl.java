@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
+import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.dto.response.UserResponse;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
@@ -71,11 +71,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @SneakyThrows
     public Image addImage(AddImageRequest request, String userHash) {
-        AppUser user = this.getByHash(userHash);
+        var user = this.getByHash(userHash);
         if (!user.equals(this.getLoggedUser())) {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
         }
-        Image image = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
+        // here is a special logic, because stupid hibernate can't set id as foreign key, it has to have whole object:)
+        var imageId = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
+        var image = imageService.getImage(imageId);
+
         user.setImage(image);
         return image;
     }

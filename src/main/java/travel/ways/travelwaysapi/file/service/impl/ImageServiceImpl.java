@@ -11,16 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
+import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.repository.ImageRepository;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
-import travel.ways.travelwaysapi.trip.model.db.Attraction;
-import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,8 +33,8 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     @Transactional
-    public Image saveImage(Image image) {
-        return imageRepository.save(image);
+    public Long saveImage(Image image) {
+        return imageRepository.save(image).getId();
     }
 
     @Override
@@ -46,7 +45,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     @SneakyThrows
     @Transactional
-    public Image createImage(String name, MultipartFile data) {
+    public Long createImage(String name, MultipartFile data) {
         String extension = data.getContentType();
         if (extension == null || !(extension.equals(MediaType.IMAGE_JPEG_VALUE) || extension.equals(MediaType.IMAGE_PNG_VALUE))) {
             log.debug(extension + "is a bad file format, should be: " + MediaType.IMAGE_JPEG_VALUE + " or " + MediaType.IMAGE_PNG_VALUE);
@@ -57,39 +56,29 @@ public class ImageServiceImpl implements ImageService {
         image.setName(name);
         image.setExtension(extension);
         image.setHash(UUID.randomUUID().toString());
-        image = this.saveImage(image);
-        return image;
+        return this.saveImage(image);
     }
 
     @Override
     @SneakyThrows
-    public ImageSummary getImageSummary(String hash) {
-        ImageSummary imageSummary = imageRepository.findImageSummaryByHash(hash);
+    public ImageSummaryDto getImageSummary(String hash) {
+        var imageSummary = imageRepository.findImageSummaryByHash(hash);
         if (imageSummary == null) {
             log.debug("can not find image for hash " + hash);
             throw new ServerException("can not find image for the hash", HttpStatus.NOT_FOUND);
         }
-        return imageSummary;
+        return ImageSummaryDto.of(imageSummary);
     }
 
     @Override
     @SneakyThrows
-    public String getMainImageHash(Trip trip) {
-        ImageSummary imageSummary = imageRepository.findImageSummaryByTripTripAndTripIsMainTrue(trip);
+    public ImageSummaryDto getImageSummary(Long id) {
+        var imageSummary = imageRepository.findImageSummaryById(id);
         if (imageSummary == null) {
-            return null;
+            log.debug("can not find image for id " + id);
+            throw new ServerException("can not find image for the hash", HttpStatus.NOT_FOUND);
         }
-        return imageSummary.getHash();
-    }
-
-    @Override
-    @SneakyThrows
-    public String getMainImageHash(Attraction attraction) {
-        ImageSummary imageSummary = imageRepository.findImageSummaryByAttractionAttractionAndAttractionIsMainTrue(attraction);
-        if (imageSummary == null) {
-            return null;
-        }
-        return imageSummary.getHash();
+        return ImageSummaryDto.of(imageSummary);
     }
 
     @Override
@@ -100,59 +89,49 @@ public class ImageServiceImpl implements ImageService {
     @Override
     @SneakyThrows
     public Image getImage(String hash) {
-        AppUser appUser = userService.getLoggedUser();
+        var image = imageRepository.findByHash(hash);
 
-        Image image = imageRepository.findByHash(hash);
+        throwErrorIfImageDoesntExists(image);
+        throwErrorIfUserDoesntHaveAccessToImage(image.get());
 
-        if (image == null) {
-            log.debug("can not find image for hash " + hash);
-            throw new ServerException("can not find image for the hash", HttpStatus.NOT_FOUND);
-        }
+        return image.get();
+    }
+
+    @Override
+    @SneakyThrows
+    public Image getImage(Long id) {
+        var image = imageRepository.findById(id);
+        throwErrorIfImageDoesntExists(image);
+        throwErrorIfUserDoesntHaveAccessToImage(image.get());
+        return image.get();
+    }
+
+    @Override
+    public List<ImageSummaryDto> getImageSummaryList(List<Long> ids) {
+        return imageRepository.getAllByIdIn(ids).stream().map(ImageSummaryDto::of).toList();
+    }
+
+    @Override
+    public ImageSummaryDto getImageSummary(AppUser user) {
+        return ImageSummaryDto.of(imageRepository.findImageSummaryByUserIs(user));
+    }
+
+    @SneakyThrows
+    private void throwErrorIfUserDoesntHaveAccessToImage(Image image) {
+        var loggedUser = userService.getLoggedUser();
 
         if (image.getTrip() != null) {
-            if (!image.getTrip().getTrip().isPublic() && !tripService.checkIfContributor(image.getTrip().getTrip(), appUser)) {
+            if (!image.getTrip().getTrip().isPublic() && !tripService.checkIfContributor(image.getTrip().getTrip(), loggedUser)) {
                 throw new ServerException("You do not have permission to get the image", HttpStatus.FORBIDDEN);
             }
         }
-
-        return image;
     }
 
-    @Override
-    public List<ImageSummary> getImageSummaryList(Trip trip) {
-        return imageRepository.findAllImageSummaryByTripTrip(trip);
+    @SneakyThrows
+    private void throwErrorIfImageDoesntExists(Optional<Image> image) {
+        if (image.isEmpty()) {
+            log.debug("can not find image");
+            throw new ServerException("can not find image for the hash", HttpStatus.NOT_FOUND);
+        }
     }
-
-    @Override
-    public List<ImageSummary> getImageSummaryList(Attraction attraction) {
-        return imageRepository.findAllImageSummaryByAttractionAttraction(attraction);
-    }
-
-    @Override
-    public ImageSummary getImageSummary(AppUser user) {
-        return imageRepository.findImageSummaryByUserIs(user);
-    }
-
-
-    @Override
-    public Boolean checkIfImageExistsInTrip(Trip trip, String imageHash) {
-
-        return imageRepository.existsImageByHashAndTripTrip(imageHash, trip);
-    }
-
-    @Override
-    public Boolean checkIfImageExistsInAttraction(Attraction attraction, String imageHash) {
-        return imageRepository.existsImageByHashAndAttractionAttraction(imageHash, attraction);
-    }
-
-    @Override
-    public Boolean isAttractionImage(String imageHash) {
-        return imageRepository.existsImageByHashAndAttractionIsNotNull(imageHash);
-    }
-
-    @Override
-    public Boolean isTripImage(String imageHash) {
-        return imageRepository.existsImageByHashAndTripIsNotNull(imageHash);
-    }
-
 }

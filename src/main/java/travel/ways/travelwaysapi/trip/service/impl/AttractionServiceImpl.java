@@ -7,17 +7,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
-import travel.ways.travelwaysapi.file.model.db.Image;
-import travel.ways.travelwaysapi.file.model.dto.AddImageRequest;
-import travel.ways.travelwaysapi.file.model.projection.ImageSummary;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.map.service.shared.LocationService;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.AttractionImage;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
+import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.AttractionResponse;
+import travel.ways.travelwaysapi.trip.model.dto.response.ImageDto;
 import travel.ways.travelwaysapi.trip.repository.AttractionImageRepository;
 import travel.ways.travelwaysapi.trip.repository.AttractionRepository;
 import travel.ways.travelwaysapi.trip.service.internal.AttractionService;
@@ -25,7 +24,6 @@ import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -61,47 +59,42 @@ public class AttractionServiceImpl implements AttractionService {
     @Override
     @Transactional
     @SneakyThrows
-    public Image addImage(AddImageRequest request, String attractionHash) {
+    public ImageDto addImage(AddImageRequest request, String attractionHash) {
         Attraction attraction = this.getAttraction(attractionHash);
         if (!this.checkIfContributor(attraction, userService.getLoggedUser())) {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
         }
-        Image image = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
+        var imageId = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
+        // here we have to download whole image, because hybernate can't update object only by id :)
+        var image = imageService.getImage(imageId);
+        var newAttractionImage = new AttractionImage(attraction, image);
 
-        AttractionImage newAttractionImage = new AttractionImage(attraction, image);
         newAttractionImage = attractionImageRepository.save(newAttractionImage);
         if (request.getIsMain()) {
-            image = this.editMainImage(attraction, image.getHash());
+            this.editMainImage(attraction, image.getHash());
         }
         attraction.getImages().add(newAttractionImage);
         image.setAttraction(newAttractionImage);
-        return image;
+
+        return ImageDto.of(image, request.getIsMain());
     }
 
     @Override
     @Transactional
     @SneakyThrows
-    public Image editMainImage(Attraction attraction, String newMainImageHash) {
+    public void editMainImage(Attraction attraction, String newMainImageHash) {
         if (!userService.getLoggedUser().equals(attraction.getUser())) {
             throw new ServerException("You don't have permission to edit the image", HttpStatus.FORBIDDEN);
         }
 
-        if (newMainImageHash != null && !imageService.checkIfImageExistsInAttraction(attraction, newMainImageHash)) {
+        if (newMainImageHash != null && !attractionImageRepository.existsImageInAttraction(attraction.getId(), newMainImageHash)) {
             throw new ServerException("this image is not in the attraction", HttpStatus.BAD_REQUEST);
         }
 
-        String oldMainImageHash = imageService.getMainImageHash(attraction);
-        if (oldMainImageHash != null) {
-            AttractionImage oldMainAttractionImage = attractionImageRepository.findByImageHash(oldMainImageHash);
-            oldMainAttractionImage.setMain(false);
-        }
-        if (newMainImageHash == null) {
-            return null;
-        }
-        Image newMainImage = imageService.getImage(newMainImageHash);
-        AttractionImage newMainAttractionImage = attractionImageRepository.findByImageHash(newMainImageHash);
+        attractionImageRepository.unsetMainImage(attraction);
+
+        var newMainAttractionImage = attractionImageRepository.findByImageHash(newMainImageHash);
         newMainAttractionImage.setMain(true);
-        return newMainImage;
     }
 
     @Override
@@ -109,14 +102,8 @@ public class AttractionServiceImpl implements AttractionService {
         AppUser loggedUser = userService.getLoggedUser();
         boolean showPrivate = loggedUser.equals(user);
 
-        List<AttractionResponse> attractions = new ArrayList<>();
-        for (Attraction attraction : attractionRepository.findAllByUser(user)) {
-            if (!showPrivate && !attraction.isPublic() && !this.checkIfContributor(attraction, loggedUser)) {
-                continue;
-            }
-            attractions.add(AttractionResponse.of(attraction, getImageSummaryList(attraction)));
-        }
-        return attractions;
+        return mapToAttractionResponse(attractionRepository.findAllByUser(user), showPrivate);
+
     }
 
     @Override
@@ -136,14 +123,7 @@ public class AttractionServiceImpl implements AttractionService {
         AppUser loggedUser = userService.getLoggedUser();
         boolean showPrivate = loggedUser.equals(tripService.findOwner(trip));
 
-        List<AttractionResponse> attractions = new ArrayList<>();
-        for (Attraction attraction : attractionRepository.findAllByTrip(trip)) {
-            if (!showPrivate && !attraction.isPublic() && !this.checkIfContributor(attraction, loggedUser)) {
-                continue;
-            }
-            attractions.add(AttractionResponse.of(attraction, getImageSummaryList(attraction)));
-        }
-        return attractions;
+        return mapToAttractionResponse(attractionRepository.findAllByTrip(trip), showPrivate);
     }
 
     @Override
@@ -156,9 +136,7 @@ public class AttractionServiceImpl implements AttractionService {
             throw new ServerException("You do not have permission to delete the attraction", HttpStatus.FORBIDDEN);
         }
         log.debug("removing attraction with id: " + attraction.getId());
-        for (ImageSummary imageSummary : imageService.getImageSummaryList(attraction)) {
-            this.deleteImage(imageSummary.getHash());
-        }
+        // maybe here should be soft delete?
         attractionRepository.delete(attraction);
     }
 
@@ -177,20 +155,17 @@ public class AttractionServiceImpl implements AttractionService {
         if (attraction.getTrip() != null && !tripService.checkIfContributor(attraction.getTrip(), appUser)) {
             return false;
         }
-        if (attraction.getTrip() == null && !attraction.getUser().equals(appUser)) {
-            return false;
-        }
-        return true;
+        return attraction.getTrip() != null || attraction.getUser().equals(appUser);
     }
 
     @Override
     @SneakyThrows
-    public List<ImageSummary> getImageSummaryList(Attraction attraction) {
+    public List<ImageDto> getImageSummaryList(Attraction attraction) {
         AppUser appUser = userService.getLoggedUser();
         if (!attraction.isPublic() && !this.checkIfContributor(attraction, appUser)) {
             throw new ServerException("you do not have permission to see the images", HttpStatus.FORBIDDEN);
         }
-        return imageService.getImageSummaryList(attraction);
+        return imageService.getImageSummaryList(attractionImageRepository.findAllImageIdInAttraction(attraction.getId())).stream().map(x -> ImageDto.of(x, attractionImageRepository.isMain(x.getHash()))).toList();
     }
 
     @Override
@@ -209,19 +184,23 @@ public class AttractionServiceImpl implements AttractionService {
     @Transactional
     @SneakyThrows
     public Attraction editAttraction(EditAttractionRequest request) {
-        AppUser loggedUser = userService.getLoggedUser();
-        Attraction attraction = this.getAttraction(request.getAttractionHash());
+        var loggedUser = userService.getLoggedUser();
+        var attraction = this.getAttraction(request.getAttractionHash());
         if (!this.checkIfContributor(attraction, loggedUser)) {
             throw new ServerException("You don't have permission to edit the trip", HttpStatus.FORBIDDEN);
+        }
+        if (!request.isValid()) {
+            throw new ServerException("Invalid field values", HttpStatus.BAD_REQUEST);
         }
         attraction.setTitle(request.getTitle());
         attraction.setDescription(request.getDescription());
         attraction.setPublic(request.isPublic());
         attraction.setVisited(request.isVisited());
         attraction.setVisitedAt(request.getVisitedAt());
-        String tripHash = request.getTripHash();
+        attraction.setRate(request.getRate());
+        var tripHash = request.getTripHash();
         if (tripHash != null) {
-            Trip trip = tripService.getTrip(tripHash);
+            var trip = tripService.getTrip(tripHash);
             attraction = this.addAttractionToTrip(attraction, trip);
         } else {
             attraction.setTrip(null);
@@ -233,10 +212,18 @@ public class AttractionServiceImpl implements AttractionService {
     @SneakyThrows
     @Transactional
     public Attraction getAttractionByImageHash(String imageHash) {
-        Attraction attraction = attractionRepository.findByImagesImageHash(imageHash);
-        if(attraction == null){
+        var attraction = attractionRepository.findByImagesImageHash(imageHash);
+        if (attraction == null) {
             throw new ServerException("Attraction not found", HttpStatus.NOT_FOUND);
         }
         return attraction;
+    }
+
+    private List<AttractionResponse> mapToAttractionResponse(List<Attraction> attractions, boolean showPrivate) {
+        var loggedUser = userService.getLoggedUser();
+
+        return attractions.stream()
+                .filter(x -> showPrivate || x.isPublic() || checkIfContributor(x, loggedUser))
+                .map(x -> AttractionResponse.of(x, getImageSummaryList(x))).toList();
     }
 }

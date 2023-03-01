@@ -6,9 +6,15 @@ import travel.ways.travelwaysapi.user.model.db.AppUser;
 
 public interface UserRepository extends JpaRepository<AppUser, Long> {
     AppUser findByUsername(String username);
+
     AppUser findByEmail(String email);
+
     boolean existsByEmail(String email);
+
     boolean existsByUsername(String username);
+
     AppUser findByHash(String hash);
+
     AppUser findOwnerByTripsTripAndTripsIsOwnerTrue(Trip trip);
+
 }

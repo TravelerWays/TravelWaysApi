@@ -7,7 +7,9 @@ import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
@@ -20,19 +22,11 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
     void deleteImageByHash(String hash);
 
-    Image findByHash(String hash);
+    Optional<Image> findByHash(String hash);
 
     ImageSummary findImageSummaryByHash(String hash);
 
-    List<ImageSummary> findAllImageSummaryByTripTrip(Trip trip);
+    ImageSummary findImageSummaryById(Long id);
 
-    Boolean existsImageByHashAndTripTrip(String hash, Trip trip);
-
-    Boolean existsImageByHashAndAttractionAttraction(String hash, Attraction attraction);
-
-    Boolean existsImageByHashAndAttractionIsNotNull(String hash);
-
-    Boolean existsImageByHashAndTripIsNotNull(String hash);
-
-    List<ImageSummary> findAllImageSummaryByAttractionAttraction(Attraction attraction);
+    List<ImageSummary> getAllByIdIn(Collection<Long> id);
 }
