@@ -31,18 +31,17 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) {
         var token = request.getHeader(HttpHeaders.AUTHORIZATION);
         try {
-            if (token != null && token.startsWith(JwtService.TOKEN_TYPE)) {
+            var isPublicApiRequest = SecurityConfig.PublicURI.stream().noneMatch(x -> request.getRequestURI().startsWith(x.replace("**", "")));
+            if (!isPublicApiRequest) {
                 token = token.substring(JwtService.TOKEN_TYPE.length()).trim();
                 jwtService.authenticateUser(token);
             }
         } catch (JWTDecodeException | TokenExpiredException e) {
-            if (SecurityConfig.PublicURI.stream().noneMatch(x -> request.getRequestURI().startsWith(x.replace("**", "")))) {
-                response.setContentType(APPLICATION_JSON_VALUE);
-                BaseErrorResponse baseError = new BaseErrorResponse("JWT error", HttpStatus.FORBIDDEN, time.now().getTimestamp());
-                response.setStatus(baseError.getStatus().value());
-                response.getWriter().write(new ObjectMapper().writeValueAsString(baseError));
-                return;
-            }
+            response.setContentType(APPLICATION_JSON_VALUE);
+            BaseErrorResponse baseError = new BaseErrorResponse("JWT error", HttpStatus.FORBIDDEN, time.now().getTimestamp());
+            response.setStatus(baseError.getStatus().value());
+            response.getWriter().write(new ObjectMapper().writeValueAsString(baseError));
+            return;
         }
 
         filterChain.doFilter(request, response);
