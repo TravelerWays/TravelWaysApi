@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 import travel.ways.travelwaysapi._core.config.SecurityConfig;
+import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.model.dto.BaseErrorResponse;
 import travel.ways.travelwaysapi._core.util.Time;
 import travel.ways.travelwaysapi.auth.service.internal.JwtService;
@@ -29,10 +30,15 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @SneakyThrows
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) {
-        var token = request.getHeader(HttpHeaders.AUTHORIZATION);
         try {
-            var isPublicApiRequest = SecurityConfig.PublicURI.stream().noneMatch(x -> request.getRequestURI().startsWith(x.replace("**", "")));
+            var publicUri = SecurityConfig.PublicURI.stream().map(x -> x.replace("/**", "")).toList();
+            var requestUri = request.getRequestURI();
+            var isPublicApiRequest = publicUri.stream().anyMatch(requestUri::startsWith);
             if (!isPublicApiRequest) {
+                var token = request.getHeader(HttpHeaders.AUTHORIZATION);
+                if (token == null) {
+                    throw new ServerException("Token missing", HttpStatus.UNAUTHORIZED);
+                }
                 token = token.substring(JwtService.TOKEN_TYPE.length()).trim();
                 jwtService.authenticateUser(token);
             }
