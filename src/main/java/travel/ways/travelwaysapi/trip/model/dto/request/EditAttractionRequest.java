@@ -23,7 +23,7 @@ public class EditAttractionRequest {
     private Short rate;
 
     public boolean isValid() {
-        if (isVisited) {
+        if (!isVisited) {
             return visitedAt == null && rate == null;
         }
 
