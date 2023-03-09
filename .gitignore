@@ -4,6 +4,7 @@ target/
 !**/src/test/**/target/
 out/
 logs/
+htmlReport/
 
 ### STS ###
 .apt_generated
@@ -35,4 +36,3 @@ build/
 
 application-dev.properties
 application-prod.properties
-application-test.properties
