@@ -107,7 +107,6 @@ public class AttractionControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .content(objectMapper.writeValueAsString(createAttractionRequest))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
@@ -168,7 +167,6 @@ public class AttractionControllerTest {
         //assert
         List<AttractionResponse> Attractions = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
         });
-
 
         assertEquals(2, Attractions.size());
         assertEquals(attraction.getHash(), Attractions.get(0).getHash());
