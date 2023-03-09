@@ -16,7 +16,7 @@ public class TripInvitationController {
     private final TripInvitationService tripInvitationService;
 
     @PostMapping
-    public TripInvitationResponse createTripInvitation(@ModelAttribute CreateTripInvitationRequest createTripInvitationRequest) {
+    public TripInvitationResponse createTripInvitation(@RequestBody CreateTripInvitationRequest createTripInvitationRequest) {
         return tripInvitationService.createTripInvitation(createTripInvitationRequest);
     }
 
