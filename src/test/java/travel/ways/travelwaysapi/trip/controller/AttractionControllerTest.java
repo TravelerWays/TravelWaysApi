@@ -8,24 +8,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.auth.service.impl.JwtServiceImpl;
+import travel.ways.travelwaysapi.file.repository.ImageRepository;
+import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
+import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
+import travel.ways.travelwaysapi.trip.model.dto.request.EditAttractionMainImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.AttractionResponse;
+import travel.ways.travelwaysapi.trip.model.dto.response.ImageDto;
 import travel.ways.travelwaysapi.trip.service.internal.AttractionService;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -50,6 +62,10 @@ public class AttractionControllerTest {
     private MockMvc mvc;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ImageService imageService;
+    @Autowired
+    private ImageRepository imageRepository;
 
 
     @BeforeEach
@@ -303,6 +319,210 @@ public class AttractionControllerTest {
         mvc.perform(put("/api/attraction/edit")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .content(objectMapper.writeValueAsString(editAttractionRequest))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isForbidden());
+
+        //clean
+        jwtService.authenticateUser(jwtService.generateJwt("JD"));
+        attractionService.deleteAttraction(attraction.getHash());
+    }
+
+    @Test
+    @Transactional
+    public void editMainImage_shouldEditMainImage_whenProperRequest() throws Exception {
+        // arrange
+        Attraction attraction = attractionService.createAttraction(getCreateAttractionRequest(0));
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false),attraction.getHash());
+
+        EditAttractionMainImageRequest editAttractionMainImageRequest = new EditAttractionMainImageRequest(
+                attraction.getHash(),
+                imageDto.getHash()
+        );
+
+        String jwt = jwtService.generateJwt("JD");
+        //act & assert
+        mvc.perform(put("/api/attraction/edit/main-image")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .content(objectMapper.writeValueAsString(editAttractionMainImageRequest))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+        jwtService.authenticateUser(jwt);
+
+        Optional<ImageDto> newImageDto = attractionService.getImageSummaryList(attraction).stream().filter(ImageDto::isMain).findFirst();
+        assertNotNull(newImageDto);
+        assertEquals(imageDto.getHash(), newImageDto.get().getHash());
+        //clean
+        attractionService.deleteAttraction(attraction.getHash());
+    }
+
+    @Test
+    @Transactional
+    public void editMainImage_shouldReturn403_whenForbidden() throws Exception {
+        // arrange
+        Attraction attraction = attractionService.createAttraction(getCreateAttractionRequest(0));
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false),attraction.getHash());
+
+        EditAttractionMainImageRequest editAttractionMainImageRequest = new EditAttractionMainImageRequest(
+                attraction.getHash(),
+                imageDto.getHash()
+        );
+
+        String jwt = jwtService.generateJwt("JD_2");
+        //act & assert
+        mvc.perform(put("/api/attraction/edit/main-image")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .content(objectMapper.writeValueAsString(editAttractionMainImageRequest))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isForbidden());
+
+        //clean
+        jwtService.authenticateUser(jwtService.generateJwt("JD"));
+        attractionService.deleteAttraction(attraction.getHash());
+    }
+
+    @Test
+    @Transactional
+    public void addImageToAttraction_shouldAddNotMainImage_whenProperRequest() throws Exception {
+        // arrange
+        Attraction attraction = attractionService.createAttraction(getCreateAttractionRequest(0));
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        String jwt = jwtService.generateJwt("JD");
+        //act & assert
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/attraction/" + attraction.getHash() + "/image")
+                        .file(multipartFile)
+                        .part(new MockPart("isMain", "false".getBytes()))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        ImageDto imageDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ImageDto.class);
+        jwtService.authenticateUser(jwt);
+
+        assertEquals(data, imageService.getImage(imageDto.getHash()).getData());
+
+        //clean
+        attractionService.deleteAttraction(attraction.getHash());
+    }
+
+    @Test
+    @Transactional
+    public void addImageToAttraction_shouldAddMainImage_whenProperRequest() throws Exception {
+        // arrange
+        Attraction attraction = attractionService.createAttraction(getCreateAttractionRequest(0));
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        String jwt = jwtService.generateJwt("JD");
+        //act & assert
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/attraction/" + attraction.getHash() + "/image")
+                        .file(multipartFile)
+                        .part(new MockPart("isMain", "true".getBytes()))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        ImageDto imageDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ImageDto.class);
+        jwtService.authenticateUser(jwt);
+
+        assertEquals(data, imageService.getImage(imageDto.getHash()).getData());
+        ImageDto newImageDto =  attractionService.getImageSummaryList(attraction).stream().filter(ImageDto::isMain).findFirst().get();
+        assertTrue(newImageDto.isMain());
+        assertEquals(imageDto.getHash(), newImageDto.getHash());
+
+        //clean
+        attractionService.deleteAttraction(attraction.getHash());
+    }
+
+    @Test
+    @Transactional
+    public void addImageToAttraction_shouldReturn403_whenForbidden() throws Exception {
+        // arrange
+        Attraction attraction = attractionService.createAttraction(getCreateAttractionRequest(0));
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        String jwt = jwtService.generateJwt("JD_2");
+        //act & assert
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/attraction/" + attraction.getHash() + "/image")
+                        .file(multipartFile)
+                        .part(new MockPart("isMain", "true".getBytes()))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+        //clean
+        jwtService.authenticateUser(jwtService.generateJwt("JD"));
+        attractionService.deleteAttraction(attraction.getHash());
+    }
+
+    @Test
+    public void deleteImage_shouldDeleteImage_whenProperRequest() throws Exception {
+        Attraction attraction = attractionService.createAttraction(getCreateAttractionRequest(0));
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false),attraction.getHash());
+
+
+        String jwt = jwtService.generateJwt("JD");
+        //act & assert
+        mvc.perform(delete("/api/attraction/image/" + imageDto.getHash())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+        jwtService.authenticateUser(jwt);
+
+        assertThrows(ServerException.class, () -> imageService.getImage(imageDto.getHash()));
+        //clean
+        attractionService.deleteAttraction(attraction.getHash());
+    }
+
+    @Test
+    public void deleteImage_shouldReturn403_whenForbidden() throws Exception {
+        Attraction attraction = attractionService.createAttraction(getCreateAttractionRequest(0));
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false),attraction.getHash());
+
+
+        String jwt = jwtService.generateJwt("JD_2");
+        //act & assert
+        mvc.perform(delete("/api/attraction/image/" + imageDto.getHash())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isForbidden());
 
