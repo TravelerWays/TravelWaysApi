@@ -48,7 +48,9 @@ public class TestBootstrap {
                     "display_name",
                     "osm_id"
             );
-            locationService.create(createLocationRequest);
+            if(!locationService.exitsByOsmId("osm_id")){
+                locationService.create(createLocationRequest);
+            }
         };
     }
 

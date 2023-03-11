@@ -76,7 +76,7 @@ public class ImageServiceImpl implements ImageService {
         var imageSummary = imageRepository.findImageSummaryById(id);
         if (imageSummary == null) {
             log.debug("can not find image for id " + id);
-            throw new ServerException("can not find image for the hash", HttpStatus.NOT_FOUND);
+            throw new ServerException("can not find image for the id", HttpStatus.NOT_FOUND);
         }
         return ImageSummaryDto.of(imageSummary);
     }
