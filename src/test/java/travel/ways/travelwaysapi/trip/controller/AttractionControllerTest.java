@@ -338,7 +338,7 @@ public class AttractionControllerTest {
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
-        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false),attraction.getHash());
+        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false), attraction.getHash());
 
         EditAttractionMainImageRequest editAttractionMainImageRequest = new EditAttractionMainImageRequest(
                 attraction.getHash(),
@@ -372,7 +372,7 @@ public class AttractionControllerTest {
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
-        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false),attraction.getHash());
+        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false), attraction.getHash());
 
         EditAttractionMainImageRequest editAttractionMainImageRequest = new EditAttractionMainImageRequest(
                 attraction.getHash(),
@@ -424,6 +424,32 @@ public class AttractionControllerTest {
 
     @Test
     @Transactional
+    public void addImageToAttraction_shouldThrow_whenBadExtension() throws Exception {
+        // arrange
+        Attraction attraction = attractionService.createAttraction(getCreateAttractionRequest(0));
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+                "not_png_not_jpg", data);
+
+        String jwt = jwtService.generateJwt("JD");
+        //act & assert
+        mvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/attraction/" + attraction.getHash() + "/image")
+                        .file(multipartFile)
+                        .part(new MockPart("isMain", "false".getBytes()))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+        jwtService.authenticateUser(jwt);
+        //clean
+        attractionService.deleteAttraction(attraction.getHash());
+    }
+
+    @Test
+    @Transactional
     public void addImageToAttraction_shouldAddMainImage_whenProperRequest() throws Exception {
         // arrange
         Attraction attraction = attractionService.createAttraction(getCreateAttractionRequest(0));
@@ -447,7 +473,7 @@ public class AttractionControllerTest {
         jwtService.authenticateUser(jwt);
 
         assertEquals(data, imageService.getImage(imageDto.getHash()).getData());
-        ImageDto newImageDto =  attractionService.getImageSummaryList(attraction).stream().filter(ImageDto::isMain).findFirst().get();
+        ImageDto newImageDto = attractionService.getImageSummaryList(attraction).stream().filter(ImageDto::isMain).findFirst().get();
         assertTrue(newImageDto.isMain());
         assertEquals(imageDto.getHash(), newImageDto.getHash());
 
@@ -491,7 +517,7 @@ public class AttractionControllerTest {
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
-        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false),attraction.getHash());
+        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false), attraction.getHash());
 
 
         String jwt = jwtService.generateJwt("JD");
@@ -516,7 +542,7 @@ public class AttractionControllerTest {
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
-        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false),attraction.getHash());
+        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false), attraction.getHash());
 
 
         String jwt = jwtService.generateJwt("JD_2");
