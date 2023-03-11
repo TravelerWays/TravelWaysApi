@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import travel.ways.travelwaysapi.map.model.db.Location;
 import travel.ways.travelwaysapi.map.model.dto.osm.LocationDto;
+import travel.ways.travelwaysapi.trip.model.db.Attraction;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -17,14 +21,19 @@ public class LocationResponse {
     private String lon;
     private String displayName;
     private String osmId;
+    private Integer rate;
 
     public static LocationResponse of(Location location) {
+        var attractionRates = location.getAttractions().stream().map(Attraction::getRate).filter(Objects::nonNull).mapToInt(Short::intValue).toArray();
+        var rate = Arrays.stream(attractionRates).sum();
+
         return new LocationResponse(
                 location.getName(),
                 location.getLat(),
                 location.getLon(),
                 location.getDisplayName(),
-                location.getOsmId()
+                location.getOsmId(),
+                rate > 0 ? rate / attractionRates.length : 0
         );
     }
 
@@ -34,7 +43,8 @@ public class LocationResponse {
                 osmModel.getLat(),
                 osmModel.getLon(),
                 osmModel.getDisplayName(),
-                osmModel.getOsmId()
+                osmModel.getOsmId(),
+                0
         );
     }
 }
