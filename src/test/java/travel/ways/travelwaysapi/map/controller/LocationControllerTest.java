@@ -18,7 +18,6 @@ import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
 import travel.ways.travelwaysapi.auth.service.impl.JwtServiceImpl;
 import travel.ways.travelwaysapi.map.model.dto.request.CreateLocationRequest;
 import travel.ways.travelwaysapi.map.model.dto.response.LocationResponse;
-import travel.ways.travelwaysapi.map.repository.LocationRepository;
 import travel.ways.travelwaysapi.map.service.shared.LocationService;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,8 +40,6 @@ class LocationControllerTest {
     @Autowired
     private JwtServiceImpl jwtService;
     private MockMvc mvc;
-    @Autowired
-    private LocationRepository locationRepository;
 
 
     @BeforeEach
@@ -139,7 +136,7 @@ class LocationControllerTest {
                 "34.343",
                 "34.332",
                 "new_location_display_name",
-                "new_location"
+                "different_new_location"
         );
 
         String jwt = jwtService.generateJwt("JD");

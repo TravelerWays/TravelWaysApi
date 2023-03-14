@@ -16,17 +16,6 @@ import travel.ways.travelwaysapi.map.service.shared.LocationService;
 public class LocationServiceImpl implements LocationService {
     private final LocationRepository locationRepository;
 
-    @Override
-    @SneakyThrows
-    public Location getLocation(Long id) {
-        var location = locationRepository.findById(id);
-
-        if (location.isEmpty()) {
-            throw new ServerException("Location with id " + id + " not found", HttpStatus.NOT_FOUND);
-        }
-
-        return location.get();
-    }
 
     @Override
     @SneakyThrows
