@@ -14,6 +14,7 @@ import travel.ways.travelwaysapi.trip.model.db.AttractionImage;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
+import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.AttractionResponse;
 import travel.ways.travelwaysapi.trip.model.dto.response.ImageDto;
@@ -45,15 +46,11 @@ public class AttractionServiceImpl implements AttractionService {
 
         attraction.setLocation(location);
         attraction.setUser(userService.getLoggedUser());
-        String tripHash = createAttractionRequest.getTripHash();
-        if (tripHash != null) {
-            Trip trip = tripService.getTrip(tripHash);
-            attraction = this.addAttractionToTrip(attraction, trip);
-        } else {
-            attraction.setTrip(null);
-        }
-        attraction = attractionRepository.save(attraction);
-        return attraction;
+        var tripHash = createAttractionRequest.getTripHash();
+        var trip = tripHash != null ? tripService.getTrip(tripHash) : tripService.createTrip(new CreateTripRequest(createAttractionRequest.getTitle(), createAttractionRequest.isPublic(), createAttractionRequest.getDescription()));
+        this.addAttractionToTrip(attraction, trip);
+
+        return attractionRepository.save(attraction);
     }
 
     @Override
