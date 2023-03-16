@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.file.model.db.Image;
+import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
@@ -80,6 +81,7 @@ public class UserServiceImpl implements UserService {
         var image = imageService.getImage(imageId);
 
         user.setImage(image);
+        image.setUser(user);
         return image;
     }
 
@@ -91,7 +93,11 @@ public class UserServiceImpl implements UserService {
         if (!user.equals(this.getLoggedUser())) {
             throw new ServerException("You don't have permission to delete image", HttpStatus.FORBIDDEN);
         }
-        String imageHash = imageService.getImageSummary(user).getHash();
+        ImageSummaryDto imageSummaryDto = imageService.getImageSummary(user);
+        if(imageSummaryDto == null){
+            throw new ServerException("There is no image to delete", HttpStatus.NOT_FOUND);
+        }
+        String imageHash = imageSummaryDto.getHash();
         user.setImage(null);
         imageService.deleteImage(imageHash);
     }
