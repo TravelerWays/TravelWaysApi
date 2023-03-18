@@ -26,9 +26,9 @@ jobs:
       run: mvn -B package --file pom.xml
     
     
-  coverage:
-    runs-on: ubuntu-latest
-    steps:
+  # coverage:
+  #   runs-on: ubuntu-latest
+  #   steps:
 
     - name: Run Coverage
       run: mvn jacoco:prepare-agent test install jacoco:report
