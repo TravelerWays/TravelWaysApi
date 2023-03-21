@@ -32,15 +32,7 @@ jobs:
 
     - name: Run Coverage
       run: mvn jacoco:prepare-agent test install jacoco:report
-    # - name: Add coverage to PR
-    #   id: jacoco
-    #   uses: madrapps/jacoco-report@v1.3
-    #   with:
-    #     paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
-    #     token: ${{ secrets.GITHUB_TOKEN }}
-    #     min-coverage-overall: 70
-    #     min-coverage-changed-files: 60
-    # generates coverage-report.md and publishes as checkrun
+
     - name: JaCoCo Code Coverage Report
       id: jacoco_reporter
       uses: PavanMudigonda/jacoco-reporter@v4.8
@@ -53,12 +45,9 @@ jobs:
         minimum_coverage: 75
         fail_below_threshold: true
         publish_only_summary: true
-      
-      # Publish Coverage Job Summary  # Optional
+
     - name: Add Coverage Job Summary
       run: echo "${{ steps.jacoco_reporter.outputs.coverageSummary }}" >> $GITHUB_STEP_SUMMARY
-        
-    # uploads the coverage-report.md artifact  # Optional
 
     - name: Upload Code Coverage Artifacts
       uses: actions/upload-artifact@v2
