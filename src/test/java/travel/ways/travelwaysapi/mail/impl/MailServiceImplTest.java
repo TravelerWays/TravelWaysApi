@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import travel.ways.travelwaysapi._core.properity.MailProperty;
 import travel.ways.travelwaysapi.mail.models.dto.request.SendMailRequest;
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class MailServiceImplTest {
 
