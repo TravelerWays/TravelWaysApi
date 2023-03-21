@@ -36,7 +36,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public void changePassword(Long userId, String newPassword) {
         var optionalUser = userRepository.findById(userId);
-        if(optionalUser.isEmpty()){
+        if (optionalUser.isEmpty()) {
             throw new ServerException("User doesn't exists", HttpStatus.BAD_REQUEST);
         }
         var user = optionalUser.get();
@@ -46,12 +46,12 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @SneakyThrows
     @Transactional
-    public AppUser createUser(CreateUserRequest requestUser){
-        if(userRepository.existsByEmail(requestUser.getEmail())){
+    public AppUser createUser(CreateUserRequest requestUser) {
+        if (userRepository.existsByEmail(requestUser.getEmail())) {
             throw new ServerException("User with email: " + requestUser.getEmail() + " already exists",
                     HttpStatus.CONFLICT);
         }
-        if(userRepository.existsByUsername(requestUser.getUsername())){
+        if (userRepository.existsByUsername(requestUser.getUsername())) {
             throw new ServerException("User with username: " + requestUser.getUsername() + " already exists",
                     HttpStatus.CONFLICT);
         }
@@ -60,23 +60,23 @@ public class AccountServiceImpl implements AccountService {
         AppUser user = AppUser.of(requestUser, List.of(roleRepository.findByName(Roles.ROLE_USER)));
         user.setHash(UUID.randomUUID().toString());
 
-        userRepository.save(user);
+        user = userRepository.save(user);
         return user;
     }
 
     @Transactional
     @Override
     @SneakyThrows
-    public AppUser activateUser(String hash){
+    public AppUser activateUser(String hash) {
         AppUser user = userRepository.findByHash(hash);
-        if(user == null){
+        if (user == null) {
             throw new ServerException("Can't find user for hash", HttpStatus.NOT_FOUND);
         }
         user.setActive(true);
         return user;
     }
 
-    public void sendActivationMail(AppUser user){
+    public void sendActivationMail(AppUser user) {
         mailService.sendMail(new SendMailRequest<>(
                 "Active account",
                 user.getEmail(),

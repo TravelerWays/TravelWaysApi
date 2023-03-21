@@ -52,7 +52,6 @@ class UserControllerTest {
     private ImageService imageService;
 
 
-
     @BeforeEach
     public void setup() {
         mvc = MockMvcBuilders
@@ -122,6 +121,30 @@ class UserControllerTest {
     }
 
     @Test
+    @Transactional
+    public void addUserImage_shouldReturn403_WhenForbidden() throws Exception {
+        String jwt = jwtService.generateJwt("JD_2");
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        AppUser user = userService.getByUsername("JD");
+        //act
+        mvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/user/" + user.getHash() + "/image")
+                        .file(multipartFile)
+                        .part(new MockPart("isMain", "true".getBytes()))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+
+    @Test
+    @Transactional
     public void deleteUserImage_shouldDeleteUserImage() throws Exception {
         String jwt = jwtService.generateJwt("JD");
 
@@ -140,5 +163,34 @@ class UserControllerTest {
 
         jwtService.authenticateUser(jwt);
         assertNull(user.getImage());
+    }
+
+    @Test
+    public void deleteUserImage_shouldReturn403_whenForbidden() throws Exception {
+        String jwt = jwtService.generateJwt("JD_2");
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+        AppUser user = userService.getByUsername("JD");
+        userService.addImage(new AddImageRequest(multipartFile, true), user.getHash());
+
+        //act && assert
+        mvc.perform(delete("/api/user/" + user.getHash() + "/image")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void deleteUserImage_shouldReturn404_whenNotFoundImage() throws Exception {
+        String jwt = jwtService.generateJwt("JD");
+        AppUser user = userService.getByUsername("JD");
+        //act && assert
+        mvc.perform(delete("/api/user/" + user.getHash() + "/image")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(status().isNotFound());
     }
 }
