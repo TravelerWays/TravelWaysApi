@@ -15,4 +15,6 @@ public interface PasswordRecoveryRepository extends JpaRepository<PasswordRecove
 
     PasswordRecovery findByHash(String hash);
 
+    PasswordRecovery findByUser(AppUser user);
+
 }

@@ -1,9 +1,13 @@
 package travel.ways.travelwaysapi.map.model.dto.osm;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddressDto {
     private String city;
     @JsonProperty("city_district")

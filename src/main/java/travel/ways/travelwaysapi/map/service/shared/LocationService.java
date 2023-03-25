@@ -5,7 +5,6 @@ import travel.ways.travelwaysapi.map.model.dto.request.CreateLocationRequest;
 import travel.ways.travelwaysapi.map.model.dto.response.LocationResponse;
 
 public interface LocationService {
-    Location getLocation(Long id);
 
     Location getByOsmId(String osmId);
 

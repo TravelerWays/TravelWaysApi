@@ -8,24 +8,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.auth.service.impl.JwtServiceImpl;
+import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.Trip;
+import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
+import travel.ways.travelwaysapi.trip.model.dto.request.EditTripMainImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditTripRequest;
+import travel.ways.travelwaysapi.trip.model.dto.response.ImageDto;
 import travel.ways.travelwaysapi.trip.model.dto.response.TripResponse;
 import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -48,6 +58,8 @@ class TripControllerTest {
     private MockMvc mvc;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ImageService imageService;
 
 
     @BeforeEach
@@ -368,6 +380,214 @@ class TripControllerTest {
         //assert
         jwtService.authenticateUser(jwtService.generateJwt("JD"));
         //clean
+        tripService.deleteTrip(trip);
+    }
+
+    @Test
+    @Transactional
+    public void editMainImage_shouldEditMainImage_whenProperRequest() throws Exception {
+        // arrange
+        Trip trip = tripService.createTrip(getCreateTripRequest(0));
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFile, false), trip.getHash());
+
+        EditTripMainImageRequest editTripMainImageRequest = new EditTripMainImageRequest(
+                trip.getHash(),
+                imageDto.getHash()
+        );
+
+        String jwt = jwtService.generateJwt("JD");
+        //act & assert
+        mvc.perform(put("/api/trip/edit/main-image")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .content(objectMapper.writeValueAsString(editTripMainImageRequest))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+        jwtService.authenticateUser(jwt);
+
+        Optional<ImageDto> newImageDto = tripService.getImageSummaryList(trip).stream().filter(ImageDto::isMain).findFirst();
+        assertNotNull(newImageDto);
+        assertEquals(imageDto.getHash(), newImageDto.get().getHash());
+        //clean
+        tripService.deleteTrip(trip);
+    }
+
+    @Test
+    @Transactional
+    public void editMainImage_shouldReturn403_whenForbidden() throws Exception {
+        // arrange
+        Trip trip = tripService.createTrip(getCreateTripRequest(0));
+
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFile, false), trip.getHash());
+
+        EditTripMainImageRequest editTripMainImageRequest = new EditTripMainImageRequest(
+                trip.getHash(),
+                imageDto.getHash()
+        );
+
+        String jwt = jwtService.generateJwt("JD_2");
+        //act & assert
+        mvc.perform(put("/api/trip/edit/main-image")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .content(objectMapper.writeValueAsString(editTripMainImageRequest))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isForbidden());
+
+        //clean
+        jwtService.authenticateUser(jwtService.generateJwt("JD"));
+        tripService.deleteTrip(trip);
+    }
+
+    @Test
+    @Transactional
+    public void addImageToTrip_shouldAddNotMainImage_whenProperRequest() throws Exception {
+        // arrange
+        Trip trip = tripService.createTrip(getCreateTripRequest(0));
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        String jwt = jwtService.generateJwt("JD");
+        //act & assert
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/trip/" + trip.getHash() + "/image")
+                        .file(multipartFile)
+                        .part(new MockPart("isMain", "false".getBytes()))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        ImageDto imageDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ImageDto.class);
+        jwtService.authenticateUser(jwt);
+
+        assertEquals(data,imageService.getImage(tripService.getImageSummaryList(trip).get(0).getHash()).getData());
+
+        //clean
+        tripService.deleteTrip(trip);
+    }
+
+    @Test
+    @Transactional
+    public void addImageToTrip_shouldAddMainImage_whenProperRequest() throws Exception {
+        // arrange
+        Trip trip = tripService.createTrip(getCreateTripRequest(0));
+
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        String jwt = jwtService.generateJwt("JD");
+        //act & assert
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/trip/" + trip.getHash() + "/image")
+                        .file(multipartFile)
+                        .part(new MockPart("isMain", "true".getBytes()))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        ImageDto imageDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ImageDto.class);
+        jwtService.authenticateUser(jwt);
+
+        assertEquals(data, imageService.getImage(imageDto.getHash()).getData());
+        ImageDto newImageDto = tripService.getImageSummaryList(trip).stream().filter(ImageDto::isMain).findFirst().get();
+        assertTrue(newImageDto.isMain());
+        assertEquals(imageDto.getHash(), newImageDto.getHash());
+
+        //clean
+        tripService.deleteTrip(trip);
+    }
+
+    @Test
+    @Transactional
+    public void addImageToTrip_shouldReturn403_whenForbidden() throws Exception {
+        // arrange
+        Trip trip = tripService.createTrip(getCreateTripRequest(0));
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        String jwt = jwtService.generateJwt("JD_2");
+        //act & assert
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/trip/" + trip.getHash() + "/image")
+                        .file(multipartFile)
+                        .part(new MockPart("isMain", "true".getBytes()))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+        //clean
+        jwtService.authenticateUser(jwtService.generateJwt("JD"));
+        tripService.deleteTrip(trip);
+    }
+
+    @Test
+    public void deleteImage_shouldDeleteImage_whenProperRequest() throws Exception {
+        Trip trip = tripService.createTrip(getCreateTripRequest(0));
+
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFile, false), trip.getHash());
+
+
+        String jwt = jwtService.generateJwt("JD");
+        //act & assert
+        mvc.perform(delete("/api/trip/image/" + imageDto.getHash())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+        jwtService.authenticateUser(jwt);
+
+        assertThrows(ServerException.class, () -> imageService.getImage(imageDto.getHash()));
+        //clean
+        tripService.deleteTrip(trip);
+    }
+
+    @Test
+    public void deleteImage_shouldReturn403_whenForbidden() throws Exception {
+        Trip trip = tripService.createTrip(getCreateTripRequest(0));
+
+
+        byte[] data = new byte[255];
+        new Random().nextBytes(data);
+        MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
+                MediaType.IMAGE_PNG_VALUE, data);
+
+        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFile, false), trip.getHash());
+
+
+        String jwt = jwtService.generateJwt("JD_2");
+        //act & assert
+        mvc.perform(delete("/api/trip/image/" + imageDto.getHash())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isForbidden());
+
+        //clean
+        jwtService.authenticateUser(jwtService.generateJwt("JD"));
         tripService.deleteTrip(trip);
     }
 
