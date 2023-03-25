@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.auth.service.impl.UserDetailsServiceImpl;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
@@ -40,6 +41,15 @@ class UserServiceImplTest {
 
         // act / assert
         assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername("username"));
+    }
+
+    @Test
+    void getByHash_whenUserDoesntExist_thenThrowError() {
+        // arrange
+        Mockito.when(userRepository.findByHash(Mockito.any())).thenReturn(null);
+
+        // act / assert
+        assertThrows(ServerException.class, () -> userService.getByHash("username"));
     }
 
     @Test

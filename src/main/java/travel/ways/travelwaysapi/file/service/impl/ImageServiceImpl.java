@@ -113,6 +113,10 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public ImageSummaryDto getImageSummary(AppUser user) {
+        var image = imageRepository.findImageSummaryByUserIs(user);
+        if(image == null){
+            return null;
+        }
         return ImageSummaryDto.of(imageRepository.findImageSummaryByUserIs(user));
     }
 
