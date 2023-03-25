@@ -9,8 +9,8 @@ import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.Role;
 import travel.ways.travelwaysapi.user.model.dto.request.ChangePasswordRequest;
-import travel.ways.travelwaysapi.user.service.shared.AccountService;
 import travel.ways.travelwaysapi.user.service.internal.PasswordRecoveryService;
+import travel.ways.travelwaysapi.user.service.shared.AccountService;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ class AccountControllerTest {
 
 
     @Test
-    public void changePassword_whenInvalidRecoveryHash_thenThrowException(){
+    public void changePassword_whenInvalidRecoveryHash_thenThrowException() {
         // arrange
         Mockito.when(passwordRecoveryService.isRecoveryHashValid(Mockito.any())).thenReturn(false);
 
@@ -42,7 +42,7 @@ class AccountControllerTest {
     }
 
     @Test
-    public void changePassword_whenValidRecoveryHash_thenReturnSuccess(){
+    public void changePassword_whenValidRecoveryHash_thenReturnSuccess() {
         // arrange
         var appUser = new AppUser(
                 "Jhon",

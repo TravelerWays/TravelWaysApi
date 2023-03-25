@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
+
 class AccountServiceImplTest {
     @Mock
     private UserRepository userRepository;
@@ -56,7 +57,7 @@ class AccountServiceImplTest {
     }
 
     @Test
-    public void registerUser_whenUserExists_throwException(){
+    public void registerUser_whenUserExists_throwException() {
         CreateUserRequest userRequest = new CreateUserRequest(
                 "testName",
                 "testSurname",
