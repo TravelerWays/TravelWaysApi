@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
-import travel.ways.travelwaysapi.trip.model.db.Attraction;
+import travel.ways.travelwaysapi.trip.model.db.attraction.Attraction;
 import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditAttractionMainImageRequest;

@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.auth.service.impl.JwtServiceImpl;
-import travel.ways.travelwaysapi.trip.model.db.Trip;
+import travel.ways.travelwaysapi.trip.model.db.trip.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripInvitationRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.TripInvitationResponse;
