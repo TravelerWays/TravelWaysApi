@@ -6,9 +6,9 @@ import lombok.*;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
 import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.map.model.db.ScratchMapCountry;
-import travel.ways.travelwaysapi.trip.model.db.Attraction;
-import travel.ways.travelwaysapi.trip.model.db.Trip;
-import travel.ways.travelwaysapi.trip.model.db.TripInvitation;
+import travel.ways.travelwaysapi.trip.model.db.attraction.Attraction;
+import travel.ways.travelwaysapi.trip.model.db.trip.Trip;
+import travel.ways.travelwaysapi.trip.model.db.trip.TripInvitation;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 
 import javax.persistence.*;

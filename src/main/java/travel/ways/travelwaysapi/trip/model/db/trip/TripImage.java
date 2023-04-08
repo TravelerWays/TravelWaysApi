@@ -1,4 +1,4 @@
-package travel.ways.travelwaysapi.trip.model.db;
+package travel.ways.travelwaysapi.trip.model.db.trip;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
@@ -13,28 +13,27 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "attraction_image")
-public class AttractionImage {
-
+@Table(name = "trip_image")
+public class TripImage {
     @EmbeddedId
-    private AttractionImageId id;
+    private TripImageId id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @JsonBackReference
-    @MapsId("attractionId")
-    private Attraction attraction;
+    @MapsId("tripId")
+    private Trip trip;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonBackReference
     @MapsId("imageId")
+    @JsonBackReference
     private Image image;
 
     @Column(name = "is_main", nullable = false)
     private boolean isMain;
 
-    public AttractionImage(Attraction attraction, Image image) {
-        this.id = new AttractionImageId(attraction.getId(), image.getId());
-        this.attraction = attraction;
+    public TripImage(Trip trip, Image image) {
+        this.id = new TripImageId(trip.getId(), image.getId());
+        this.trip = trip;
         this.image = image;
     }
 
@@ -42,18 +41,18 @@ public class AttractionImage {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AttractionImage that = (AttractionImage) o;
-        return isMain == that.isMain && Objects.equals(id, that.id) && Objects.equals(attraction, that.attraction) && Objects.equals(image, that.image);
+        TripImage tripImage = (TripImage) o;
+        return Objects.equals(trip, tripImage.trip) && Objects.equals(image, tripImage.image);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, attraction, image, isMain);
+        return Objects.hash(trip, image);
     }
 
     @Override
     public String toString() {
-        return "AttractionImage{" +
+        return "TripImage{" +
                 "id=" + id +
                 ", isMain=" + isMain +
                 '}';

@@ -3,7 +3,7 @@ package travel.ways.travelwaysapi.user.model.db;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
-import travel.ways.travelwaysapi.trip.model.db.Trip;
+import travel.ways.travelwaysapi.trip.model.db.trip.Trip;
 
 import javax.persistence.*;
 import java.util.Objects;

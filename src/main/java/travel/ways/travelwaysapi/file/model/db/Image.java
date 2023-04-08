@@ -5,8 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
-import travel.ways.travelwaysapi.trip.model.db.AttractionImage;
-import travel.ways.travelwaysapi.trip.model.db.TripImage;
+import travel.ways.travelwaysapi.trip.model.db.attraction.AttractionImage;
+import travel.ways.travelwaysapi.trip.model.db.trip.TripImage;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 
 import javax.persistence.*;

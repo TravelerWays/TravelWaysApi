@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
 import travel.ways.travelwaysapi.map.model.dto.request.CreateLocationRequest;
-import travel.ways.travelwaysapi.trip.model.db.Attraction;
+import travel.ways.travelwaysapi.trip.model.db.attraction.Attraction;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
