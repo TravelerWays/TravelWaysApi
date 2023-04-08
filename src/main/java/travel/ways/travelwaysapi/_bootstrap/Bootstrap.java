@@ -8,6 +8,12 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.model.Roles;
+import travel.ways.travelwaysapi.trip.model.db.expense.Currency;
+import travel.ways.travelwaysapi.trip.model.db.expense.CurrencyEnum;
+import travel.ways.travelwaysapi.trip.model.db.expense.ExpenseCategory;
+import travel.ways.travelwaysapi.trip.model.db.expense.ExpenseCategoryEnum;
+import travel.ways.travelwaysapi.trip.repository.CurrencyRepository;
+import travel.ways.travelwaysapi.trip.repository.ExpenseCategoryRepository;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.Role;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
@@ -21,6 +27,8 @@ public class Bootstrap {
     private final AccountService accountService;
     private final RoleRepository roleRepository;
     private final UserService userService;
+    private final ExpenseCategoryRepository expenseCategoryRepository;
+    private final CurrencyRepository currencyRepository;
 
     @Bean
     @Transactional
@@ -29,6 +37,30 @@ public class Bootstrap {
             for (var roleName : Roles.GetAllRoles()) {
                 if (!roleRepository.existsByName(roleName)) {
                     roleRepository.save(new Role(roleName));
+                }
+            }
+        };
+    }
+
+    @Bean
+    @Transactional
+    public CommandLineRunner setupExpenseCategories() {
+        return args -> {
+            for (var expenseCategory : ExpenseCategoryEnum.values()) {
+                if (!expenseCategoryRepository.existsByExpenseCategory(expenseCategory)) {
+                    expenseCategoryRepository.save(new ExpenseCategory(expenseCategory));
+                }
+            }
+        };
+    }
+
+    @Bean
+    @Transactional
+    public CommandLineRunner setupCurrencies() {
+        return args -> {
+            for (var currency : CurrencyEnum.values()) {
+                if (!currencyRepository.existsByCurrency(currency)) {
+                    currencyRepository.save(new Currency(currency));
                 }
             }
         };
