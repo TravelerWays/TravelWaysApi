@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import travel.ways.travelwaysapi.map.model.db.Location;
 import travel.ways.travelwaysapi.map.model.dto.osm.LocationDto;
-import travel.ways.travelwaysapi.trip.model.db.Attraction;
+import travel.ways.travelwaysapi.trip.model.db.attraction.Attraction;
 
 import java.util.Arrays;
 import java.util.Objects;
