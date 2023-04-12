@@ -171,15 +171,12 @@ public class TripServiceImpl implements TripService {
         if (!this.checkIfContributor(trip, userService.getLoggedUser())) {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
         }
-        var imageId = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
+        var imageId = imageService.createImage(request.getImagesData()[0].getOriginalFilename(), request.getImagesData()[0]);
         // here we have to download whole image, because hybernate can't update object only by id :)
         var image = imageService.getImage(imageId);
         var newTripImage = new TripImage(trip, image);
 
         tripImageRepository.save(newTripImage);
-        if (request.getIsMain()) {
-            this.editMainImage(trip, image.getHash());
-        }
         return ImageDto.of(image, request.getIsMain());
     }
 

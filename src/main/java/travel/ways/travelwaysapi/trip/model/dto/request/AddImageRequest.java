@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class AddImageRequest {
     @NotNull
-    MultipartFile imageData;
+    MultipartFile[] imagesData;
     @NotNull
     Boolean isMain;
 }

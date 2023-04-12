@@ -14,7 +14,7 @@ import java.util.List;
 public interface AttractionService {
     Attraction createAttraction(CreateAttractionRequest createAttractionRequest);
 
-    ImageDto addImage(AddImageRequest request, String attractionHash);
+    List<ImageDto> addImage(AddImageRequest request, String attractionHash);
 
     void editMainImage(Attraction attraction, String newMainImageHash);
 

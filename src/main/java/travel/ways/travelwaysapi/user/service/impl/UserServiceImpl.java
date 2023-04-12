@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
         }
         // here is a special logic, because stupid hibernate can't set id as foreign key, it has to have whole object:)
-        var imageId = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
+        var imageId = imageService.createImage(request.getImagesData()[0].getOriginalFilename(), request.getImagesData()[0]);
         var image = imageService.getImage(imageId);
 
         user.setImage(image);
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
             throw new ServerException("You don't have permission to delete image", HttpStatus.FORBIDDEN);
         }
         ImageSummaryDto imageSummaryDto = imageService.getImageSummary(user);
-        if(imageSummaryDto == null){
+        if (imageSummaryDto == null) {
             throw new ServerException("There is no image to delete", HttpStatus.NOT_FOUND);
         }
         String imageHash = imageSummaryDto.getHash();
