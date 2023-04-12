@@ -175,6 +175,7 @@ public class TripServiceImpl implements TripService {
         // here we have to download whole image, because hybernate can't update object only by id :)
         var image = imageService.getImage(imageId);
         var newTripImage = new TripImage(trip, image);
+        newTripImage.setMain(request.getIsMain());
 
         tripImageRepository.save(newTripImage);
         return ImageDto.of(image, request.getIsMain());

@@ -460,7 +460,7 @@ class TripControllerTest {
 
         byte[] data = new byte[255];
         new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
         String jwt = jwtService.generateJwt("JD");
@@ -491,7 +491,7 @@ class TripControllerTest {
 
         byte[] data = new byte[255];
         new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
         String jwt = jwtService.generateJwt("JD");
@@ -524,7 +524,7 @@ class TripControllerTest {
 
         byte[] data = new byte[255];
         new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
         String jwt = jwtService.generateJwt("JD_2");

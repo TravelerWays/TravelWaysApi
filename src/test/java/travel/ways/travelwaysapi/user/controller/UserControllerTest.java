@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 import travel.ways.travelwaysapi.auth.service.impl.JwtServiceImpl;
 import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
@@ -97,7 +98,7 @@ class UserControllerTest {
 
         byte[] data = new byte[255];
         new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
         AppUser user = userService.getByUsername("JD");
@@ -127,7 +128,7 @@ class UserControllerTest {
 
         byte[] data = new byte[255];
         new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
         AppUser user = userService.getByUsername("JD");
@@ -153,7 +154,9 @@ class UserControllerTest {
         MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
         AppUser user = userService.getByUsername("JD");
-        userService.addImage(new AddImageRequest(multipartFile, true), user.getHash());
+        var multipartFileArray = new MultipartFile[]{multipartFile};
+
+        userService.addImage(new AddImageRequest(multipartFileArray, true), user.getHash());
 
         //act
         mvc.perform(delete("/api/user/" + user.getHash() + "/image")
@@ -174,7 +177,9 @@ class UserControllerTest {
         MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
         AppUser user = userService.getByUsername("JD");
-        userService.addImage(new AddImageRequest(multipartFile, true), user.getHash());
+        var multipartFileArray = new MultipartFile[]{multipartFile};
+
+        userService.addImage(new AddImageRequest(multipartFileArray, true), user.getHash());
 
         //act && assert
         mvc.perform(delete("/api/user/" + user.getHash() + "/image")

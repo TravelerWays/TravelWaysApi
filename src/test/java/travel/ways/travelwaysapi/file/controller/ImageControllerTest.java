@@ -77,9 +77,11 @@ class ImageControllerTest {
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
-        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false), attraction.getHash());
+        var multipartFileArray = new MultipartFile[]{multipartFile};
 
-        String jwt = jwtService.generateJwt("JD");
+        var imageDto = attractionService.addImage(new AddImageRequest(multipartFileArray, false), attraction.getHash()).get(0);
+
+        var jwt = jwtService.generateJwt("JD");
         //act
         MvcResult result = mvc.perform(get("/api/image/" + imageDto.getHash())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
@@ -106,7 +108,9 @@ class ImageControllerTest {
         new Random().nextBytes(data);
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
-        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFile, false), trip.getHash());
+
+        var multipartFileArray = new MultipartFile[]{multipartFile};
+        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFileArray, false), trip.getHash());
 
         String jwt = jwtService.generateJwt("JD");
         //act
