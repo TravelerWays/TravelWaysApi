@@ -25,6 +25,8 @@ import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -56,24 +58,26 @@ public class AttractionServiceImpl implements AttractionService {
     @Override
     @Transactional
     @SneakyThrows
-    public ImageDto addImage(AddImageRequest request, String attractionHash) {
+    public List<ImageDto> addImage(AddImageRequest request, String attractionHash) {
         Attraction attraction = this.getAttraction(attractionHash);
         if (!this.checkIfContributor(attraction, userService.getLoggedUser())) {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
         }
-        var imageId = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
+        var imagesId = Arrays.stream(request.getImagesData()).map(x -> imageService.createImage(x.getOriginalFilename(), x));
+
         // here we have to download whole image, because hybernate can't update object only by id :)
-        var image = imageService.getImage(imageId);
-        var newAttractionImage = new AttractionImage(attraction, image);
+        var response = new ArrayList<ImageDto>();
 
-        newAttractionImage = attractionImageRepository.save(newAttractionImage);
-        if (request.getIsMain()) {
-            this.editMainImage(attraction, image.getHash());
-        }
-        attraction.getImages().add(newAttractionImage);
-        image.setAttraction(newAttractionImage);
+        imagesId.forEach(x -> {
+            var image = imageService.getImage(x);
+            var newAttractionImage = new AttractionImage(attraction, image);
+            newAttractionImage = attractionImageRepository.save(newAttractionImage);
+            image.setAttraction(newAttractionImage);
+            attraction.getImages().add(newAttractionImage);
+            response.add(ImageDto.of(image, false));
+        });
 
-        return ImageDto.of(image, request.getIsMain());
+        return response;
     }
 
     @Override

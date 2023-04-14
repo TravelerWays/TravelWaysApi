@@ -16,7 +16,6 @@ import travel.ways.travelwaysapi.trip.controller.TripController;
 import travel.ways.travelwaysapi.trip.model.db.Attraction;
 import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
-import travel.ways.travelwaysapi.trip.model.dto.response.ImageDto;
 import travel.ways.travelwaysapi.trip.service.internal.AttractionService;
 
 import java.sql.Date;
@@ -58,8 +57,10 @@ class ImageServiceTest {
         new Random().nextBytes(data);
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
+        var multipartFileArray = new MultipartFile[]{multipartFile};
 
-        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false), attraction.getHash());
+        var images = attractionService.addImage(new AddImageRequest(multipartFileArray, false), attraction.getHash());
+        var imageDto = images.get(0);
 
         //act & assert
         jwtService.authenticateUser(jwtService.generateJwt("JD"));
@@ -87,8 +88,10 @@ class ImageServiceTest {
         new Random().nextBytes(data);
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
+        var multipartFileArray = new MultipartFile[]{multipartFile};
 
-        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false), attraction.getHash());
+        var images = attractionService.addImage(new AddImageRequest(multipartFileArray, false), attraction.getHash());
+        var imageDto = images.get(0);
 
         //act & assert
         jwtService.authenticateUser(jwtService.generateJwt("JD"));

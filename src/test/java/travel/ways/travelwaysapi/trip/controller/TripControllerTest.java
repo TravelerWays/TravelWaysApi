@@ -394,7 +394,9 @@ class TripControllerTest {
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
-        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFile, false), trip.getHash());
+        var multipartFileArray = new MultipartFile[]{multipartFile};
+
+        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFileArray, false), trip.getHash());
 
         EditTripMainImageRequest editTripMainImageRequest = new EditTripMainImageRequest(
                 trip.getHash(),
@@ -429,7 +431,8 @@ class TripControllerTest {
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
-        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFile, false), trip.getHash());
+        var multipartFileArray = new MultipartFile[]{multipartFile};
+        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFileArray, false), trip.getHash());
 
         EditTripMainImageRequest editTripMainImageRequest = new EditTripMainImageRequest(
                 trip.getHash(),
@@ -457,7 +460,7 @@ class TripControllerTest {
 
         byte[] data = new byte[255];
         new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
         String jwt = jwtService.generateJwt("JD");
@@ -473,7 +476,7 @@ class TripControllerTest {
         ImageDto imageDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ImageDto.class);
         jwtService.authenticateUser(jwt);
 
-        assertEquals(data,imageService.getImage(tripService.getImageSummaryList(trip).get(0).getHash()).getData());
+        assertEquals(data, imageService.getImage(tripService.getImageSummaryList(trip).get(0).getHash()).getData());
 
         //clean
         tripService.deleteTrip(trip);
@@ -488,7 +491,7 @@ class TripControllerTest {
 
         byte[] data = new byte[255];
         new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
         String jwt = jwtService.generateJwt("JD");
@@ -521,7 +524,7 @@ class TripControllerTest {
 
         byte[] data = new byte[255];
         new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
         String jwt = jwtService.generateJwt("JD_2");
@@ -550,7 +553,8 @@ class TripControllerTest {
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
-        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFile, false), trip.getHash());
+        var multipartFileArray = new MultipartFile[]{multipartFile};
+        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFileArray, false), trip.getHash());
 
 
         String jwt = jwtService.generateJwt("JD");
@@ -575,8 +579,9 @@ class TripControllerTest {
         new Random().nextBytes(data);
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
+        var multipartFileArray = new MultipartFile[]{multipartFile};
 
-        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFile, false), trip.getHash());
+        ImageDto imageDto = tripService.addImage(new AddImageRequest(multipartFileArray, false), trip.getHash());
 
 
         String jwt = jwtService.generateJwt("JD_2");

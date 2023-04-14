@@ -72,7 +72,7 @@ public class AttractionController {
     }
 
     @PostMapping(value = "/{attractionHash}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageDto addImageToAttraction(@PathVariable String attractionHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
+    public List<ImageDto> addImageToAttraction(@PathVariable String attractionHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
         return attractionService.addImage(addImageRequest, attractionHash);
     }
 

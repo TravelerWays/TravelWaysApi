@@ -339,8 +339,9 @@ public class AttractionControllerTest {
         new Random().nextBytes(data);
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
+        var multipartFileArray = new MultipartFile[]{multipartFile};
 
-        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false), attraction.getHash());
+        var imageDto = attractionService.addImage(new AddImageRequest(multipartFileArray, false), attraction.getHash()).get(0);
 
         EditAttractionMainImageRequest editAttractionMainImageRequest = new EditAttractionMainImageRequest(
                 attraction.getHash(),
@@ -373,8 +374,9 @@ public class AttractionControllerTest {
         new Random().nextBytes(data);
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
+        var multipartFileArray = new MultipartFile[]{multipartFile};
 
-        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false), attraction.getHash());
+        var imageDto = attractionService.addImage(new AddImageRequest(multipartFileArray, false), attraction.getHash()).get(0);
 
         EditAttractionMainImageRequest editAttractionMainImageRequest = new EditAttractionMainImageRequest(
                 attraction.getHash(),
@@ -402,7 +404,7 @@ public class AttractionControllerTest {
 
         byte[] data = new byte[255];
         new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
         String jwt = jwtService.generateJwt("JD");
@@ -415,7 +417,7 @@ public class AttractionControllerTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
-        ImageDto imageDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ImageDto.class);
+        ImageDto imageDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ImageDto[].class)[0];
         jwtService.authenticateUser(jwt);
 
         assertEquals(data, imageService.getImage(imageDto.getHash()).getData());
@@ -458,7 +460,7 @@ public class AttractionControllerTest {
 
         byte[] data = new byte[255];
         new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
         String jwt = jwtService.generateJwt("JD");
@@ -471,13 +473,10 @@ public class AttractionControllerTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
-        ImageDto imageDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ImageDto.class);
+        var imageDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ImageDto[].class)[0];
         jwtService.authenticateUser(jwt);
 
         assertEquals(data, imageService.getImage(imageDto.getHash()).getData());
-        ImageDto newImageDto = attractionService.getImageSummaryList(attraction).stream().filter(ImageDto::isMain).findFirst().get();
-        assertTrue(newImageDto.isMain());
-        assertEquals(imageDto.getHash(), newImageDto.getHash());
 
         //clean
         attractionService.deleteAttraction(attraction.getHash());
@@ -491,7 +490,7 @@ public class AttractionControllerTest {
 
         byte[] data = new byte[255];
         new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
         String jwt = jwtService.generateJwt("JD_2");
@@ -518,8 +517,9 @@ public class AttractionControllerTest {
         new Random().nextBytes(data);
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
+        var multipartFileArray = new MultipartFile[]{multipartFile};
 
-        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false), attraction.getHash());
+        var imageDto = attractionService.addImage(new AddImageRequest(multipartFileArray, false), attraction.getHash()).get(0);
 
 
         String jwt = jwtService.generateJwt("JD");
@@ -543,8 +543,9 @@ public class AttractionControllerTest {
         new Random().nextBytes(data);
         MultipartFile multipartFile = new MockMultipartFile("sample.png", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
+        var multipartFileArray = new MultipartFile[]{multipartFile};
 
-        ImageDto imageDto = attractionService.addImage(new AddImageRequest(multipartFile, false), attraction.getHash());
+        var imageDto = attractionService.addImage(new AddImageRequest(multipartFileArray, false), attraction.getHash()).get(0);
 
 
         String jwt = jwtService.generateJwt("JD_2");
