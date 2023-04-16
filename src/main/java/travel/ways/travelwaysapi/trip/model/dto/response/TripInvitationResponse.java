@@ -3,7 +3,7 @@ package travel.ways.travelwaysapi.trip.model.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import travel.ways.travelwaysapi.trip.model.db.TripInvitation;
+import travel.ways.travelwaysapi.trip.model.db.trip.TripInvitation;
 
 @Getter
 @Setter

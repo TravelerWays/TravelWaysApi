@@ -1,6 +1,6 @@
 package travel.ways.travelwaysapi.trip.service.internal;
 
-import travel.ways.travelwaysapi.trip.model.db.TripInvitation;
+import travel.ways.travelwaysapi.trip.model.db.trip.TripInvitation;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateTripInvitationRequest;
 import travel.ways.travelwaysapi.trip.model.dto.response.TripInvitationResponse;
 

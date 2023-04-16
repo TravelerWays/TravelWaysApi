@@ -1,8 +1,10 @@
-package travel.ways.travelwaysapi.trip.model.db;
+package travel.ways.travelwaysapi.trip.model.db.trip;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
+import travel.ways.travelwaysapi.trip.model.db.attraction.Attraction;
+import travel.ways.travelwaysapi.trip.model.db.expense.Expense;
 import travel.ways.travelwaysapi.user.model.db.AppUserTrip;
 
 import javax.persistence.CascadeType;
@@ -46,6 +48,9 @@ public class Trip extends BaseEntity {
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
     private Set<TripInvitation> invitations = new HashSet<>();
+
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
+    private Set<Expense> expenses = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

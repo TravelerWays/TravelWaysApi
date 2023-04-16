@@ -2,8 +2,8 @@ package travel.ways.travelwaysapi.file.model.projection;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Value;
-import travel.ways.travelwaysapi.trip.model.db.AttractionImage;
-import travel.ways.travelwaysapi.trip.model.db.TripImage;
+import travel.ways.travelwaysapi.trip.model.db.attraction.AttractionImage;
+import travel.ways.travelwaysapi.trip.model.db.trip.TripImage;
 
 public interface ImageSummary {
     @JsonIgnore

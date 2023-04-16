@@ -1,4 +1,4 @@
-package travel.ways.travelwaysapi.trip.model.db;
+package travel.ways.travelwaysapi.trip.model.db.trip;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

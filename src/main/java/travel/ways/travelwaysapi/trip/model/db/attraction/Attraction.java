@@ -1,9 +1,10 @@
-package travel.ways.travelwaysapi.trip.model.db;
+package travel.ways.travelwaysapi.trip.model.db.attraction;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import travel.ways.travelwaysapi._core.model.db.BaseEntity;
 import travel.ways.travelwaysapi.map.model.db.Location;
+import travel.ways.travelwaysapi.trip.model.db.trip.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 

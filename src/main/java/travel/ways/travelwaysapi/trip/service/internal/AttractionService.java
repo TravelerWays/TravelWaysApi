@@ -1,7 +1,7 @@
 package travel.ways.travelwaysapi.trip.service.internal;
 
-import travel.ways.travelwaysapi.trip.model.db.Attraction;
-import travel.ways.travelwaysapi.trip.model.db.Trip;
+import travel.ways.travelwaysapi.trip.model.db.attraction.Attraction;
+import travel.ways.travelwaysapi.trip.model.db.trip.Trip;
 import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.CreateAttractionRequest;
 import travel.ways.travelwaysapi.trip.model.dto.request.EditAttractionRequest;

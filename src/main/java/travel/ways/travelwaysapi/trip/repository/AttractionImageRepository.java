@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
-import travel.ways.travelwaysapi.trip.model.db.Attraction;
-import travel.ways.travelwaysapi.trip.model.db.AttractionImage;
-import travel.ways.travelwaysapi.trip.model.db.AttractionImageId;
+import travel.ways.travelwaysapi.trip.model.db.attraction.Attraction;
+import travel.ways.travelwaysapi.trip.model.db.attraction.AttractionImage;
+import travel.ways.travelwaysapi.trip.model.db.attraction.AttractionImageId;
 
 import java.util.List;
 
