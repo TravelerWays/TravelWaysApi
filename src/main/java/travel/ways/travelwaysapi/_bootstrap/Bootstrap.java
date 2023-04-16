@@ -46,9 +46,10 @@ public class Bootstrap {
     @Transactional
     public CommandLineRunner setupExpenseCategories() {
         return args -> {
-            for (var expenseCategory : ExpenseCategoryEnum.values()) {
-                if (!expenseCategoryRepository.existsByExpenseCategory(expenseCategory)) {
-                    expenseCategoryRepository.save(new ExpenseCategory(expenseCategory));
+            for (var expenseCategoryEnum : ExpenseCategoryEnum.values()) {
+                if (!expenseCategoryRepository.existsByExpenseCategory(expenseCategoryEnum)) {
+                    expenseCategoryRepository.save(new ExpenseCategory((long) expenseCategoryEnum.getValue(),
+                            expenseCategoryEnum));
                 }
             }
         };
@@ -60,7 +61,7 @@ public class Bootstrap {
         return args -> {
             for (var currency : CurrencyEnum.values()) {
                 if (!currencyRepository.existsByCurrency(currency)) {
-                    currencyRepository.save(new Currency(currency));
+                    currencyRepository.save(new Currency((long) currency.getValue(), currency));
                 }
             }
         };

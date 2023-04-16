@@ -1,24 +1,36 @@
 package travel.ways.travelwaysapi.trip.model.db.expense;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import travel.ways.travelwaysapi._core.model.db.BaseEntity;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public class ExpenseCategory extends BaseEntity {
+public class ExpenseCategory {
+
+    @Id
+    protected Long id;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    protected Date createAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    protected Date updateAt;
     @Column(nullable = false, length = 100)
     @Enumerated(EnumType.STRING)
     private ExpenseCategoryEnum expenseCategory;
 
+    public ExpenseCategory(Long id, ExpenseCategoryEnum expenseCategoryEnum) {
+        this.id = id;
+        this.expenseCategory = expenseCategoryEnum;
+    }
 }

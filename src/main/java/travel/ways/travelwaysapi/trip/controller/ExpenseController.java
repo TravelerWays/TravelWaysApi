@@ -35,7 +35,7 @@ public class ExpenseController {
         return expenseService.getExpensesByTrip(tripHash);
     }
 
-    @PutMapping("/edit")
+    @PutMapping
     public ExpenseResponseDto editExpense(@Valid @RequestBody EditExpenseRequest editExpenseRequest){
         return expenseService.editExpense(editExpenseRequest);
     }

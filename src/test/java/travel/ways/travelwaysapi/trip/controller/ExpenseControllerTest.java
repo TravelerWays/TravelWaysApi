@@ -242,7 +242,7 @@ class ExpenseControllerTest {
 
         String jwt = jwtService.generateJwt("JD");
         //act
-        MvcResult result = mvc.perform(put("/api/expense/edit/")
+        MvcResult result = mvc.perform(put("/api/expense/")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .content(objectMapper.writeValueAsString(editExpenseRequest))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -278,7 +278,7 @@ class ExpenseControllerTest {
 
         String jwt = jwtService.generateJwt("JD_2");
         //act
-        mvc.perform(put("/api/expense/edit/")
+        mvc.perform(put("/api/expense/")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .content(objectMapper.writeValueAsString(editExpenseRequest))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
