@@ -92,4 +92,6 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
         var baseError = new BaseErrorResponse(defaultErrorMessage, status, time.now().getTimestamp());
         return new ResponseEntity<>(baseError, status);
     }
+    
+
 }
