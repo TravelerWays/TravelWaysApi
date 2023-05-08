@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RestController;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.model.Roles;
 import travel.ways.travelwaysapi._core.properity.CommonProperty;
@@ -24,6 +25,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@RestController
 public class AccountServiceImpl implements AccountService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -84,5 +86,4 @@ public class AccountServiceImpl implements AccountService {
                 new ActiveAccountTemplateModel(user.getHash(), commonProperty.getFrontAppUrl())
         ));
     }
-
 }

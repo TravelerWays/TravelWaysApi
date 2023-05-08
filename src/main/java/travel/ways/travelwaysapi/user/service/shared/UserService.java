@@ -7,6 +7,7 @@ import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.dto.response.UserResponse;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserService {
     AppUser getByUsername(String username);
@@ -24,4 +25,6 @@ public interface UserService {
     Image addImage(AddImageRequest request, String userHash);
 
     void deleteImage(String hashImage);
+
+    Set<AppUser> search(String query);
 }
