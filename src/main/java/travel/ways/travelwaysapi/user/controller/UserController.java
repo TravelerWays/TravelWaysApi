@@ -34,6 +34,12 @@ public class UserController {
         return UserResponse.of(user, imageService.getImageSummary(user));
     }
 
+    @GetMapping("/friends")
+    public List<UserResponse> getUserFriends() {
+        var user = userService.getLoggedUser();
+        return userFriendsService.getUserFriends(user).stream().map(x -> UserResponse.of(x, imageService.getImageSummary(x))).toList();
+    }
+
     @PostMapping(value = "/{userHash}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ImageSummaryDto addUserImage(@PathVariable String userHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
         var image = userService.addImage(addImageRequest, userHash);
@@ -47,7 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public List<UserResponse> Search(@RequestParam String query) {
+    public List<UserResponse> Search(@RequestParam("query") String query, @RequestParam(value = "excludeUserFriends", required = false, defaultValue = "false") boolean excludeUserFriends) {
         return userService.search(query)
                 .stream().map(x -> UserResponse.of(x, null)).toList();
     }

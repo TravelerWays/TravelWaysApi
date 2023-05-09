@@ -13,7 +13,7 @@ public interface UserService {
     AppUser getByUsername(String username);
 
     List<UserResponse> getAll();
-
+    
     AppUser getByHash(String hash);
 
     void save(AppUser appUser);

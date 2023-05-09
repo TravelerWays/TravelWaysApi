@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
+import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.UserFriends;
 import travel.ways.travelwaysapi.user.model.dto.NotificationModel;
 import travel.ways.travelwaysapi.user.model.dto.request.ChaneInvitationStatusRequest;
@@ -90,5 +91,10 @@ public class UserFriendsServiceImpl implements UserFriendsService {
     @Override
     public List<UserFriends> getUserInvitation(String userHash) {
         return userFriendRepository.findUserInvitation(userHash, FriendsStatus.Pending);
+    }
+
+    @Override
+    public List<AppUser> getUserFriends(AppUser user) {
+        return userFriendRepository.findUserFriends(user);
     }
 }
