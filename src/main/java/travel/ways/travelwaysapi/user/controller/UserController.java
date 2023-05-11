@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public List<UserResponse> Search(@RequestParam("query") String query, @RequestParam(value = "excludeUserFriends", required = false, defaultValue = "false") boolean excludeUserFriends) {
+    public List<UserResponse> Search(@RequestParam("query") String query) {
         return userService.search(query)
                 .stream().map(x -> UserResponse.of(x, null)).toList();
     }
