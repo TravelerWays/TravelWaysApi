@@ -2,8 +2,10 @@ package travel.ways.travelwaysapi.user.service.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.db.Notification;
@@ -32,13 +34,27 @@ public class NotificationServiceImpl implements NotificationService {
                 UUID.randomUUID().toString(),
                 targetUser,
                 model.getContent(),
+                model.getRelatedObjectHash(),
+                model.getType(),
                 false
         ));
     }
 
     @Override
     public List<Notification> getUserNotification(AppUser user) {
-        return notificationRepository.findByUser(user).stream().filter(x -> !x.isRead()).toList();
+        return notificationRepository.findUserNotification(user, PageRequest.of(0, 10)).stream().toList();
+    }
+
+    @Override
+    @Transactional
+    public void markAllUserNotificationAsRead(AppUser user) {
+        notificationRepository.markNotificationAsRead(user);
+    }
+
+    @Override
+    @Transactional
+    public void removeNotificationForObject(String relatedObject) {
+        notificationRepository.deleteByRelatedObjectHash(relatedObject);
     }
 
 

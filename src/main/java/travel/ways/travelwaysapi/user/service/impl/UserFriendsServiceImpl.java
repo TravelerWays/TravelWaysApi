@@ -11,6 +11,7 @@ import travel.ways.travelwaysapi.user.model.db.UserFriends;
 import travel.ways.travelwaysapi.user.model.dto.NotificationModel;
 import travel.ways.travelwaysapi.user.model.dto.request.ChaneInvitationStatusRequest;
 import travel.ways.travelwaysapi.user.model.enums.FriendsStatus;
+import travel.ways.travelwaysapi.user.model.enums.NotificationType;
 import travel.ways.travelwaysapi.user.repository.UserFriendRepository;
 import travel.ways.travelwaysapi.user.service.shared.NotificationService;
 import travel.ways.travelwaysapi.user.service.shared.UserFriendsService;
@@ -32,14 +33,20 @@ public class UserFriendsServiceImpl implements UserFriendsService {
     public void createInvitation(String userHash) {
         var loggedUser = userService.getLoggedUser();
         if (loggedUser.getHash().equals(userHash)) {
-            throw new ServerException("", HttpStatus.BAD_REQUEST);
+            throw new ServerException("You cannot send an invitation to yourself\n", HttpStatus.BAD_REQUEST);
         }
         var invitedFriend = userService.getByHash(userHash);
 
         if (userFriendRepository.existsByUserAndFriend(loggedUser, invitedFriend)) {
-            throw new ServerException("User friend exists", HttpStatus.BAD_REQUEST);
+            throw new ServerException("This user is already your friend", HttpStatus.BAD_REQUEST);
         }
 
+        if (userFriendRepository.hasPendingInvitation(loggedUser, invitedFriend)) {
+            throw new ServerException("Invitation already exists in pending status", HttpStatus.BAD_REQUEST);
+
+        }
+
+        var invitationHash = UUID.randomUUID().toString();
         userFriendRepository.save(new UserFriends(
                 UUID.randomUUID().toString(),
                 loggedUser,
@@ -48,7 +55,10 @@ public class UserFriendsServiceImpl implements UserFriendsService {
         ));
         notificationService.sendNotification(new NotificationModel(
                 invitedFriend.getHash(),
-                "New friend's request"
+                "New friend request from " + loggedUser.getName() + " " + loggedUser.getSurname(),
+                invitationHash,
+                false,
+                NotificationType.NewInvitation
         ));
     }
 

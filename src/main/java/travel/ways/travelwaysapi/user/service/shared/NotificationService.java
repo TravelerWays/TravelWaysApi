@@ -10,4 +10,8 @@ public interface NotificationService {
     void sendNotification(NotificationModel model);
 
     List<Notification> getUserNotification(AppUser user);
+
+    void markAllUserNotificationAsRead(AppUser user);
+
+    void removeNotificationForObject(String relatedObject);
 }

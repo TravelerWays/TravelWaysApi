@@ -2,6 +2,7 @@ package travel.ways.travelwaysapi.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
@@ -64,6 +65,13 @@ public class UserController {
         return notificationService.getUserNotification(appUser).stream().map(NotificationModel::of).toList();
     }
 
+    @PutMapping("/notification")
+    public ResponseEntity<Void> MarkAllNotificationAsRead() {
+        var loggedUser = userService.getLoggedUser();
+        notificationService.markAllUserNotificationAsRead(loggedUser);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/invite")
     public BaseResponse invite(@RequestBody String userHash) {
         userFriendsService.createInvitation(userHash);
@@ -73,6 +81,7 @@ public class UserController {
     @PutMapping("/invite")
     public BaseResponse changeInvitationStatus(@RequestBody ChaneInvitationStatusRequest request) {
         userFriendsService.changeInvitationStatus(request);
+        notificationService.removeNotificationForObject(request.getInvitationHash());
         return BaseResponse.success();
     }
 
