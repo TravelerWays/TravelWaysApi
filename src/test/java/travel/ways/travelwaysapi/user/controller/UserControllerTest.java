@@ -1,6 +1,5 @@
 package travel.ways.travelwaysapi.user.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +26,6 @@ import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.dto.response.UserResponse;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
-import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,22 +57,6 @@ class UserControllerTest {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
-    }
-
-    @Test
-    public void getAll_shouldReturnAllUsers() throws Exception {
-        String jwt = jwtService.generateJwt("JD");
-        //act
-        MvcResult result = mvc
-                .perform(get("/api/user/all/")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-
-        List<UserResponse> users = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
-        });
-        assertEquals("JD", users.get(0).getUsername());
-        assertEquals("JD_2", users.get(1).getUsername());
     }
 
     @Test

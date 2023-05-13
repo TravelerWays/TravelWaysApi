@@ -18,7 +18,9 @@ import travel.ways.travelwaysapi.user.repository.UserRepository;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -102,4 +104,13 @@ public class UserServiceImpl implements UserService {
         imageService.deleteImage(imageHash);
     }
 
+    @Override
+    public Set<AppUser> search(String query) {
+        var splitQuery = query.split(" ");
+        var result = new HashSet<AppUser>();
+        for (String subQuery : splitQuery) {
+            result.addAll(userRepository.searchAppUserByNameOrSurname(subQuery));
+        }
+        return result;
+    }
 }

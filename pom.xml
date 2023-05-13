@@ -148,9 +148,9 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <!-- <version>0.8.4</version> -->
                 <configuration>
-	                <destfile>${basedir}/target/coverage-reports/jacoco-unit.exec</destfile>
-	                <datafile>${basedir}/target/coverage-reports/jacoco-unit.exec</datafile>
-	            </configuration>	
+                    <destfile>${basedir}/target/coverage-reports/jacoco-unit.exec</destfile>
+                    <datafile>${basedir}/target/coverage-reports/jacoco-unit.exec</datafile>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

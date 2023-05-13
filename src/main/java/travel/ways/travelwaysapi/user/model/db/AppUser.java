@@ -10,6 +10,7 @@ import travel.ways.travelwaysapi.trip.model.db.attraction.Attraction;
 import travel.ways.travelwaysapi.trip.model.db.trip.Trip;
 import travel.ways.travelwaysapi.trip.model.db.trip.TripInvitation;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
+import travel.ways.travelwaysapi.user.model.enums.FriendsStatus;
 
 import javax.persistence.*;
 import java.util.*;
@@ -61,6 +62,12 @@ public class AppUser extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<TripInvitation> invitations = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<UserFriends> friends = new ArrayList<>();
+
+    @OneToMany(mappedBy = "friend", cascade = CascadeType.ALL)
+    private Collection<UserFriends> friendsInvitations = new ArrayList<>();
+
     public AppUser(String name, String surname, String username, String email, String password, Collection<Role> roles) {
         this.name = name;
         this.surname = surname;
@@ -105,16 +112,20 @@ public class AppUser extends BaseEntity {
         trip.getUsers().add(appUserTrip);
     }
 
+    public Collection<UserFriends> getFriendsInvitations() {
+        return friendsInvitations.stream().filter(x -> x.getStatus() == FriendsStatus.Pending).toList();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof AppUser appUser)) return false;
-        if (!super.equals(o)) return false;
-        return Objects.equals(email, appUser.getEmail());
+
+        return appUser.getHash().equals(hash);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), email);
+        return Objects.hash(super.hashCode(), hash);
     }
 }
