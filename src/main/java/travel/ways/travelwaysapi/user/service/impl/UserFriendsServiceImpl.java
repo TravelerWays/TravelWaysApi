@@ -48,7 +48,7 @@ public class UserFriendsServiceImpl implements UserFriendsService {
 
         var invitationHash = UUID.randomUUID().toString();
         userFriendRepository.save(new UserFriends(
-                UUID.randomUUID().toString(),
+                invitationHash,
                 loggedUser,
                 invitedFriend,
                 FriendsStatus.Pending
