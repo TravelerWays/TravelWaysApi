@@ -13,4 +13,5 @@ public interface ExpenseService {
     Expense getExpense(String expenseHash);
     List<ExpenseResponseDto> getExpensesByTrip(String tripHash);
     ExpenseResponseDto editExpense(EditExpenseRequest editExpenseRequest);
+//    List<ExpenseResponseDto> getExpensesForAttractionsBetween(List<Attraction> attractions, Date start, Date end);
 }

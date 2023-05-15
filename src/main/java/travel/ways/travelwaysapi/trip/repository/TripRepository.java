@@ -7,5 +7,6 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
     Trip findByHash(String tripHash);
 
     Trip findByImagesImageHash(String imageHash);
-    
+
+
 }

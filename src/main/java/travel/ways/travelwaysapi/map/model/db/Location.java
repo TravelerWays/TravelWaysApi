@@ -36,6 +36,9 @@ public class Location extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String osmId;
 
+    @Column(nullable = false)
+    private String CountryCode;
+
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Attraction.class, mappedBy = "location")
     private List<Attraction> attractions = new ArrayList<>();
 
@@ -46,6 +49,7 @@ public class Location extends BaseEntity {
                 createLocationRequest.getLon(),
                 createLocationRequest.getDisplayName(),
                 createLocationRequest.getOsmId(),
+                createLocationRequest.getCountryCode(),
                 new ArrayList<>()
         );
     }

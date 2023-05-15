@@ -66,8 +66,6 @@ public class AttractionControllerTest {
     private UserService userService;
     @Autowired
     private ImageService imageService;
-    @Autowired
-    private ImageRepository imageRepository;
 
 
     @BeforeEach
@@ -115,6 +113,7 @@ public class AttractionControllerTest {
     }
 
     @Test
+    @Transactional
     public void add_shouldAddAttraction_whenProperRequest() throws Exception {
         // arrange
         CreateAttractionRequest createAttractionRequest = getCreateAttractionRequest(0);
@@ -132,6 +131,7 @@ public class AttractionControllerTest {
         //assert
         AttractionResponse resultAttraction =
                 objectMapper.readValue(result.getResponse().getContentAsString(), AttractionResponse.class);
+        jwtService.authenticateUser(jwt);
         Attraction newAttraction = attractionService.getAttraction(resultAttraction.getHash());
         assertEquals(createAttractionRequest.getTitle(), newAttraction.getTitle());
 
@@ -264,6 +264,7 @@ public class AttractionControllerTest {
     }
 
     @Test
+    @Transactional
     public void editAttraction_shouldEditAttraction_whenProperRequest() throws Exception {
         // arrange
         Attraction attraction = attractionService.createAttraction(getCreateAttractionRequest(0));
@@ -290,6 +291,7 @@ public class AttractionControllerTest {
                 .andReturn();
 
         //assert
+        jwtService.authenticateUser(jwt);
         AttractionResponse resultAttraction =
                 objectMapper.readValue(result.getResponse().getContentAsString(), AttractionResponse.class);
         Attraction newAttraction = attractionService.getAttraction(resultAttraction.getHash());

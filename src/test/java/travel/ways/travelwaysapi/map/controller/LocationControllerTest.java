@@ -96,7 +96,8 @@ class LocationControllerTest {
                 "34.343",
                 "34.332",
                 "new_location_display_name",
-                "new_location"
+                "new_location",
+                "en"
         );
 
         String jwt = jwtService.generateJwt("JD");
@@ -136,7 +137,8 @@ class LocationControllerTest {
                 "34.343",
                 "34.332",
                 "new_location_display_name",
-                "different_new_location"
+                "different_new_location",
+                "en"
         );
 
         String jwt = jwtService.generateJwt("JD");
@@ -162,7 +164,8 @@ class LocationControllerTest {
                 "54.434",
                 "43.343",
                 "display_name",
-                "osm_id"
+                "osm_id",
+                "en"
         );
 
         String jwt = jwtService.generateJwt("JD");

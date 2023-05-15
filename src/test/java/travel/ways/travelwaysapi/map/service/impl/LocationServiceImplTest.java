@@ -29,7 +29,8 @@ class LocationServiceImplTest {
                 "54.434",
                 "43.343",
                 "display_name",
-                "osm_id"
+                "osm_id",
+                "en"
         )));
 
     }

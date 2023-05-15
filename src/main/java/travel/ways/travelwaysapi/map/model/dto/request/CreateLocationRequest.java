@@ -15,4 +15,5 @@ public class CreateLocationRequest {
     private String lon;
     private String displayName;
     private String osmId;
+    private String countryCode;
 }
