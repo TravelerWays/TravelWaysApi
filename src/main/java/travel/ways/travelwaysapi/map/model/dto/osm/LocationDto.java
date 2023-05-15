@@ -17,4 +17,7 @@ public class LocationDto {
     private String type;
     @JsonProperty("osm_id")
     private String OsmId;
+    @JsonProperty("country_code")
+    private String countryCode;
+
 }

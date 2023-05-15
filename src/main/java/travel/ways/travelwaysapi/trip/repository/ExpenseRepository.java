@@ -9,4 +9,5 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findByTripHash(String hash);
 
     Expense findByHash(String expenseHash);
+
 }

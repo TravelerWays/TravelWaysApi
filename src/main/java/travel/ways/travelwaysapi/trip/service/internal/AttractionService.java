@@ -9,6 +9,7 @@ import travel.ways.travelwaysapi.trip.model.dto.response.AttractionResponse;
 import travel.ways.travelwaysapi.trip.model.dto.response.ImageDto;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 
+import java.util.Date;
 import java.util.List;
 
 public interface AttractionService {
@@ -37,4 +38,7 @@ public interface AttractionService {
     Attraction editAttraction(EditAttractionRequest request);
 
     Attraction getAttractionByImageHash(String imageHash);
+
+    List<Attraction> getAttractionsForLoggedUserBetween(Date start, Date end);
+
 }

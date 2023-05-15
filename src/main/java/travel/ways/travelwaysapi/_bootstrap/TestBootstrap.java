@@ -46,7 +46,8 @@ public class TestBootstrap {
                     "54.434",
                     "43.343",
                     "display_name",
-                    "osm_id"
+                    "osm_id",
+                    "en"
             );
             if(!locationService.exitsByOsmId("osm_id")){
                 locationService.create(createLocationRequest);

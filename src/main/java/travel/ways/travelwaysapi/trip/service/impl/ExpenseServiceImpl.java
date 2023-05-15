@@ -78,7 +78,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public Expense getExpense(String expenseHash) {
         Expense expense = expenseRepository.findByHash(expenseHash);
-        if(expense == null) {
+        if (expense == null) {
             throw new ServerException("Expense not found", HttpStatus.NOT_FOUND);
         }
         return expense;
@@ -94,6 +94,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         }
         return expenseRepository.findByTripHash(tripHash).stream().map(ExpenseResponseDto::of).toList();
     }
+
 
     @SneakyThrows
     @Override
@@ -113,6 +114,21 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         return ExpenseResponseDto.of(expense);
     }
+
+//    @Override
+//    public List<ExpenseResponseDto> getExpensesForAttractionsBetween(List<Attraction> attractions, Date start, Date end) {
+//        if (start == null){
+//            start = new Date(0);
+//        }
+//        if (end == null){
+//            end = Date.from(Instant.now());
+//        }
+//        System.out.println(attractions);
+//        System.out.println(expenseRepository.getExpensesForAttractionsBetween(new HashSet<>(attractions), start, end));
+//
+//        return expenseRepository.getExpensesForAttractionsBetween(new HashSet<>(attractions), start, end).stream()
+//                .map(ExpenseResponseDto::of).toList();
+//    }
 
 
 }

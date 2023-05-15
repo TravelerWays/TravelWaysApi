@@ -25,8 +25,10 @@ import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -148,6 +150,10 @@ public class AttractionServiceImpl implements AttractionService {
         if (attraction == null) {
             throw new ServerException("Can not find attraction", HttpStatus.NOT_FOUND);
         }
+        if (!checkIfContributor(attraction, userService.getLoggedUser())) {
+            throw new ServerException("You do not have permission to this attraction", HttpStatus.FORBIDDEN);
+        }
+
         return attraction;
     }
 
@@ -218,6 +224,17 @@ public class AttractionServiceImpl implements AttractionService {
             throw new ServerException("Attraction not found", HttpStatus.NOT_FOUND);
         }
         return attraction;
+    }
+
+    @Override
+    public List<Attraction> getAttractionsForLoggedUserBetween(Date start, Date end) {
+        if (start == null){
+            start = new Date(0);
+        }
+        if (end == null){
+            end = Date.from(Instant.now());
+        }
+        return attractionRepository.getAttractionsBetween(start, end, userService.getLoggedUser());
     }
 
     private List<AttractionResponse> mapToAttractionResponse(List<Attraction> attractions, boolean showPrivate) {

@@ -22,6 +22,7 @@ public class LocationResponse {
     private String displayName;
     private String osmId;
     private Integer rate;
+    private String countryCode;
 
     public static LocationResponse of(Location location) {
         var attractionRates = location.getAttractions().stream().map(Attraction::getRate).filter(Objects::nonNull).mapToInt(Short::intValue).toArray();
@@ -33,7 +34,8 @@ public class LocationResponse {
                 location.getLon(),
                 location.getDisplayName(),
                 location.getOsmId(),
-                rate > 0 ? rate / attractionRates.length : 0
+                rate > 0 ? rate / attractionRates.length : 0,
+                location.getCountryCode()
         );
     }
 
@@ -44,7 +46,8 @@ public class LocationResponse {
                 osmModel.getLon(),
                 osmModel.getDisplayName(),
                 osmModel.getOsmId(),
-                0
+                0,
+                osmModel.getCountryCode()
         );
     }
 }
