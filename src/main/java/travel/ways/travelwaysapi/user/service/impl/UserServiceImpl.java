@@ -73,11 +73,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @SneakyThrows
-    public Image addImage(AddImageRequest request, String userHash) {
-        var user = this.getByHash(userHash);
-        if (!user.equals(this.getLoggedUser())) {
+    public Image addImage(AddImageRequest request, AppUser user) {
+        if (!user.equals(getLoggedUser())) {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
         }
+        deleteImage(user);
+
         // here is a special logic, because stupid hibernate can't set id as foreign key, it has to have whole object:)
         var imageId = imageService.createImage(request.getImagesData()[0].getOriginalFilename(), request.getImagesData()[0]);
         var image = imageService.getImage(imageId);
@@ -90,8 +91,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @SneakyThrows
-    public void deleteImage(String userHash) {
-        AppUser user = this.getByHash(userHash);
+    public void deleteImage(AppUser user) {
         if (!user.equals(this.getLoggedUser())) {
             throw new ServerException("You don't have permission to delete image", HttpStatus.FORBIDDEN);
         }

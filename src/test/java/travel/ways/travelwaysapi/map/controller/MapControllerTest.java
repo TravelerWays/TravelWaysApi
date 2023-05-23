@@ -112,8 +112,7 @@ class MapControllerTest {
                 "34.43",
                 "34,43",
                 "type",
-                "osm_id",
-                "en"
+                "osm_id"
         );
     }
 }

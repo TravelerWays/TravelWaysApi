@@ -28,7 +28,7 @@ public class EditAttractionRequest {
 
     public boolean isValid() {
         if (!isVisited) {
-            return visitedAt == null && rate == null;
+            return rate == null;
         }
 
         return true;

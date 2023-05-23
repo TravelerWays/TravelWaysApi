@@ -41,15 +41,17 @@ public class UserController {
         return userFriendsService.getUserFriends(user).stream().map(x -> UserResponse.of(x, imageService.getImageSummary(x))).toList();
     }
 
-    @PostMapping(value = "/{userHash}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImageSummaryDto addUserImage(@PathVariable String userHash, @Valid @ModelAttribute AddImageRequest addImageRequest) {
-        var image = userService.addImage(addImageRequest, userHash);
+    @PutMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImageSummaryDto addUserImage( @Valid @ModelAttribute AddImageRequest addImageRequest) {
+        var loggedUser = userService.getLoggedUser();
+        var image = userService.addImage(addImageRequest, loggedUser);
         return imageService.getImageSummary(image.getHash());
     }
 
-    @DeleteMapping("/{userHash}/image")
-    public BaseResponse deleteUserImage(@PathVariable String userHash) {
-        userService.deleteImage(userHash);
+    @DeleteMapping("/image")
+    public BaseResponse deleteUserImage() {
+        var loggedUser = userService.getLoggedUser();
+        userService.deleteImage(loggedUser);
         return new BaseResponse(true, "user image deleted");
     }
 

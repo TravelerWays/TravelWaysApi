@@ -22,9 +22,9 @@ public interface UserService {
 
     AppUser getTripOwner(Trip trip);
 
-    Image addImage(AddImageRequest request, String userHash);
+    Image addImage(AddImageRequest request, AppUser user);
 
-    void deleteImage(String hashImage);
+    void deleteImage(AppUser user);
 
     Set<AppUser> search(String query);
 }

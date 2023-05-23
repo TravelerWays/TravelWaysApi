@@ -4,13 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
-import travel.ways.travelwaysapi.user.model.dto.request.ChangePasswordRequest;
-import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
-import travel.ways.travelwaysapi.user.model.dto.request.InitPasswordRecoveryRequest;
+import travel.ways.travelwaysapi.user.model.dto.request.*;
 import travel.ways.travelwaysapi.user.model.dto.response.ValidHashPasswordRecoveryResponse;
 import travel.ways.travelwaysapi.user.service.internal.PasswordRecoveryService;
 import travel.ways.travelwaysapi.user.service.shared.AccountService;
@@ -68,5 +67,17 @@ public class AccountController {
         recoveryPasswordService.setRecoveryHashAsUsed(hash);
         log.info("password for user: " + user + " has been changed");
         return new BaseResponse(true, "password changed");
+    }
+
+    @PutMapping("user-data ")
+    public ResponseEntity<BaseResponse> updateUser(@RequestBody UpdateUserRequest request){
+        accountService.updateUser(request);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
+
+    @PutMapping("password")
+    public ResponseEntity<BaseResponse> changePassword(@RequestBody UpdatePasswordRequest request){
+        accountService.chanePassword(request);
+        return ResponseEntity.ok(BaseResponse.success());
     }
 }
