@@ -13,6 +13,7 @@ import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
 import travel.ways.travelwaysapi.user.repository.RoleRepository;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
+import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import java.util.Optional;
 
@@ -33,13 +34,16 @@ class AccountServiceImplTest {
     @Mock
     private CommonProperty commonProperty;
 
+    @Mock
+    UserService userService;
+
     private AccountServiceImpl accountManager;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        accountManager = new AccountServiceImpl(userRepository, passwordEncoder, roleRepository, mailService, commonProperty);
+        accountManager = new AccountServiceImpl(userRepository, passwordEncoder, roleRepository, mailService, userService, commonProperty);
     }
 
     @Test

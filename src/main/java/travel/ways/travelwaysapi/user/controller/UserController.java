@@ -71,6 +71,7 @@ public class UserController {
         return notificationService.getUserNotification(appUser).stream().map(NotificationModel::of).toList();
     }
 
+
     @PutMapping("/notification")
     public ResponseEntity<Void> MarkAllNotificationAsRead() {
         var loggedUser = userService.getLoggedUser();
