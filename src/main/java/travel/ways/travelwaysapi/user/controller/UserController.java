@@ -8,10 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
 import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
-import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.user.model.dto.NotificationModel;
+import travel.ways.travelwaysapi.user.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.user.model.dto.request.ChaneInvitationStatusRequest;
+import travel.ways.travelwaysapi.user.model.dto.request.UpdatePasswordRequest;
+import travel.ways.travelwaysapi.user.model.dto.request.UpdateUserRequest;
 import travel.ways.travelwaysapi.user.model.dto.response.UserResponse;
+import travel.ways.travelwaysapi.user.service.shared.AccountService;
 import travel.ways.travelwaysapi.user.service.shared.NotificationService;
 import travel.ways.travelwaysapi.user.service.shared.UserFriendsService;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
@@ -27,6 +30,7 @@ public class UserController {
     private final ImageService imageService;
     private final UserFriendsService userFriendsService;
     private final NotificationService notificationService;
+    private final AccountService accountService;
 
     @GetMapping("/logged")
     public UserResponse getLogged() {
@@ -85,6 +89,20 @@ public class UserController {
         userFriendsService.changeInvitationStatus(request);
         notificationService.removeNotificationForObject(request.getInvitationHash());
         return BaseResponse.success();
+    }
+
+    @PutMapping("user-data")
+    public ResponseEntity<UserResponse> updateUser(@RequestBody UpdateUserRequest request){
+        var loggedUser = userService.getLoggedUser();
+        accountService.updateUser(request);
+        var user = userService.getByHash(loggedUser.getHash());
+        return ResponseEntity.ok(UserResponse.of(user, imageService.getImageSummary(user)));
+    }
+
+    @PutMapping("password")
+    public ResponseEntity<BaseResponse> changePassword(@RequestBody UpdatePasswordRequest request){
+        accountService.chanePassword(request);
+        return ResponseEntity.ok(BaseResponse.success());
     }
 
 

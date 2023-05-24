@@ -53,8 +53,8 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public void chanePassword(UpdatePasswordRequest request) {
         var loggedUser = userService.getLoggedUser();
-        if (!passwordEncoder.encode(request.getOldPassword()).equals(loggedUser.getPassword())) {
-            throw new ServerException("Password doesn't match", HttpStatus.BAD_REQUEST);
+        if (!passwordEncoder.matches(request.getOldPassword(), loggedUser.getPassword())) {
+            throw new ServerException("Invalid old password", HttpStatus.BAD_REQUEST);
         }
         loggedUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(loggedUser);

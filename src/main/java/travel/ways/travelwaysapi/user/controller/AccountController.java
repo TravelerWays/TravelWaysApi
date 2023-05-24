@@ -8,11 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
+import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.dto.request.*;
+import travel.ways.travelwaysapi.user.model.dto.response.UserResponse;
 import travel.ways.travelwaysapi.user.model.dto.response.ValidHashPasswordRecoveryResponse;
 import travel.ways.travelwaysapi.user.service.internal.PasswordRecoveryService;
 import travel.ways.travelwaysapi.user.service.shared.AccountService;
+import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import javax.validation.Valid;
 
@@ -23,6 +26,9 @@ import javax.validation.Valid;
 public class AccountController {
     private final PasswordRecoveryService recoveryPasswordService;
     private final AccountService accountService;
+    private final UserService userService;
+    private final ImageService imageService;
+
 
     @PostMapping("/register")
     public BaseResponse registerUser( @RequestBody @Valid CreateUserRequest createUserRequest) {
@@ -69,15 +75,5 @@ public class AccountController {
         return new BaseResponse(true, "password changed");
     }
 
-    @PutMapping("user-data ")
-    public ResponseEntity<BaseResponse> updateUser(@RequestBody UpdateUserRequest request){
-        accountService.updateUser(request);
-        return ResponseEntity.ok(BaseResponse.success());
-    }
 
-    @PutMapping("password")
-    public ResponseEntity<BaseResponse> changePassword(@RequestBody UpdatePasswordRequest request){
-        accountService.chanePassword(request);
-        return ResponseEntity.ok(BaseResponse.success());
-    }
 }
