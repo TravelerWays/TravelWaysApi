@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -14,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -21,8 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import travel.ways.travelwaysapi.auth.service.impl.JwtServiceImpl;
 import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
-import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
+import travel.ways.travelwaysapi.user.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.user.model.dto.response.UserResponse;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
@@ -80,15 +82,20 @@ class UserControllerTest {
 
         byte[] data = new byte[255];
         new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
                 MediaType.IMAGE_PNG_VALUE, data);
 
         AppUser user = userService.getByUsername("JD");
+        var builder =
+                MockMvcRequestBuilders.multipart("/api/user/image");
+        builder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
+
         //act
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
-                        .multipart("/api/user/" + user.getHash() + "/image")
+        MvcResult result = mvc.perform(builder
                         .file(multipartFile)
-                        .part(new MockPart("isMain", "true".getBytes()))
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(status().is2xxSuccessful())
@@ -105,29 +112,6 @@ class UserControllerTest {
 
     @Test
     @Transactional
-    public void addUserImage_shouldReturn403_WhenForbidden() throws Exception {
-        String jwt = jwtService.generateJwt("JD_2");
-
-        byte[] data = new byte[255];
-        new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imagesData", "sample.png",
-                MediaType.IMAGE_PNG_VALUE, data);
-
-        AppUser user = userService.getByUsername("JD");
-        //act
-        mvc.perform(MockMvcRequestBuilders
-                        .multipart("/api/user/" + user.getHash() + "/image")
-                        .file(multipartFile)
-                        .part(new MockPart("isMain", "true".getBytes()))
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andExpect(status().isForbidden())
-                .andReturn();
-    }
-
-
-    @Test
-    @Transactional
     public void deleteUserImage_shouldDeleteUserImage() throws Exception {
         String jwt = jwtService.generateJwt("JD");
 
@@ -138,36 +122,16 @@ class UserControllerTest {
         AppUser user = userService.getByUsername("JD");
         var multipartFileArray = new MultipartFile[]{multipartFile};
 
-        userService.addImage(new AddImageRequest(multipartFileArray, true), user.getHash());
+        userService.addImage(new AddImageRequest(multipartFileArray[0]), user);
 
         //act
-        mvc.perform(delete("/api/user/" + user.getHash() + "/image")
+        mvc.perform(delete("/api/user/image")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(status().is2xxSuccessful());
 
         jwtService.authenticateUser(jwt);
         assertNull(user.getImage());
-    }
-
-    @Test
-    public void deleteUserImage_shouldReturn403_whenForbidden() throws Exception {
-        String jwt = jwtService.generateJwt("JD_2");
-
-        byte[] data = new byte[255];
-        new Random().nextBytes(data);
-        MockMultipartFile multipartFile = new MockMultipartFile("imageData", "sample.png",
-                MediaType.IMAGE_PNG_VALUE, data);
-        AppUser user = userService.getByUsername("JD");
-        var multipartFileArray = new MultipartFile[]{multipartFile};
-
-        userService.addImage(new AddImageRequest(multipartFileArray, true), user.getHash());
-
-        //act && assert
-        mvc.perform(delete("/api/user/" + user.getHash() + "/image")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andExpect(status().isForbidden());
     }
 
     @Test

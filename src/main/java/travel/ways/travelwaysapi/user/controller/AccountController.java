@@ -4,16 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import travel.ways.travelwaysapi._core.exception.ServerException;
 import travel.ways.travelwaysapi._core.model.dto.BaseResponse;
+import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
-import travel.ways.travelwaysapi.user.model.dto.request.ChangePasswordRequest;
-import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
-import travel.ways.travelwaysapi.user.model.dto.request.InitPasswordRecoveryRequest;
+import travel.ways.travelwaysapi.user.model.dto.request.*;
+import travel.ways.travelwaysapi.user.model.dto.response.UserResponse;
 import travel.ways.travelwaysapi.user.model.dto.response.ValidHashPasswordRecoveryResponse;
 import travel.ways.travelwaysapi.user.service.internal.PasswordRecoveryService;
 import travel.ways.travelwaysapi.user.service.shared.AccountService;
+import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import javax.validation.Valid;
 
@@ -24,6 +26,9 @@ import javax.validation.Valid;
 public class AccountController {
     private final PasswordRecoveryService recoveryPasswordService;
     private final AccountService accountService;
+    private final UserService userService;
+    private final ImageService imageService;
+
 
     @PostMapping("/register")
     public BaseResponse registerUser( @RequestBody @Valid CreateUserRequest createUserRequest) {
@@ -69,4 +74,6 @@ public class AccountController {
         log.info("password for user: " + user + " has been changed");
         return new BaseResponse(true, "password changed");
     }
+
+
 }

@@ -36,7 +36,6 @@ public class Location extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String osmId;
 
-    @Column(nullable = false)
     private String CountryCode;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Attraction.class, mappedBy = "location")

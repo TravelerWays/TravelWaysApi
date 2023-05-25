@@ -15,9 +15,12 @@ import travel.ways.travelwaysapi.mail.models.dto.request.SendMailRequest;
 import travel.ways.travelwaysapi.mail.models.mailTemplate.ActiveAccountTemplateModel;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
 import travel.ways.travelwaysapi.user.model.dto.request.CreateUserRequest;
+import travel.ways.travelwaysapi.user.model.dto.request.UpdatePasswordRequest;
+import travel.ways.travelwaysapi.user.model.dto.request.UpdateUserRequest;
 import travel.ways.travelwaysapi.user.repository.RoleRepository;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
 import travel.ways.travelwaysapi.user.service.shared.AccountService;
+import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,12 +28,12 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@RestController
 public class AccountServiceImpl implements AccountService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final MailService mailService;
+    private final UserService userService;
     private final CommonProperty commonProperty;
 
     @Override
@@ -43,6 +46,36 @@ public class AccountServiceImpl implements AccountService {
         }
         var user = optionalUser.get();
         user.setPassword(passwordEncoder.encode(newPassword));
+    }
+
+    @Override
+    @SneakyThrows
+    @Transactional
+    public void chanePassword(UpdatePasswordRequest request) {
+        var loggedUser = userService.getLoggedUser();
+        if (!passwordEncoder.matches(request.getOldPassword(), loggedUser.getPassword())) {
+            throw new ServerException("Invalid old password", HttpStatus.BAD_REQUEST);
+        }
+        loggedUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(loggedUser);
+    }
+
+    @Override
+    @SneakyThrows
+    public void updateUser(UpdateUserRequest request) {
+        request.validAndThrowError();
+        var loggedUser = userService.getLoggedUser();
+
+        if(!loggedUser.getEmail().equals(request.getEmail()) && userRepository.existsByEmail(request.getEmail())){
+            throw new ServerException("User with this email exists", HttpStatus.BAD_REQUEST);
+        }
+
+        loggedUser.setEmail(request.getEmail());
+        loggedUser.setUsername(request.getEmail());
+        loggedUser.setName(request.getName());
+        loggedUser.setSurname(request.getSurname());
+
+        userRepository.save(loggedUser);
     }
 
     @Override

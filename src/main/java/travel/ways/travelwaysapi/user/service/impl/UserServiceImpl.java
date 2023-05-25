@@ -11,8 +11,8 @@ import travel.ways.travelwaysapi.file.model.db.Image;
 import travel.ways.travelwaysapi.file.model.dto.ImageSummaryDto;
 import travel.ways.travelwaysapi.file.service.shared.ImageService;
 import travel.ways.travelwaysapi.trip.model.db.trip.Trip;
-import travel.ways.travelwaysapi.trip.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
+import travel.ways.travelwaysapi.user.model.dto.request.AddImageRequest;
 import travel.ways.travelwaysapi.user.model.dto.response.UserResponse;
 import travel.ways.travelwaysapi.user.repository.UserRepository;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
@@ -73,13 +73,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @SneakyThrows
-    public Image addImage(AddImageRequest request, String userHash) {
-        var user = this.getByHash(userHash);
-        if (!user.equals(this.getLoggedUser())) {
+    public Image addImage(AddImageRequest request, AppUser user) {
+        if (!user.equals(getLoggedUser())) {
             throw new ServerException("You don't have permission to add image", HttpStatus.FORBIDDEN);
         }
+        if(user.getImage() != null){
+            deleteImage(user);
+        }
+
         // here is a special logic, because stupid hibernate can't set id as foreign key, it has to have whole object:)
-        var imageId = imageService.createImage(request.getImagesData()[0].getOriginalFilename(), request.getImagesData()[0]);
+        var imageId = imageService.createImage(request.getImageData().getOriginalFilename(), request.getImageData());
         var image = imageService.getImage(imageId);
 
         user.setImage(image);
@@ -90,8 +93,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @SneakyThrows
-    public void deleteImage(String userHash) {
-        AppUser user = this.getByHash(userHash);
+    public void deleteImage(AppUser user) {
         if (!user.equals(this.getLoggedUser())) {
             throw new ServerException("You don't have permission to delete image", HttpStatus.FORBIDDEN);
         }

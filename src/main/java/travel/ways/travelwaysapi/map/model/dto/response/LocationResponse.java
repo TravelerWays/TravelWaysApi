@@ -47,7 +47,7 @@ public class LocationResponse {
                 osmModel.getDisplayName(),
                 osmModel.getOsmId(),
                 0,
-                osmModel.getCountryCode()
+                osmModel.getAddress().getCountryCode()
         );
     }
 }
