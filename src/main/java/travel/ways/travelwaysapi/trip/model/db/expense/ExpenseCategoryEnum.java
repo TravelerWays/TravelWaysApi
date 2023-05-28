@@ -3,7 +3,8 @@ package travel.ways.travelwaysapi.trip.model.db.expense;
         Transport(0),
         Restaurants(1),
         Food(2),
-        Attractions(3);
+        Attractions(3),
+        Hotels(4);
 
         private final int value;
 
