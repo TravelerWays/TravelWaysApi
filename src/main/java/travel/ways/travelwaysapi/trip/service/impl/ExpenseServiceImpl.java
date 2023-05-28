@@ -19,6 +19,7 @@ import travel.ways.travelwaysapi.trip.repository.ExpenseRepository;
 import travel.ways.travelwaysapi.trip.service.internal.ExpenseService;
 import travel.ways.travelwaysapi.trip.service.shared.TripService;
 import travel.ways.travelwaysapi.user.model.db.AppUser;
+import travel.ways.travelwaysapi.user.service.shared.UserFriendsService;
 import travel.ways.travelwaysapi.user.service.shared.UserService;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final UserService userService;
     private final CurrencyRepository currencyRepository;
     private final ExpenseCategoryRepository expenseCategoryRepository;
+    private final UserFriendsService userFriendsService;
 
     @Override
     @SneakyThrows
@@ -87,9 +89,10 @@ public class ExpenseServiceImpl implements ExpenseService {
     @SneakyThrows
     @Override
     public List<ExpenseResponseDto> getExpensesByTrip(String tripHash) {
-        Trip trip = tripService.getTrip(tripHash);
-        AppUser user = userService.getLoggedUser();
-        if (!user.equals(tripService.findOwner(trip)) && !tripService.checkIfContributor(trip, user)) {
+        var trip = tripService.getTrip(tripHash);
+        var user = tripService.findOwner(trip);
+        var loggedUser = userService.getLoggedUser();
+        if (!loggedUser.equals(user) && !tripService.checkIfContributor(trip, loggedUser) || !userFriendsService.isLoggedUserUserFriend(user)) {
             throw new ServerException("You do not have permission to get expenses", HttpStatus.FORBIDDEN);
         }
         return expenseRepository.findByTripHash(tripHash).stream().map(ExpenseResponseDto::of).toList();
