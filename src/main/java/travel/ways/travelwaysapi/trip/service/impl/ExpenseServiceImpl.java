@@ -92,7 +92,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         var trip = tripService.getTrip(tripHash);
         var user = tripService.findOwner(trip);
         var loggedUser = userService.getLoggedUser();
-        if (!loggedUser.equals(user) && !tripService.checkIfContributor(trip, loggedUser) || !userFriendsService.isLoggedUserUserFriend(user)) {
+        if (!loggedUser.equals(user) && !tripService.checkIfContributor(trip, loggedUser) && !userFriendsService.isLoggedUserUserFriend(user)) {
             throw new ServerException("You do not have permission to get expenses", HttpStatus.FORBIDDEN);
         }
         return expenseRepository.findByTripHash(tripHash).stream().map(ExpenseResponseDto::of).toList();
