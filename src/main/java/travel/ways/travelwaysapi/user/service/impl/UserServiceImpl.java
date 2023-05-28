@@ -97,11 +97,11 @@ public class UserServiceImpl implements UserService {
         if (!user.equals(this.getLoggedUser())) {
             throw new ServerException("You don't have permission to delete image", HttpStatus.FORBIDDEN);
         }
-        ImageSummaryDto imageSummaryDto = imageService.getImageSummary(user);
+        var imageSummaryDto = imageService.getImageSummary(user);
         if (imageSummaryDto == null) {
             throw new ServerException("There is no image to delete", HttpStatus.NOT_FOUND);
         }
-        String imageHash = imageSummaryDto.getHash();
+        var imageHash = imageSummaryDto.getHash();
         user.setImage(null);
         imageService.deleteImage(imageHash);
     }

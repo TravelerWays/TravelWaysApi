@@ -107,4 +107,10 @@ public class UserFriendsServiceImpl implements UserFriendsService {
     public List<AppUser> getUserFriends(AppUser user) {
         return userFriendRepository.findUserFriends(user);
     }
+
+    @Override
+    public boolean isLoggedUserUserFriend(AppUser user) {
+        var loggedUser = userService.getLoggedUser();
+        return userFriendRepository.existsByUserAndFriend(loggedUser, user);
+    }
 }
